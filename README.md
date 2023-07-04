@@ -2,15 +2,15 @@
 # Riyadh-Transport
 Welcome to this in development program, this program is still in it's early stages of development, here's our development plan:
 
-✅ Build a prototype with a basic non-real map in Python
-✅ Expand the code to real world examples
-🛠️ Add all the busses to the python code
-🛠️ Develop a QT adaptation
-❌ Develop a GUI
-❌ Port to mobile platforms
-❌ Release as APK on Android
-❌ Deploy on Testflght for iOS
-❌ Official full release publicly
+ - ✅ Build a prototype with a basic non-real map in Python
+ - ✅ Expand the code to real world examples
+ - 🛠️ Add all the busses to the python code
+ - 🛠️ Develop a QT adaptation
+ - ❌ Develop a GUI
+ - ❌ Port to mobile platforms
+ - ❌ Release as APK on Android
+ - ❌ Deploy on Testflght for iOS
+ - ❌ Official full release publicly
 
 ## Abilities and Limitations
 The program can:
