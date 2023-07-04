@@ -1,4 +1,8 @@
 import tkinter as tk
+from tkinter import ttk
+from PIL import ImageTk, Image
+import urllib.request
+import io
 
 bus_routes = {
     "Bus 9": [
@@ -27,7 +31,31 @@ bus_routes = {
     ],
     "Bus 680": [
         'Transportation Center A', 'Southern Ring 401', 'Al Faryan 205', 'Al Faryan 204', 'Al Faryan 203', 'Al-Yamamah 602', 'Al-Yamamah 601', 'Utayqah 616', 'Suwaidi Al Am 410', 'Suwaidi Al Am 409', 'Suwaidi Al Am 408', 'Sultanah 206', 'Sultanah 205', 'Sultanah 204', 'Sultanah 203', 'Olaishah 604', 'Olaishah 602', 'Al-Fakhiriyah 601', 'An-Namuthajiyah 603', 'An-Namuthajiyah 602', 'Takhassusi 220', 'Takhassusi 219', 'Takhassusi 218', 'Takhassusi 217', 'Takhassusi 216', 'Takhassusi 215', 'Takhassusi 213', 'Takhassusi 212', 'Takhassusi 210', 'Takhassusi 209', 'Takhassusi 208', 'King Abdullah 408', 'King Abdullah 405', 'King Abdullah 404', 'King Abdullah 403', 'King Abdullah 402', 'Irqah 609', 'Irqah 608', 'Irqah 607', 'Irqah 606', 'Irqah 605', 'Irqah 604', 'Irqah 603', 'Irqah 602', 'Irqah 601', 'Irqah 501', 'Irqah 502', 'Irqah 503', 'Irqah 504', 'Irqah 505', 'Irqah 506', 'Irqah 508', 'Al-Khuzama 501', 'King Abdullah 302', 'King Abdullah 304', 'King Abdullah 305', 'King Abdullah 307', 'King Abdullah 309', 'Takhassusi 108', 'Takhassusi 109', 'Takhassusi 110', 'Takhassusi 111', 'Takhassusi 112', 'Takhassusi 113', 'Takhassusi 114', 'Takhassusi 115', 'An-Namuthajiyah 503', 'Al-Fakhiriyah 501', 'Olaishah 501', 'Olaishah 503', 'Sultanah 103', 'Sultanah 104', 'Sultanah 105', 'Sultanah 106', 'Suwaidi Al Am 308', 'Suwaidi Al Am 309', 'Utayqah 516', 'Al-Yamamah 501', 'Al-Yamamah 502', 'Al Faryan 103', 'Al Faryan 104', 'Al Faryan 105', 'Southern Ring 301', 'Transportation Center A'
-        ]
+    ],
+    "Bus 341": [
+        'KSU 503', 'KSU 504', 'King Abdullah 403', 'King Abdullah 402', 'King Khalid 102', 'Al Urubah 302', 'Al Urubah 303', 'Al Urubah 304', 'Al Urubah 305', 'Al Urubah 306', 'Al Urubah 307', 'Al Urubah 308', 'Al Urubah 309', 'Al Urubah 310', 'Al Urubah 311', 'Al Urubah 312', 'Al Urubah 313', 'Abdulrahman Al Ghafqi 301', 'Abdulrahman Al Ghafqi 302', 'Abdulrahman Al Ghafqi 303', 'Khalid Bin Al Walid 212', 'Abdulrahman Al Ghafqi 403', 'Abdulrahman Al Ghafqi 402', 'Abdulrahman Al Ghafqi 401', 'Al Urubah 413', 'Al Urubah 412', 'Al Urubah 411', 'Al Urubah 410', 'Al Urubah 409', 'Al Urubah 408', 'Al Urubah 407', 'Al Urubah 406', 'Al Urubah 405', 'Al Urubah 404', 'Al Urubah 403', 'Al Urubah 401', 'King Khalid 202', 'King Abdullah 301', 'King Abdullah 302', 'KSU 604', 'KSU 603'
+    ],
+    "Bus 150": [
+        'Amr Bin Al Aas 307', 'Nasseriya 303', 'Nasseriya 304', 'Al-Muraba 501', 'Al-Muraba 502', 'Al-Muraba 503', 'Ma`Ahad Al Idarah 301', 'Ma`Ahad Al Idarah 302', 'Omar Bin Abdulaziz 301', 'Omar Bin Abdulaziz 302', 'Omar Bin Abdulaziz 303', 'Omar Bin Abdulaziz 304', 'Omar Bin Abdulaziz 305', 'Omar Bin Abdulaziz 306', 'Omar Bin Abdulaziz 308', 'Omar Bin Abdulaziz 309', 'Unayzah 203', 'Ar-Rawabi 501', 'Ar-Rawabi 502', 'Ar-Rawabi 503', 'As-Salam 501', 'As-Salam 503', 'As-Salam 505', 'West An-Naseem 502', 'West An-Naseem 503', 'Hassan Bin Thabit 205', 'Abdullah Bin Saleem 301', 'Ar-Rimayah 502', 'Ar-Rimayah 602', 'East An-Naseem 603', 'Mohammed Bin Hindi 401', 'West An-Naseem 604', 'West An-Naseem 601', 'As-Salam 604', 'As-Salam 603', 'As-Salam 602', 'As-Salam 601', 'Ar-Rawabi 603', 'Ar-Rawabi 601', 'Unayzah 103', 'Omar Bin Abdulaziz 410', 'Omar Bin Abdulaziz 407', 'Omar Bin Abdulaziz 406', 'Omar Bin Abdulaziz 404', 'Omar Bin Abdulaziz 402', 'Omar Bin Abdulaziz 401', 'Salahuddin Al Ayubi 104', 'Salahuddin Al Ayubi 105', 'Ma`Ahad Al Idarah 402', 'Ma`Ahad Al Idarah 401', 'Al-Muraba 603', 'Al-Muraba 602', 'Al-Muraba 601', 'Nasseriya 404', 'Nasseriya 402', 'Nasseriya 401', 'Al-Fakhiriyah 501', 'Amr Bin Al Aas 307'
+    ],
+    "Bus 430": [
+        'Khalid Bin Al Walid 207', 'Khalid Bin Al Walid 206', 'Al-Hamra 602', 'Al-Hamra 601', 'Al-Ezdihar 604', 'Al-Ezdihar 602', 'Al-Nuzha 602', 'Al-Nuzha 601', 'Al-Maseef 601', 'Al-Murooj 603', 'Al-Murooj 602', 'Al-Murooj 601', 'Al-Nakheel 607', 'Al-Nakheel 606', 'Al-Muhammadiyah 502', 'King Abdullah 405', 'King Abdullah 404', 'KSU 605', 'KSU 606', 'KSU 506', 'KSU 505', 'King Abdullah 304', 'King Abdullah 305', 'King Abdullah 307', 'Al-Muhammadiyah 601', 'Al-Nakheel 507', 'Al-Murooj 501', 'Al-Murooj 503', 'Al-Maseef 501', 'Al-Maseef 502', 'Al-Nuzha 501', 'Al-Ezdihar 504', 'Khalid Bin Al Walid 105', 'Khalid Bin Al Walid 107'
+    ],
+    "Bus 350": [
+        'KSU 506', 'KSU 507', 'KSU 508', 'KSU 503', 'KSU 504', 'King Abdullah 304', 'King Abdullah 305', 'King Abdullah 307', 'Ar-Raed 502', 'Ar-Raed 503', 'Ar-Raed 504', 'North Al-Mathar 501', 'North Al-Mathar 502', 'North Al-Mathar 503', 'North Al-Mathar 504', 'Al-Mathar 501', 'Al-Mathar 503', 'King Khalid 106', 'King Saud 301', 'An-Namuthajiyah 501', 'An-Namuthajiyah 503', 'Amr Bin Al Aas 307', 'Nasseriya 303', 'Nasseriya 304', 'King Abdulaziz 215', 'Omar Bin Al Khatab 302', 'Omar Bin Al Khatab 303', 'Omar Bin Al Khatab 304', 'Omar Bin Al Khatab 305', 'Omar Bin Al Khatab 306', 'Omar Bin Al Khatab 309', 'Al-Jazeerah 505', 'Al-Jazeerah 506', 'Haroon Rasheed 205', 'Haroon Rasheed 201']
+}
+
+bus_images = {
+    # Replace these URLs with the actual image URLs for each bus route
+    "Bus 9": "https://i.imgur.com/iDzACj5.png",
+    "Bus 7": "https://i.imgur.com/jDOJZCK.png",
+    "Bus 8": "https://i.imgur.com/p7GZejI.png",
+    "Bus 10": "https://i.imgur.com/rnKO7up.png",
+    "Bus 16": "https://i.imgur.com/qKnzFEC.png",
+    "Bus 17": "https://i.imgur.com/ykrD7e3.png",
+    "Bus 160": "https://i.imgur.com/d7nj24n.jpg",
+    "Bus 660": "https://i.imgur.com/I4DwMuQ.png",
+    "Bus 680": "https://i.imgur.com/dgJGtd6.png"
 }
 
 def find_route():
@@ -109,26 +137,71 @@ def find_route():
                                                 cheapest_route = route
 
     result_label.config(text=f"Fastest Route: {fastest_route}\nCheapest Route: {cheapest_route}")
+def on_bus_select(event):
+    bus = bus_select.get()
+    stations_text.config(state=tk.NORMAL)
+    stations_text.delete("1.0", tk.END)
+    stations_text.insert(tk.END, "\n".join(bus_routes[bus]))
+    stations_text.config(state=tk.DISABLED)
+
+    image_url = bus_images[bus]
+    with urllib.request.urlopen(image_url) as url:
+        image_data = url.read()
+    image = Image.open(io.BytesIO(image_data))
+    image.thumbnail((400, 400), Image.LANCZOS)
+    photo = ImageTk.PhotoImage(image)
+    route_image.configure(image=photo)
+    route_image.image = photo
 
 root = tk.Tk()
 root.title("Riyadh Transport")
 
-start_label = tk.Label(root, text="Enter your starting station:")
+tab_control = ttk.Notebook(root)
+
+route_finder_tab = ttk.Frame(tab_control)
+tab_control.add(route_finder_tab, text="Route Finder")
+
+start_label = tk.Label(route_finder_tab, text="Enter your starting station:")
 start_label.pack()
 
-start_entry = tk.Entry(root)
+start_entry = tk.Entry(route_finder_tab)
 start_entry.pack()
 
-destination_label = tk.Label(root, text="Enter your destination station:")
+destination_label = tk.Label(route_finder_tab, text="Enter your destination station:")
 destination_label.pack()
 
-destination_entry = tk.Entry(root)
+destination_entry = tk.Entry(route_finder_tab)
 destination_entry.pack()
 
-button = tk.Button(root, text="Find Route", command=find_route)
+button = tk.Button(route_finder_tab, text="Find Route", command=find_route)
 button.pack()
 
-result_label = tk.Label(root, text="")
+result_label = tk.Label(route_finder_tab, text="")
 result_label.pack()
+
+bus_info_tab = ttk.Frame(tab_control)
+tab_control.add(bus_info_tab, text="Bus Information")
+
+bus_select_label = tk.Label(bus_info_tab, text="Select a bus:")
+bus_select_label.pack()
+
+bus_select = ttk.Combobox(bus_info_tab, values=list(bus_routes.keys()))
+bus_select.bind("<<ComboboxSelected>>", on_bus_select)
+bus_select.pack()
+
+stations_text_label = tk.Label(bus_info_tab, text="Stations:")
+stations_text_label.pack()
+
+stations_text = tk.Text(bus_info_tab, height=10, width=50)
+stations_text.pack()
+stations_text.config(state=tk.DISABLED)
+
+route_image_label = tk.Label(bus_info_tab, text="Route Image:")
+route_image_label.pack()
+
+route_image = tk.Label(bus_info_tab)
+route_image.pack()
+
+tab_control.pack(expand=1, fill="both")
 
 root.mainloop()
