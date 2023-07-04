@@ -1,5 +1,7 @@
+
 # Riyadh-Transport
 Welcome to this in development program, this program is still in it's early stages of development, here's our development plan:
+
 ✅ Build a prototype with a basic non-real map in Python
 ✅ Expand the code to real world examples
 🛠️ Add all the busses to the python code
@@ -16,7 +18,9 @@ The program can:
  - Calculate routes using smart algorithms
  - Offer 2 routes, fastest and least transfers
  - Count the necessary stations crossed
-The program CANNOT so far:
+
+
+The program **CANNOT** so far:
  - Show you the route on a map
  - Tell you to walk from 1 station to another
  - Use GPS
