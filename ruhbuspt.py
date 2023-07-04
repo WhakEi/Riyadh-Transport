@@ -55,7 +55,7 @@ bus_images = {
     "Bus 17": "https://i.imgur.com/ykrD7e3.png",
     "Bus 160": "https://i.imgur.com/d7nj24n.jpg",
     "Bus 660": "https://i.imgur.com/I4DwMuQ.png",
-    "Bus 680": "https://i.imgur.com/dgJGtd6.png"
+    "Bus 680": "https://i.imgur.com/dgJGtd6.png"A
 }
 
 def find_route():
@@ -75,7 +75,7 @@ def find_route():
                     if bus1 == bus2:
                         time = abs(bus_routes[bus1].index(start) - bus_routes[bus2].index(destination))
                         cost = len(set([bus1]))
-                        route = f"{bus1} to station {destination} ({time} stops) - Alpha v0.9.1"
+                        route = f"{bus1} to station {destination} ({time} stops) - Alpha v0.10"
 
                         if time < fastest_time:
                             fastest_time = time
@@ -90,7 +90,7 @@ def find_route():
                             time2 = abs(bus_routes[bus2].index(intersect) - bus_routes[bus2].index(destination))
                             time = time1 + time2
                             cost = len(set([bus1,bus2]))
-                            route = f"{bus1} to station {intersect} ({time1} stops), {bus2} to station {destination} ({time2} stops) - Alpha v0.9.1"
+                            route = f"{bus1} to station {intersect} ({time1} stops), {bus2} to station {destination} ({time2} stops) - Alpha v0.10"
 
                             if time < fastest_time:
                                 fastest_time = time
@@ -107,7 +107,7 @@ def find_route():
                                     time3 = abs(bus_routes[bus2].index(intersect2) - bus_routes[bus2].index(destination))
                                     time = time1 + time2 + time3
                                     cost = len(set([bus1,bus2,bus3]))
-                                    route = f"{bus1} to station {intersect} ({time1} stops), {bus3} to station {intersect2} ({time2} stops), {bus2} to station {destination} ({time3} stops) - Alpha v0.9.1"
+                                    route = f"{bus1} to station {intersect} ({time1} stops), {bus3} to station {intersect2} ({time2} stops), {bus2} to station {destination} ({time3} stops) - Alpha v0.10"
 
                                     if time < fastest_time:
                                         fastest_time = time
@@ -126,7 +126,7 @@ def find_route():
                                             time4 = abs(bus_routes[bus2].index(intersect3) - bus_routes[bus2].index(destination))
                                             time = time1 + time2 + time3 + time4
                                             cost = len(set([bus1,bus2,bus3,bus4]))
-                                            route = f"{bus1} to station {intersect} ({time1} stops), {bus3} to station {intersect2} ({time2} stops), {bus4} to station {intersect3} ({time3} stops), {bus2} to station {destination} ({time4} stops) - Alpha v0.9.1"
+                                            route = f"{bus1} to station {intersect} ({time1} stops), {bus3} to station {intersect2} ({time2} stops), {bus4} to station {intersect3} ({time3} stops), {bus2} to station {destination} ({time4} stops) - Alpha v0.10"
 
                                             if time < fastest_time:
                                                 fastest_time = time
