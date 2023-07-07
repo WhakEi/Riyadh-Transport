@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bus Stations</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      #map {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body,
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      const overpassApiUrl = 'https://overpass-api.de/api/interpreter';
+      const query = `
+        [out:json];
+        node[amenity=bus_station]({{bbox}});
+        out;
+      `;
+
+      const bounds = {
+        south: 24.524654,
+        west: 46.415819,
+        north: 24.804110,
+        east: 46.906380
+      };
+
+      const bbox = `${bounds.south},${bounds.west},${bounds.north},${bounds.east}`;
+
+      (async () => {
+        const response = await fetch(overpassApiUrl, {
+          method: 'POST',
+          body: query.replace('{{bbox}}', bbox)
+        });
+        const data = await response.json();
+
+        const customNames = {
+          'new-station-0': 'Transportation Center A',
+          'new-station-1': 'Al Batha 210',
+          'new-station-2': 'Al Batha 208',
+          'new-station-3': 'Al Batha 207',
+          'new-station-4': 'Al Batha 206',
+          'new-station-5': 'Al Batha 205',
+          'new-station-6': 'Al Batha 204',
+          'new-station-7': 'Al Batha 202',
+          'new-station-8': 'Al Batha 201',
+          'new-station-10': 'Al-Muraba 610',
+          'new-station-11': 'Al-Muraba 609',
+          'new-station-12': 'Al-Muraba 607',
+          'new-station-13': 'Al-Muraba 606',
+          'new-station-14': 'Al-Muraba 605',
+          'new-station-15': 'Al-Olaya 613',
+          'new-station-16': 'Olaya 218',
+          'new-station-17': 'Olaya 217',
+          'new-station-18': 'Olaya 216',
+          'new-station-19': 'Olaya 212',
+          'new-station-20': 'Olaya 211',
+          'new-station-21': 'Olaya 210',
+          'new-station-22': 'Olaya 209',
+          'new-station-23': 'Olaya 208',
+          'new-station-24': 'Olaya 207',
+          'new-station-25': 'Olaya 206',
+          'new-station-26': 'Al-Mughera Bin Shoubah 101'
+          // Add more custom names here
+        };
+
+        const stations = data.elements
+          .filter(
+            station =>
+              station.tags &&
+              station.tags.name &&
+              station.tags.name !== 'Saptco VIP Bus Terminal'
+          )
+          .map(station => {
+            return {
+              id: station.id,
+              lat: station.lat,
+              lon: station.lon,
+              tags: {
+                ...station.tags,
+                name: customNames[station.id] || station.tags.name
+              }
+            };
+          });
+
+        // Add new-stations to the array
+        const newStations = [
+          [24.596952083914562, 46.74694745281195], // Coordinates of the first new-station
+          [24.60249830094673, 46.73284766630303], // Coordinates of the second new-station
+          [24.596847986354913, 46.7357939104847],
+          [24.60878792759858, 46.72970453462697],
+          [24.617185415698682, 46.72586919619911],
+          [24.62577359052572, 46.72103250281936],
+          [24.62763640631511, 46.71917641412297],
+          [24.635096995318957, 46.717267152813335],
+          [24.644102898199257, 46.71643990283913],
+          [24.652418923534317, 46.71278002327253],
+          [24.655548467071373, 46.71175683114123],
+          [24.659876049390746, 46.71026139650801],
+          [24.665714653408948, 46.707772152917215],
+          [24.669505457888064, 46.706217687934426],
+          [24.68069938704901, 46.701327750960154],
+          [24.684018538928047, 46.690491554669954],
+          [24.689116892515276, 46.68760549770582],
+          [24.697421985640712, 46.683431980492735],
+          [24.702798336592284, 46.68073203387055],
+          [24.71212484355953, 46.67598051837226],
+          [24.716978399529115, 46.67354507258539],
+          [24.725252070017287, 46.669368645289055],
+          [24.73047603390432, 46.66683623771702],
+          [24.73400361931709, 46.6649801490606],
+          [24.736303317263612, 46.66379997709606],
+          [24.742348305179117, 46.6607311800559],
+          [24.754172308981364, 46.664054410490294]
+
+          // Add more new-stations here
+        ];
+        newStations.forEach((coords, index) => {
+          const id = `new-station-${index}`;
+          stations.push({
+            id,
+            lat: coords[0],
+            lon: coords[1],
+            tags: { name: customNames[id] || `New Station ${index + 1}` }
+          });
+        });
+
+        // ...
+
+
+        const map = L.map('map').setView([24.678808290364298, 46.701361194563226], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution:
+            '© <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Add markers for each station
+        stations.forEach(station => {
+          L.marker([station.lat, station.lon])
+            .addTo(map)
+            .bindPopup(station.tags.name || 'Unnamed station');
+        });
+
+        // Draw a line between the stations
+        const latlngs = stations.map(station => [station.lat, station.lon]);
+        L.polyline(latlngs, { color: 'red' }).addTo(map);
+      })();
+    </script>
+  </body>
+</html>
