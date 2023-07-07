@@ -11,7 +11,7 @@ Welcome to this in development program, this program is still in it's early stag
  - ❌ Port to mobile platforms
  - ❌ Use location proximity to find nearest station
  - ❌ Release as APK on Android
- - ❌ Deploy on Testflght for iOS
+ - ❌ Deploy on Testflight for iOS
  - ❌ Official full release publicly
 
 ## Abilities and Limitations
