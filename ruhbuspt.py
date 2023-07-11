@@ -211,7 +211,7 @@ stations_text.config(state=tk.DISABLED)
 bus_buttons = {}
 for bus in bus_routes.keys():
     def on_button_click(bus=bus):
-        subprocess.Popen(['python', f'{bus}.py'])
+        subprocess.Popen(['python', f'busdb/{bus}.py'])
     button = tk.Button(bus_info_tab, text=f"View {bus} route", command=on_button_click)
     bus_buttons[bus] = button
 
