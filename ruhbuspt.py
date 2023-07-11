@@ -52,63 +52,6 @@ bus_routes = {
         'Bilal Bin Rabah 418', 'Western Ring 202', 'Western Ring 201', 'Al Rabeya 401', 'Jeddah 313', 'Jeddah 314', 'King Khalid 202', 'King Abdullah 301', 'King Abdullah 302', 'King Abdullah 304', 'Takhassusi 207', 'Takhassusi 206', 'Takhassusi 205', 'Takhassusi 204', 'Takhassusi 202', 'Takhassusi 201', 'Ath Thumamah 301', 'Ath Thumamah 302', 'Ath Thumamah 303', 'King Abdulaziz 108', 'King Abdulaziz 210', 'King Abdulaziz 209', 'King Abdulaziz 208', 'Ath Thumamah 403', 'Ath Thumamah 402', 'Ath Thumamah 401', 'Takhassusi 101', 'Takhassusi 103', 'Takhassusi 105', 'Takhassusi 106', 'Takhassusi 107', 'King Abdullah 405', 'King Abdullah 404', 'King Abdullah 403', 'King Abdullah 402', 'Al Rabeya 401', 'Western Ring 101', 'Western Ring 102', 'Bilal Bin Rabah 318', 'West Al-Uraija 501']
 }
 
-station_coordinates = {
-    "Al Batha 210": (24.596847986354913, 46.7357939104847),
-    "Al Batha 208": (24.60249830094673, 46.73284766630303),
-    "Transportation Center A": (24.596952083914562, 46.74694745281195),
-    "Al Batha 207": (24.60878792759858, 46.72970453462697),
-    "Al Batha 206": (24.617185415698682, 46.72586919619911),
-    "Al Batha 205": (24.62577359052572, 46.72103250281936),
-    "Al Batha 204": (24.62763640631511, 46.71917641412297),
-    "Al Batha 202": (24.635096995318957, 46.717267152813335),
-    "Al Batha 201": (24.644102898199257, 46.71643990283913),
-    "Al-Muraba 610": (24.652418923534317, 46.71278002327253),
-    "Al-Muraba 609": (24.655548467071373, 46.71175683114123),
-    "Al-Muraba 607": (24.659876049390746, 46.71026139650801),
-    "Al-Muraba 606": (24.665714653408948, 46.707772152917215),
-    "Al-Muraba 605": (24.669505457888064, 46.706217687934426),
-    "Al-Olaya 613": (24.68069938704901, 46.701327750960154),
-    "Olaya 218": (24.684018538928047, 46.690491554669954),
-    "Olaya 217": (24.689116892515276, 46.68760549770582),
-    "Olaya 216": (24.697421985640712, 46.683431980492735),
-    "Olaya 215": (24.702798336592284, 46.68073203387055),
-    "Olaya 212": (24.71212484355953, 46.67598051837226),
-    "Olaya 211": (24.716978399529115, 46.67354507258539),
-    "Olaya 210": (24.725252070017287, 46.669368645289055),
-    "Olaya 209": (24.73047603390432, 46.66683623771702),
-    "Olaya 208": (24.73400361931709, 46.6649801490606),
-    "Olaya 207": (24.736303317263612, 46.66379997709606),
-    "Olaya 206": (24.742348305179117, 46.6607311800559),
-    "Al-Mughera Bin Shoubah 101": (24.754172308981364, 46.664054410490294),
-    "Al-Murooj 602": (24.750063434440168, 46.667299650962505),
-    "Olaya 106": (24.742467429316076, 46.66037156630781),
-    "Olaya 107": (24.73599730500528, 46.66369750553665),
-    "Olaya 108": (24.732880529606323, 46.66521015788421),
-    "Olaya 109": (24.73068796159733, 46.666229397309884),
-    "Olaya 110": (24.724879905803036, 46.669233471440464),
-    "Olaya 111": (24.71767792986553, 46.67284908920229),
-    "Olaya 113": (24.71102939569033, 46.676218113157454),
-    "Olaya 114": (24.70457849373193, 46.679554123979365),
-    "Olaya 116": (24.697219305419697, 46.683111784582664),
-    "Olaya 117": (24.68889339682271, 46.68736610447823),
-    "Olaya 118": (24.683325328877253, 46.69027582932767),
-    "Al-Olaya 512": (24.682138972590412, 46.70010406630585),
-    "Al-Olaya 513": (24.678490798233987, 46.701902212564676),
-    "Al-Muraba 505": (24.671039612926858, 46.705569068160244),
-    "Al-Muraba 506": (24.665969769872834, 46.707242766586226),
-    "Al-Muraba 508": (24.65767233224662, 46.710525790442944),
-    "Al-Muraba 510": (24.652211907800158, 46.71274665953214),
-    "Al Batha 101": (24.642162808753348, 46.71703152006325),
-    "Al Batha 102": (24.634205122452762, 46.71648434937824),
-    "Al Batha 104": (24.62754651585229, 46.71895079685936),
-    "Al Batha 105": (24.62499123077584, 46.721289683131744),
-    "Al Batha 106": (24.61641050710476, 46.725743727830654),
-    "Al Batha 107": (24.61024801046009, 46.72842056226863),
-    "Al Batha 108": (24.602554617927648, 46.73239458780619),
-    "Al Batha 109": (24.598771809398723, 46.73437452715397)
-}
-
-
 bus_images = {
     # Replace these URLs with the actual image URLs for each bus route
     "Bus 9": "https://i.imgur.com/iDzACj5.png",
@@ -141,7 +84,7 @@ def find_route():
                     if bus1 == bus2:
                         time = abs(bus_routes[bus1].index(start) - bus_routes[bus2].index(destination))
                         cost = len(set([bus1]))
-                        route = f"{bus1} to station {destination} ({time} stops) - Alpha v0.12"
+                        route = f"{bus1} to station {destination} ({time} stops) - Alpha v0.13"
 
                         if time < fastest_time:
                             fastest_time = time
@@ -156,7 +99,7 @@ def find_route():
                             time2 = abs(bus_routes[bus2].index(intersect) - bus_routes[bus2].index(destination))
                             time = time1 + time2
                             cost = len(set([bus1,bus2]))
-                            route = f"{bus1} to station {intersect} ({time1} stops), {bus2} to station {destination} ({time2} stops) - Alpha v0.12"
+                            route = f"{bus1} to station {intersect} ({time1} stops), {bus2} to station {destination} ({time2} stops) - Alpha v0.13"
 
                             if time < fastest_time:
                                 fastest_time = time
@@ -173,7 +116,7 @@ def find_route():
                                     time3 = abs(bus_routes[bus2].index(intersect2) - bus_routes[bus2].index(destination))
                                     time = time1 + time2 + time3
                                     cost = len(set([bus1,bus2,bus3]))
-                                    route = f"{bus1} to station {intersect} ({time1} stops), {bus3} to station {intersect2} ({time2} stops), {bus2} to station {destination} ({time3} stops) - Alpha v0.12"
+                                    route = f"{bus1} to station {intersect} ({time1} stops), {bus3} to station {intersect2} ({time2} stops), {bus2} to station {destination} ({time3} stops) - Alpha v0.13"
 
                                     if time < fastest_time:
                                         fastest_time = time
@@ -192,7 +135,7 @@ def find_route():
                                             time4 = abs(bus_routes[bus2].index(intersect3) - bus_routes[bus2].index(destination))
                                             time = time1 + time2 + time3 + time4
                                             cost = len(set([bus1,bus2,bus3,bus4]))
-                                            route = f"{bus1} to station {intersect} ({time1} stops), {bus3} to station {intersect2} ({time2} stops), {bus4} to station {intersect3} ({time3} stops), {bus2} to station {destination} ({time4} stops) - Alpha v0.12"
+                                            route = f"{bus1} to station {intersect} ({time1} stops), {bus3} to station {intersect2} ({time2} stops), {bus4} to station {intersect3} ({time3} stops), {bus2} to station {destination} ({time4} stops) - Alpha v0.13"
 
                                             if time < fastest_time:
                                                 fastest_time = time
@@ -205,19 +148,17 @@ def find_route():
     result_label.config(text=f"Fastest Route: {fastest_route}\nCheapest Route: {cheapest_route}")
 def on_bus_select(event):
     bus = bus_select.get()
+    print(f"Selected bus: {bus}")
+    print(f"Bus buttons: {list(bus_buttons.keys())}")
+    # ...
     stations_text.config(state=tk.NORMAL)
     stations_text.delete("1.0", tk.END)
     stations_text.insert(tk.END, "\n".join(bus_routes[bus]))
     stations_text.config(state=tk.DISABLED)
 
-    image_url = bus_images[bus]
-    with urllib.request.urlopen(image_url) as url:
-        image_data = url.read()
-    image = Image.open(io.BytesIO(image_data))
-    image.thumbnail((400, 400), Image.LANCZOS)
-    photo = ImageTk.PhotoImage(image)
-    route_image.configure(image=photo)
-    route_image.image = photo
+    for b in bus_buttons.values():
+        b.pack_forget()
+    bus_buttons[bus].pack()
 
 root = tk.Tk()
 root.title("Riyadh Transport")
@@ -253,9 +194,6 @@ def on_button_click():
 bus_info_tab = ttk.Frame(tab_control)
 tab_control.add(bus_info_tab, text="Bus Information")
 
-button = tk.Button(bus_info_tab, text="View Bus 9 route", command=on_button_click)
-button.pack()
-
 bus_select_label = tk.Label(bus_info_tab, text="Select a bus:")
 bus_select_label.pack()
 
@@ -270,11 +208,12 @@ stations_text = tk.Text(bus_info_tab, height=10, width=50)
 stations_text.pack()
 stations_text.config(state=tk.DISABLED)
 
-route_image_label = tk.Label(bus_info_tab, text="Route Image:")
-route_image_label.pack()
-
-route_image = tk.Label(bus_info_tab)
-route_image.pack()
+bus_buttons = {}
+for bus in bus_routes.keys():
+    def on_button_click(bus=bus):
+        subprocess.Popen(['python', f'{bus}.py'])
+    button = tk.Button(bus_info_tab, text=f"View {bus} route", command=on_button_click)
+    bus_buttons[bus] = button
 
 tab_control.pack(expand=1, fill="both")
 

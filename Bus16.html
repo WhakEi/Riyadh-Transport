@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bus Stations</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      #map {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body,
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      const overpassApiUrl = 'https://overpass-api.de/api/interpreter';
+      const query = `
+        [out:json];
+        node[amenity=bus_station]({{bbox}});
+        out;
+      `;
+
+      const bounds = {
+        south: 24.524654,
+        west: 46.415819,
+        north: 24.804110,
+        east: 46.906380
+      };
+
+      const bbox = `${bounds.south},${bounds.west},${bounds.north},${bounds.east}`;
+
+      (async () => {
+        const response = await fetch(overpassApiUrl, {
+          method: 'POST',
+          body: query.replace('{{bbox}}', bbox)
+        });
+        const data = await response.json();
+
+        const customNames = {
+          'new-station-0': 'Al Batha 102',
+          'new-station-1': 'Ad-Dirah 605',
+          'new-station-2': 'Ash-Shomaisi 602',
+          'new-station-3': 'Ash-Shomaisi 601',
+          'new-station-4': 'Al-Badeah 603',
+          'new-station-5': 'Al-Badeah 609',
+          'new-station-6': 'Al-Badeah 608',
+          'new-station-7': 'Al-Badeah 607',
+          'new-station-8': 'Al-Badeah 606',
+          'new-station-9': 'Al-Badeah 505',
+          'new-station-10': 'Ayesha Bint Abi Bakr 204',
+          'new-station-11': 'Ayesha Bint Abi Bakr 104',
+          'new-station-12': 'Ibnul-Jouzi 402',
+          'new-station-13': 'Ibnul-Jouzi 401',
+          'new-station-14': 'Hamza Bin Abdulmuttalib 206',
+          'new-station-15': 'Hamza Bin Abdulmuttalib 205',
+          'new-station-16': 'West Al-Uraija 602',
+          'new-station-17': 'Bilal Bin Rabah 418',
+          'new-station-18': 'Bilal Bin Rabah 417',
+          'new-station-19': 'Bilal Bin Rabah 416',
+          'new-station-20': 'Bilal Bin Rabah 415',
+          'new-station-21': 'Bilal Bin Rabah 414',
+          'new-station-22': 'Bilal Bin Rabah 413',
+          'new-station-23': 'Bilal Bin Rabah 412',
+          'new-station-24': 'Bilal Bin Rabah 411',
+          'new-station-25': 'Bilal Bin Rabah 410',
+          'new-station-26': 'Bilal Bin Rabah 409',
+          'new-station-27': 'Bilal Bin Rabah 408',
+          'new-station-28': 'Bilal Bin Rabah 407',
+          'new-station-29': 'Bilal Bin Rabah 406',
+          'new-station-30': 'Bilal Bin Rabah 405',
+          'new-station-31': 'Bilal Bin Rabah 404'
+        };
+
+        const stations = data.elements
+          .filter(
+            station =>
+              station.tags &&
+              station.tags.name &&
+              station.tags.name !== 'Saptco VIP Bus Terminal'
+          )
+          .map(station => {
+            return {
+              id: station.id,
+              lat: station.lat,
+              lon: station.lon,
+              tags: {
+                ...station.tags,
+                name: customNames[station.id] || station.tags.name
+              }
+            };
+          });
+
+        // Add new-stations to the array
+        const newStations = [
+          [24.6423530626048, 46.71706749375324],
+          [24.634152063888997, 46.71655201048619],
+          [24.63091917808917, 46.70305031048595],
+          [24.63052646813581, 46.69752586630404],
+          [24.626004596207643, 46.68973731048581],
+          [24.624112969296423, 46.68598932583131],
+          [24.622721797746536, 46.68379361234054],
+          [24.621330391627918, 46.68129855281294],
+          [24.619312031049006, 46.67729083561257],
+          [24.614881670876596, 46.67501960863059],
+          [24.604018989078188, 46.6415117729555],
+          [24.603409316851504, 46.64140448460818],
+          [24.598159202852766, 46.63413583561181],
+          [24.59370252230148, 46.62691455281193],
+          [24.592159712064653, 46.62193795281193],
+          [24.595070498756538, 46.61980020862987],
+          [24.594129321766427, 46.61551972768517],
+          [24.588011229875182, 46.60182145095696],
+          [24.585299233468906, 46.59727595095688],
+          [24.583297617927713, 46.593928452811674],
+          [24.579366018114897, 46.58732031048415],
+          [24.578135042960596, 46.58408865095659],
+          [24.577937602574185, 46.578576252811416],
+          [24.57824301581107, 46.574510154666186],
+          [24.578491545370397, 46.57079131048412],
+          [24.578893401754726, 46.565708895138556],
+          [24.57917453148905, 46.561705852811464],
+          [24.5794868047026, 46.55750373746571],
+          [24.579996517758445, 46.55119555281147],
+          [24.58044961892438, 46.54808745281144],
+          [24.58058761343544, 46.54439733746593],
+          [24.580875604269014, 46.53926249513866]
+        ];
+        newStations.forEach((coords, index) => {
+          const id = `new-station-${index}`;
+          stations.push({
+            id,
+            lat: coords[0],
+            lon: coords[1],
+            tags: { name: customNames[id] || `New Station ${index + 1}` }
+          });
+        });
+
+        // ...
+
+
+        const map = L.map('map').setView([24.605709225989273, 46.638125597820995], 12.5);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution:
+            'This is a part of the <a href="https://www.github.com/WhakEi/Riyadh-Transport/">Riyadh Transport</a> project'
+        }).addTo(map);
+
+        // Add markers for each station
+        stations.forEach(station => {
+          L.marker([station.lat, station.lon])
+            .addTo(map)
+            .bindPopup(station.tags.name || 'Unnamed station');
+        });
+
+        // Draw a line between the stations
+        const latlngs = stations.map(station => [station.lat, station.lon]);
+        L.polyline(latlngs, { color: 'red' }).addTo(map);
+      })();
+    </script>
+  </body>
+</html>
