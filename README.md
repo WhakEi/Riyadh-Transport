@@ -16,11 +16,11 @@ Welcome to this in development program, this program is still in it's early stag
 
 ## Changelog
 Alpha Version 0.13
- -Added viewing routes in maps
- -Fixed route previewing not displaying correctly
- -Removed routes as images (Pillow is still a dependency for now but it will be removed in the future)
- -Eel is now needed for the program to run
- -Chromium browser is now required to show route in OSM
+ - Added viewing routes in maps
+ - Fixed route previewing not displaying correctly
+ - Removed routes as images (Pillow is still a dependency for now but it will be removed in the future)
+ - Eel is now needed for the program to run
+ - Chromium browser is now required to show route in OSM
 
 ## How to run
 1. On Windows open Powershell, on Linux open Terminal and do `pip install tkinter pillow eel`
