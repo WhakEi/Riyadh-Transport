@@ -11,7 +11,7 @@ def my_python_function(a, b):
     return a + b
 
 try:
-    eel.start('Bus17.html', size=(300, 200))
+    eel.start('Bus341.html', size=(300, 200))
 except OSError as e:
     if "Can't find Google Chrome/Chromium installation" in str(e):
         root = tk.Tk()

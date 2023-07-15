@@ -16,4 +16,4 @@ except OSError as e:
     if "Can't find Google Chrome/Chromium installation" in str(e):
         root = tk.Tk()
         root.withdraw()
-        messagebox.showerror("Uh oh!", "It seems that we can't find a Chromium installation on your device, please install Google Chrome to view bus routes")
+        messagebox.showerror("Uh oh!", "It seems that we can't find a Chromium installation on your device, please install Chromium or Google Chrome to view bus routes")
