@@ -7,7 +7,7 @@ Welcome to this in development program, this program is still in it's early stag
  - ✅ Add all the busses to the python code
  - ❌ ~~Develop a QT adaptation~~ **(SCRAPPED)**
  - 🛠️ Implement integrations with mapping software
- - ❌ Develop a GUI
+ - 🛠️ Develop a GUI
  - ❌ Port to mobile platforms
  - ❌ Use location proximity to find nearest station
  - ❌ Release as APK on Android
