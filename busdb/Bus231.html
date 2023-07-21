@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bus Stations</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      #map {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body,
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      const overpassApiUrl = 'https://overpass-api.de/api/interpreter';
+      const query = `
+        [out:json];
+        node[amenity=bus_station]({{bbox}});
+        out;
+      `;
+
+      const bounds = {
+        south: 24.524654,
+        west: 46.415819,
+        north: 24.804110,
+        east: 46.906380
+      };
+
+      const bbox = `${bounds.south},${bounds.west},${bounds.north},${bounds.east}`;
+
+      (async () => {
+        const response = await fetch(overpassApiUrl, {
+          method: 'POST',
+          body: query.replace('{{bbox}}', bbox)
+        });
+        const data = await response.json();
+
+        const customNames = {
+          'new-station-0': 'King Abdullah 315',
+          'new-station-1': 'Othman Bin Affan 217',
+          'new-station-2': 'Othman Bin Affan 216',
+          'new-station-3': 'Othman Bin Affan 215',
+          'new-station-4': 'Othman Bin Affan 213',
+          'new-station-5': 'Othman Bin Affan 212',
+          'new-station-6': 'Othman Bin Affan 211',
+          'new-station-7': 'Othman Bin Affan 210',
+          'new-station-8': 'Othman Bin Affan 209',
+          'new-station-9': 'Al-Falah 601',
+          'new-station-10': 'Othman Bin Affan 207',
+          'new-station-11': 'Othman Bin Affan 206',
+          'new-station-12': 'Ath Thumamah 310',
+          'new-station-13': 'Ath Thumamah 312',
+          'new-station-14': 'Ath Thumamah 413',
+          'new-station-15': 'Ath Thumamah 411',
+          'new-station-16': 'Othman Bin Affan 204',
+          'new-station-17': 'Othman Bin Affan 203',
+          'new-station-18': 'Othman Bin Affan 202',
+          'new-station-19': 'Othman Bin Affan 201',
+          'new-station-20': 'Anas Bin Malik 412',
+          'new-station-21': 'Anas Bin Malik 411',
+          'new-station-22': 'Anas Bin Malik 410',
+          'new-station-23': 'Anas Bin Malik 409',
+          'new-station-24': 'Anas Bin Malik 408',
+          'new-station-25': 'King Abdulaziz 203',
+          'new-station-26': 'King Abdulaziz 202',
+          'new-station-27': 'King Abdulaziz 201',
+          'new-station-28': 'King Salman 404',
+          'new-station-29': 'King Salman 403',
+          'new-station-30': 'Olaya 201'
+        };
+
+        const stations = data.elements
+          .filter(
+            station =>
+              station.tags &&
+              station.tags.name &&
+              station.tags.name !== 'Saptco VIP Bus Terminal'
+          )
+          .map(station => {
+            return {
+              id: station.id,
+              lat: station.lat,
+              lon: station.lon,
+              tags: {
+                ...station.tags,
+                name: customNames[station.id] || station.tags.name
+              }
+            };
+          });
+
+        // Add new-stations to the array
+        const newStations = [
+          [24.75359685452017, 46.72548481178847],
+          [24.753587111482737, 46.720603191228605],
+          [24.75756220740147, 46.71868272963232],
+          [24.761904909211996, 46.71649088464428],
+          [24.771211455872734, 46.71173573997792],
+          [24.777584475742255, 46.708605260618405],
+          [24.790284517626077, 46.70211950180558],
+          [24.793720766619334, 46.700347590716504],
+          [24.80223400632278, 46.697082987397124],
+          [24.803583219475986, 46.695305142378594],
+          [24.809484403273398, 46.69225762351592],
+          [24.814320461368254, 46.689929246535606],
+          [24.818227484344558, 46.6892566225346],
+          [24.8189093073144, 46.701811055785505],
+          [24.81950853419848, 46.704650200280255],
+          [24.819835753640618, 46.69494553747434],
+          [24.82105601059991, 46.68663133312861],
+          [24.82380107706756, 46.68523455683082],
+          [24.827136784195886, 46.68346977587419],
+          [24.831420121406733, 46.68131763767804],
+          [24.832857140883004, 46.67567356700039],
+          [24.830433201602194, 46.66993917402372],
+          [24.827829120986845, 46.66336942181033],
+          [24.82416039645741, 46.65506718473165],
+          [24.821314445663152, 46.64807368893169],
+          [24.821365469739366, 46.642725659162274],
+          [24.826790323034448, 46.64002759068935],
+          [24.829984113101307, 46.638375349931465],
+          [24.832143042692316, 46.62609495980788],
+          [24.830275686857377, 46.62178577178819],
+          [24.82989493017782, 46.6170941649073]
+        ];
+        newStations.forEach((coords, index) => {
+          const id = `new-station-${index}`;
+          stations.push({
+            id,
+            lat: coords[0],
+            lon: coords[1],
+            tags: { name: customNames[id] || `New Station ${index + 1}` }
+          });
+        });
+
+        // ...
+
+
+        const map = L.map('map').setView([24.796422422967016, 46.67788776361584], 12.5);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution:
+            'This is a part of the <a href="https://www.github.com/WhakEi/Riyadh-Transport/">Riyadh Transport</a> project'
+        }).addTo(map);
+
+        // Add markers for each station
+        stations.forEach(station => {
+          L.marker([station.lat, station.lon])
+            .addTo(map)
+            .bindPopup(station.tags.name || 'Unnamed station');
+        });
+
+        // Draw a line between the stations
+        const latlngs = stations.map(station => [station.lat, station.lon]);
+        L.polyline(latlngs, { color: 'red' }).addTo(map);
+      })();
+    </script>
+  </body>
+</html>

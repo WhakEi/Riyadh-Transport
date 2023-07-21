@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bus Stations</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      #map {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body,
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      const overpassApiUrl = 'https://overpass-api.de/api/interpreter';
+      const query = `
+        [out:json];
+        node[amenity=bus_station]({{bbox}});
+        out;
+      `;
+
+      const bounds = {
+        south: 24.524654,
+        west: 46.415819,
+        north: 24.804110,
+        east: 46.906380
+      };
+
+      const bbox = `${bounds.south},${bounds.west},${bounds.north},${bounds.east}`;
+
+      (async () => {
+        const response = await fetch(overpassApiUrl, {
+          method: 'POST',
+          body: query.replace('{{bbox}}', bbox)
+        });
+        const data = await response.json();
+
+        const customNames = {
+          'new-station-0': 'Ath Thumamah 301',
+          'new-station-1': 'Ath Thumamah 302',
+          'new-station-2': 'Ath Thumamah 303',
+          'new-station-3': 'Ath Thumamah 304',
+          'new-station-4': 'Ath Thumamah 305',
+          'new-station-5': 'Ath Thumamah 306',
+          'new-station-6': 'Ath Thumamah 307',
+          'new-station-7': 'Ath Thumamah 308',
+          'new-station-8': 'Ath Thumamah 309',
+          'new-station-9': 'Ath Thumamah 310',
+          'new-station-10': 'Ath Thumamah 312',
+          'new-station-11': 'Saeed Bin Zaid 101',
+          'new-station-12': 'Saeed Bin Zaid 102',
+          'new-station-13': 'Saeed Bin Zaid 103',
+          'new-station-14': 'Saeed Bin Zaid 104',
+          'new-station-15': 'Khalid Bin Al Walid 102',
+          'new-station-16': 'Khalid Bin Al Walid 103',
+          'new-station-17': 'Khalid Bin Al Walid 104',
+          'new-station-18': 'Al-Hamra 503',
+          'new-station-19': 'Al-Hamra 505',
+          'new-station-20': 'Al-Hamra 506',
+          'new-station-21': 'Al-Yarmuk 501'
+        };
+
+        const stations = data.elements
+          .filter(
+            station =>
+              station.tags &&
+              station.tags.name &&
+              station.tags.name !== 'Saptco VIP Bus Terminal'
+          )
+          .map(station => {
+            return {
+              id: station.id,
+              lat: station.lat,
+              lon: station.lon,
+              tags: {
+                ...station.tags,
+                name: customNames[station.id] || station.tags.name
+              }
+            };
+          });
+
+        // Add new-stations to the array
+        const newStations = [
+          [24.783437029342082, 46.64525489914416],
+          [24.790714058235327, 46.64851985096404],
+          [24.79550897066354, 46.650681412324346],
+          [24.803773908112397, 46.655997468164855],
+          [24.806586533492524, 46.66150321049214],
+          [24.809396555288245, 46.668122593291976],
+          [24.811529871602968, 46.673361220024795],
+          [24.813946031174638, 46.67900853932873],
+          [24.816165377967483, 46.68427673747418],
+          [24.818273029811692, 46.689224029801345],
+          [24.818926505430326, 46.70177867980143],
+          [24.827159236965567, 46.72639949514735],
+          [24.820889504503263, 46.72965131049262],
+          [24.809927136921655, 46.735089310492235],
+          [24.803665440861366, 46.738219893291706],
+          [24.795951095713633, 46.742249252818844],
+          [24.7933181078247, 46.74351124329133],
+          [24.787590658727783, 46.746395995145946],
+          [24.785394809074045, 46.75306351630945],
+          [24.78799109106402, 46.759168460491466],
+          [24.791247408151225, 46.76677738561847],
+          [24.793084813466926, 46.77126714862854]
+        ];
+        newStations.forEach((coords, index) => {
+          const id = `new-station-${index}`;
+          stations.push({
+            id,
+            lat: coords[0],
+            lon: coords[1],
+            tags: { name: customNames[id] || `New Station ${index + 1}` }
+          });
+        });
+
+        // ...
+
+
+        const map = L.map('map').setView([24.803637083024196, 46.710980371497115], 12.5);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution:
+            'This is a part of the <a href="https://www.github.com/WhakEi/Riyadh-Transport/">Riyadh Transport</a> project'
+        }).addTo(map);
+
+        // Add markers for each station
+        stations.forEach(station => {
+          L.marker([station.lat, station.lon])
+            .addTo(map)
+            .bindPopup(station.tags.name || 'Unnamed station');
+        });
+
+        // Draw a line between the stations
+        const latlngs = stations.map(station => [station.lat, station.lon]);
+        L.polyline(latlngs, { color: 'red' }).addTo(map);
+      })();
+    </script>
+  </body>
+</html>
