@@ -4,7 +4,7 @@ Welcome to this in development program, this program is still in it's early stag
 
  - ✅ Build a prototype with a basic non-real map in Python
  - ✅ Expand the code to real world examples
- - 🛠️ Add all the busses to the python code
+ - ✅ Add all the busses to the python code
  - ❌ ~~Develop a QT adaptation~~ **(SCRAPPED)**
  - 🛠️ Implement integrations with mapping software
  - ❌ Develop a GUI
@@ -15,12 +15,13 @@ Welcome to this in development program, this program is still in it's early stag
  - ❌ Official full release publicly
 
 ## Changelog
-Alpha Version 0.13
- - Added viewing routes in maps
- - Fixed route previewing not displaying correctly
- - Removed routes as images (Pillow is still a dependency for now but it will be removed in the future)
- - Eel is now needed for the program to run
- - Chromium browser is now required to show route in OSM
+Alpha Version 0.16
+ - ALL THE BUSSES ARE NOW AVAILABLE
+ - Experimenting with neighboring stations and walking instructions
+ - Added Station Information tab (Not working yet)
+ - Added Disclaimer tab
+ - Updated calculation algorithm
+ - Starting transition to user-friendly GUI
 
 ## How to run
 1. On Windows open Powershell, on Linux open Terminal and do `pip install tkinter pillow eel`
