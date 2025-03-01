@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Ministry of Education",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7406109723401&destinationLng=46.6946889864651&destinationName=Ministry%20of%20Education",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001069",
+    "latitude": "24.7406109723401",
+    "longitude": "46.6946889864651"
+  },
+  {
+    "name": "King Salman Park",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7281929553753&destinationLng=46.7009143113849&destinationName=King%20Salman%20Park",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001108",
+    "latitude": "24.7281929553753",
+    "longitude": "46.7009143113849"
+  },
+  {
+    "name": "As Sulimaniyah",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7127870172622&destinationLng=46.7003483727558&destinationName=As%20Sulimaniyah",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001109",
+    "latitude": "24.7127870172622",
+    "longitude": "46.7003483727558"
+  },
+  {
+    "name": "Ad Dhabab",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7097594609714&destinationLng=46.7075259118769&destinationName=Ad%20Dhabab",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001110",
+    "latitude": "24.7097594609714",
+    "longitude": "46.7075259118769"
+  },
+  {
+    "name": "Abu Dhabi square",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7060789632148&destinationLng=46.7164910984137&destinationName=Abu%20Dhabi%20square",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001111",
+    "latitude": "24.7060789632148",
+    "longitude": "46.7164910984137"
+  },
+  {
+    "name": "Officers Club",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.697885180717&destinationLng=46.717955352327&destinationName=Officers%20Club",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001112",
+    "latitude": "24.697885180717",
+    "longitude": "46.717955352327"
+  },
+  {
+    "name": "GOSI",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.6862709582016&destinationLng=46.7181889143009&destinationName=GOSI",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001113",
+    "latitude": "24.6862709582016",
+    "longitude": "46.7181889143009"
+  },
+  {
+    "name": "Al Wizarat",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.6760188548588&destinationLng=46.7183955268163&destinationName=Al%20Wizarat",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001114",
+    "latitude": "24.6760188548588",
+    "longitude": "46.7183955268163"
+  },
+  {
+    "name": "Ministry of Defence",
+    "button_url": null,
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001115",
+    "latitude": "24.667984848154635",
+    "longitude": "46.71826330262688"
+  },
+  {
+    "name": "King Abdulaziz Hospital",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.6596757821267&destinationLng=46.7177038240474&destinationName=King%20Abdulaziz%20Hospital",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001116",
+    "latitude": "24.6596757821267",
+    "longitude": "46.7177038240474"
+  },
+  {
+    "name": "Ministry of Finance",
+    "button_url": null,
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001117",
+    "latitude": "24.652134613064366",
+    "longitude": "46.71634289105644"
+  },
+  {
+    "name": "National Museum",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.6453391370238&destinationLng=46.7131583487091&destinationName=National%20Museum",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80000427",
+    "latitude": "24.6453391370238",
+    "longitude": "46.7131583487091"
+  }
+]

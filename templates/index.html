@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riyadh Metro Route Planner</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #map {
+            height: 400px;
+            margin: 20px 0;
+            z-index: 1;
+        }
+        .autocomplete-container {
+            position: relative;
+            z-index: 1000;
+            margin-bottom: 20px;
+        }
+        .autocomplete {
+            width: calc(50% - 10px);
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .ui-autocomplete {
+            position: absolute !important;
+            z-index: 9999 !important;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            background: white;
+            width: calc(50% - 10px) !important;
+        }
+        .error { color: #e74c3c; text-align: center; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>Riyadh Metro Planner</h1>
+    <div class="autocomplete-container">
+        <input id="start" placeholder="Start station" class="autocomplete">
+        <input id="end" placeholder="End station" class="autocomplete">
+        <button onclick="findRoute()">Find Route</button>
+    </div>
+
+    <!-- Route options container -->
+    <div id="route-options" style="margin: 20px 0;"></div>
+    <div id="instructions" class="route-instructions"></div>
+    <div id="map"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map = L.map('map').setView([24.7136, 46.6753], 12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+// Autocomplete setup
+$(document).ready(function() {
+    $(".autocomplete").autocomplete({
+        source: function(request, response) {
+            $.getJSON("/search", { term: request.term }, response);
+        },
+        minLength: 2,
+        select: function(event, ui) {
+            $(event.target).val(ui.item.value);
+            return false;
+        }
+    });
+});
+
+function findRoute() {
+    const start = document.getElementById('start').value.trim();
+    const end = document.getElementById('end').value.trim();
+
+    fetch('/route', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ start, end })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            document.getElementById('instructions').innerHTML = `<div class="error">${data.error}</div>`;
+            return;
+        }
+
+        displayRoute(data.route, data.stations);
+    });
+}
+
+let currentRouteIndex = 0;
+
+function findRoute() {
+    const start = document.getElementById('start').value.trim();
+    const end = document.getElementById('end').value.trim();
+
+    fetch('/route', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ start, end })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            document.getElementById('instructions').innerHTML = `<div class="error">${data.error}</div>`;
+            return;
+        }
+
+        // Show route options if multiple paths exist
+        const routeOptions = document.getElementById('route-options');
+        if (data.routes.length > 1) {
+            routeOptions.innerHTML = `
+                <div class="route-selector">
+                    ${data.routes.map((r, i) => `
+                        <button onclick="showRoute(${i})" class="route-option">
+                            Route ${i+1} (${r.transfers} transfer${r.transfers !== 1 ? 's' : ''})
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            currentRouteIndex = 0;
+        } else {
+            routeOptions.innerHTML = '';
+        }
+
+        // Display first route by default
+        displayRoute(data.routes[0]);
+    });
+}
+
+function showRoute(index) {
+    currentRouteIndex = index;
+    const data = JSON.parse(localStorage.getItem('lastRouteData'));
+    displayRoute(data.routes[index]);
+}
+
+function displayRoute(routeData) {
+    // Clear previous layers
+    map.eachLayer(layer => {
+        if (layer instanceof L.Marker || layer instanceof L.Polyline) {
+            map.removeLayer(layer);
+        }
+    });
+
+    // Build instructions HTML
+    let html = '<h3>Route:</h3>';
+    routeData.segments.forEach(segment => {
+        html += `
+            <div class="line-badge" style="background: ${segment.color}">
+                Line ${segment.line}
+            </div>
+            <ul class="station-list">
+                ${segment.stations.map((s, i) => `
+                    <li>
+                        ${s}
+                        ${i === 0 && segment.transfer ? '<span class="transfer">TRANSFER</span>' : ''}
+                    </li>
+                `).join('')}
+            </ul>
+        `;
+    });
+    document.getElementById('instructions').innerHTML = html;
+
+    // Build coordinates array
+    const allCoordinates = [];
+    routeData.segments.forEach(segment => {
+        const segmentCoords = segment.stations
+            .map(station => {
+                const coords = routeData.coordinates[station];
+                return coords ? [coords.lat, coords.lng] : null;
+            })
+            .filter(coord => coord !== null);
+
+        if (segmentCoords.length > 1) {
+            // Draw polyline for this segment with its color
+            L.polyline(segmentCoords, {
+                color: segment.color,
+                weight: 5,
+                opacity: 0.7
+            }).addTo(map);
+            allCoordinates.push(...segmentCoords);
+        }
+    });
+
+    // Add markers with line colors
+    Object.entries(routeData.coordinates).forEach(([name, coords]) => {
+        if (coords) {
+            const markerColor = routeData.segments.find(seg => seg.stations.includes(name))?.color || '#000';
+            L.circleMarker([coords.lat, coords.lng], {
+                radius: 8,
+                fillColor: markerColor,
+                color: "#000",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map)
+            .bindPopup(name);
+        }
+    });
+
+    // Fit map to bounds or reset view
+    if (allCoordinates.length > 0) {
+        map.fitBounds(allCoordinates);
+    } else {
+        map.setView([24.7136, 46.6753], 12); // Riyadh center
+    }
+
+    // Save route data for switching
+    localStorage.setItem('lastRouteData', JSON.stringify({
+        routes: JSON.parse(localStorage.getItem('lastRouteData') || '{}').routes || []
+    }));
+}
+
+function stationNameFromCoords(coord) {
+    for (const [name, data] of Object.entries(stations)) {
+        if (data.lat === coord[0] && data.lng === coord[1]) {
+            return name;
+        }
+    }
+    return "Station";
+}
+</script>
+</body>
+</html>
