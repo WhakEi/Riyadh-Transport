@@ -1,0 +1,107 @@
+[
+  {
+    "name": "King Saud University",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7102490977068&destinationLng=46.6284023016407&destinationName=King%20Saud%20University",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001062",
+    "latitude": "24.7102490977068",
+    "longitude": "46.6284023016407"
+  },
+  {
+    "name": "King Salman Oasis",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7169814075518&destinationLng=46.6386071632697&destinationName=King%20Salman%20Oasis",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001064",
+    "latitude": "24.7169814075518",
+    "longitude": "46.6386071632697"
+  },
+  {
+    "name": "KACST",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7210124588012&destinationLng=46.6480933726713&destinationName=KACST",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001065",
+    "latitude": "24.7210124588012",
+    "longitude": "46.6480933726713"
+  },
+  {
+    "name": "At Takhassussi",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7237623115601&destinationLng=46.654669040552&destinationName=At%20Takhassussi",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001066",
+    "latitude": "24.7237623115601",
+    "longitude": "46.654669040552"
+  },
+  {
+    "name": "stc",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7267324106664&destinationLng=46.6668052800421&destinationName=stc",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80000419",
+    "latitude": "24.7267324106664",
+    "longitude": "46.6668052800421"
+  },
+  {
+    "name": "Al Wurud",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7332598518504&destinationLng=46.6770011585183&destinationName=Al%20Wurud",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001067",
+    "latitude": "24.7332598518504",
+    "longitude": "46.6770011585183"
+  },
+  {
+    "name": "King Abdulaziz Road",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7367926865211&destinationLng=46.6854992211073&destinationName=King%20Abdulaziz%20Road",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001068",
+    "latitude": "24.7367926865211",
+    "longitude": "46.6854992211073"
+  },
+  {
+    "name": "Ministry of Education",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7406109723401&destinationLng=46.6946889864651&destinationName=Ministry%20of%20Education",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001069",
+    "latitude": "24.7406109723401",
+    "longitude": "46.6946889864651"
+  },
+  {
+    "name": "An Nuzhah",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7480677137911&destinationLng=46.7122690165777&destinationName=An%20Nuzhah",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001070",
+    "latitude": "24.7480677137911",
+    "longitude": "46.7122690165777"
+  },
+  {
+    "name": "Riyadh Exhibition Center",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7545206158364&destinationLng=46.7271091850735&destinationName=Riyadh%20Exhibition%20Center",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001071",
+    "latitude": "24.7545206158364",
+    "longitude": "46.7271091850735"
+  },
+  {
+    "name": "Khalid Bin Alwaleed Road",
+    "button_url": null,
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001072",
+    "latitude": "24.767876616678116",
+    "longitude": "46.759150274970466"
+  },
+  {
+    "name": "Al Hamra",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7763894633984&destinationLng=46.7767770371393&destinationName=Al%20Hamra",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001073",
+    "latitude": "24.7763894633984",
+    "longitude": "46.7767770371393"
+  },
+  {
+    "name": "Al Khaleej",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7818785022268&destinationLng=46.7940336737497&destinationName=Al%20Khaleej",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001074",
+    "latitude": "24.7818785022268",
+    "longitude": "46.7940336737497"
+  },
+  {
+    "name": "Ishbiliyah",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7924073161784&destinationLng=46.8111286136089&destinationName=Ishbiliyah",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001075",
+    "latitude": "24.7924073161784",
+    "longitude": "46.8111286136089"
+  },
+  {
+    "name": "King Fahd Sport City",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7932228338066&destinationLng=46.8365868687643&destinationName=King%20Fahd%20Sport%20City",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001076",
+    "latitude": "24.7932228338066",
+    "longitude": "46.8365868687643"
+  }
+]

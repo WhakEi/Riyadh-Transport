@@ -1,0 +1,67 @@
+{
+  "Al-'Aziziyah 501": {
+    "error": "Failed for Al-'Aziziyah 501: Page.wait_for_selector: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator(\"div.result:has-text(\\\"Al-'Aziziyah 501\\\")\") to be visible\n"
+  },
+  "Al-'Aziziyah 605": {
+    "error": "Failed for Al-'Aziziyah 605: Page.wait_for_selector: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator(\"div.result:has-text(\\\"Al-'Aziziyah 605\\\")\") to be visible\n"
+  },
+  "Al-'Aziziyah 503": {
+    "error": "Failed for Al-'Aziziyah 503: Page.wait_for_selector: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator(\"div.result:has-text(\\\"Al-'Aziziyah 503\\\")\") to be visible\n"
+  },
+  "Al-'Aziziyah 505": {
+    "error": "Failed for Al-'Aziziyah 505: Page.wait_for_selector: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator(\"div.result:has-text(\\\"Al-'Aziziyah 505\\\")\") to be visible\n"
+  },
+  "Al-'Aziziyah 604": {
+    "error": "Failed for Al-'Aziziyah 604: Page.wait_for_selector: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator(\"div.result:has-text(\\\"Al-'Aziziyah 604\\\")\") to be visible\n"
+  },
+  "Al-'Aziziyah 602": {
+    "error": "Failed for Al-'Aziziyah 602: Page.wait_for_selector: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator(\"div.result:has-text(\\\"Al-'Aziziyah 602\\\")\") to be visible\n"
+  },
+  "Al-'Aziziyah 601": {
+    "error": "Failed for Al-'Aziziyah 601: Page.wait_for_selector: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator(\"div.result:has-text(\\\"Al-'Aziziyah 601\\\")\") to be visible\n"
+  },
+  "Al-'Aziziyah 603": {
+    "error": "Failed for Al-'Aziziyah 603: Page.wait_for_selector: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator(\"div.result:has-text(\\\"Al-'Aziziyah 603\\\")\") to be visible\n"
+  },
+  "Al-'Aziziyah 502": {
+    "error": "Failed for Al-'Aziziyah 502: Page.wait_for_selector: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator(\"div.result:has-text(\\\"Al-'Aziziyah 502\\\")\") to be visible\n"
+  },
+  "Al-'Aziziyah 504": {
+    "error": "Failed for Al-'Aziziyah 504: Page.wait_for_selector: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator(\"div.result:has-text(\\\"Al-'Aziziyah 504\\\")\") to be visible\n"
+  },
+  "Khalid Bin Alwaleed Road A": {
+    "lat": "24.769456452326",
+    "lng": "46.7582447928254",
+    "source": "RPT"
+  },
+  "Al Shafa 311": {
+    "lat": "24.628649078421",
+    "lng": "46.5598877949113",
+    "source": "RPT"
+  },
+  "Umm Al Hamam 101": {
+    "lat": "24.701190506445",
+    "lng": "46.6536180116694",
+    "source": "RPT"
+  },
+  "An-Namuthajiyah 506": {
+    "lat": "24.6581246300322",
+    "lng": "46.6949405147447",
+    "source": "RPT"
+  },
+  "An-Namuthajiyah 507": {
+    "lat": "24.6586226335953",
+    "lng": "46.697716308973",
+    "source": "RPT"
+  },
+  "An-Namuthajiyah 508": {
+    "lat": "24.6561815807363",
+    "lng": "46.6978151236542",
+    "source": "RPT"
+  },
+  "An-Namuthajiyah 509": {
+    "lat": "24.652760760789",
+    "lng": "46.6982642812964",
+    "source": "RPT"
+  }
+}

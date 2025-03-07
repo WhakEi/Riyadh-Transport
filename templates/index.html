@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riyadh Public Transport Planner</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <style>
+            body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .ui-front {
+        z-index: 1001 !important;
+    }
+
+    .input-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1002;
+    }
+
+    #map {
+        height: 500px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        z-index: 1;
+        margin-top: 20px;
+    }
+        .autocomplete {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .route-segment {
+            margin: 15px 0;
+            padding: 15px;
+            border-left: 4px solid;
+            background: #f8f9fa;
+        }
+        .walk-segment {
+            border-color: #666 !important;
+        }
+        .error {
+            color: #dc3545;
+            padding: 10px;
+            background: #f8d7da;
+            border-radius: 4px;
+        }
+        .stops {
+            margin-left: 20px;
+        }
+        .stop {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+        .route-segment .stops {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stop {
+            white-space: nowrap;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: currentColor;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .marker-pin {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .station-marker {
+            width: 24px;
+            height: 24px;
+            background: none !important;
+            border: none !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Riyadh Public Transport Planner</h1>
+    <div class="input-container">
+        <input id="start" placeholder="Start station" class="autocomplete">
+        <input id="end" placeholder="End station" class="autocomplete">
+        <button onclick="findRoute()">Find Route</button>
+    </div>
+    <div id="route-options"></div>
+    <div id="instructions"></div>
+    <div id="map"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // Initialize map centered on Riyadh
+        const map = L.map('map').setView([24.7136, 46.6753], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Global variables
+        let currentRoutes = [];
+        const API_ENDPOINT = 'http://localhost:5000/route';
+
+        // Find route function
+        // Initialize autocomplete
+        function initAutocomplete() {
+            $.get('/api/stations', function(stations) {
+                $("#start, #end").autocomplete({
+                    source: stations,
+                    focus: function(event, ui) {
+                        $(this).val(ui.item.label);
+                        return false;
+                    },
+                    select: function(event, ui) {
+                        $(this).val(ui.item.label);
+                        $(this).data('value', ui.item.value);
+                        return false;
+                    }
+                }).data('ui-autocomplete')._renderItem = function(ul, item) {
+                    return $('<li>')
+                        .append(`<div>${item.label} <small>(${item.type})</small></div>`)
+                        .appendTo(ul);
+                };
+            });
+        }
+
+        // Update findRoute function
+        async function findRoute() {
+    const start = $('#start').data('value') || $('#start').val().trim();
+    const end = $('#end').data('value') || $('#end').val().trim();
+
+    try {
+        // Clear previous results
+        $('#instructions').html('');
+        $('#route-options').html('');
+
+        const response = await fetch('/route', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                start: start,
+                end: end
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to find route');
+        }
+
+        if (!data.routes || data.routes.length === 0) {
+            throw new Error('No routes found');
+        }
+
+        currentRoutes = data.routes;
+        displayRoute(0);
+        showRouteOptions();
+
+    } catch (error) {
+        showError(error.message);
+        console.error('Route error:', error);
+    }
+}
+
+        // Display route function
+        function displayRoute(index) {
+    if (!currentRoutes[index]) {
+        showError('Invalid route selection');
+        return;
+    }
+
+    const route = currentRoutes[index];
+
+    // Clear previous map elements
+    map.eachLayer(layer => {
+        if (layer instanceof L.Polyline || layer instanceof L.Marker) {
+            map.removeLayer(layer);
+        }
+    });
+
+    // Build instructions
+    let html = '';
+    route.segments.forEach(segment => {
+        if (!segment) return;
+
+        const color = segment.type === 'metro' ? '#007bff' :
+                      segment.type === 'bus' ? '#28a745' :
+                      '#666';
+
+        if (segment.type === 'walk') {
+            html += `
+                <div class="route-segment walk-segment">
+                    <h3>🚶 Walk ${Math.round(segment.distance)}m</h3>
+                    <p>From ${segment.from} to ${segment.to}</p>
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="route-segment" style="border-color: ${color}">
+                    <h3>${segment.type.toUpperCase()} Line ${segment.line}</h3>
+                    <div class="stops">
+                        ${segment.stations.map(s => `
+                            <div class="stop">
+                                <span class="dot" style="background: ${color}"></span>
+                                ${s}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Draw route in correct order
+        const coords = segment.coordinates
+            .filter(coord => coord?.lat && coord?.lng)
+            .map(coord => [coord.lat, coord.lng]);
+
+        if (coords.length > 1) {
+            L.polyline(coords, {
+                color: color,
+                weight: 5,
+                opacity: 0.7
+            }).addTo(map);
+        }
+
+        // Add markers in order
+        segment.coordinates.forEach((coord, idx) => {
+            if (coord?.lat && coord?.lng) {
+                const stationName = segment.type === 'walk' ?
+                    (idx === 0 ? segment.from : segment.to) :
+                    segment.stations[idx];
+
+                L.marker([coord.lat, coord.lng], {
+                    icon: L.divIcon({
+                        className: 'station-marker',
+                        html: `<div class="marker-pin" style="background: ${color}"></div>`
+                    })
+                }).bindPopup(`${stationName}<br>(${segment.type.toUpperCase()})`).addTo(map);
+            }
+        });
+    });
+
+    // Adjust map view
+    const allCoords = route.segments.flatMap(seg =>
+        seg.coordinates.filter(coord => coord?.lat && coord?.lng)
+    ).map(coord => [coord.lat, coord.lng]);
+
+    if (allCoords.length > 0) {
+        const bounds = L.latLngBounds(allCoords);
+        map.fitBounds(bounds.pad(0.2));
+    } else {
+        map.setView([24.7136, 46.6753], 12);
+    }
+
+    $('#instructions').html(html);
+}
+
+        // Show route options
+        function showRouteOptions() {
+            const options = currentRoutes.map((route, i) => `
+                <button onclick="displayRoute(${i})"
+                        style="margin: 5px; background: ${route.segments[0]?.color || '#333'}">
+                    Route ${i + 1} (${route.transfers || 0} transfers)
+                </button>
+            `).join('');
+
+            $('#route-options').html(options);
+        }
+
+        // Show error message
+        function showError(message) {
+            $('#instructions').html(`<div class="error">${message}</div>`);
+        }
+        $(document).ready(function() {
+            initAutocomplete();
+        })
+    </script>
+</body>
+</html>

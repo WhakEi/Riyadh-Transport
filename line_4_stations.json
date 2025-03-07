@@ -1,0 +1,65 @@
+[
+  {
+    "name": "Airport T1-2",
+    "button_url": null,
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001107",
+    "latitude": "24.961068957991923",
+    "longitude": "46.69911769669424"
+  },
+  {
+    "name": "Airport T3-4",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.9560473821558&destinationLng=46.7021539864771&destinationName=Airport%20T3-4",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001106",
+    "latitude": "24.9560473821558",
+    "longitude": "46.7021539864771"
+  },
+  {
+    "name": "Airport T5",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.9408001003283&destinationLng=46.7102298408825&destinationName=Airport%20T5",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001105",
+    "latitude": "24.9408001003283",
+    "longitude": "46.7102298408825"
+  },
+  {
+    "name": "PNU 2",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.8597346893318&destinationLng=46.7043458757707&destinationName=PNU%202",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001103",
+    "latitude": "24.8597346893318",
+    "longitude": "46.7043458757707"
+  },
+  {
+    "name": "PNU 1",
+    "button_url": null,
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001102",
+    "latitude": "24.84153411913904",
+    "longitude": "46.717399101312125"
+  },
+  {
+    "name": "SABIC",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.8071265842095&destinationLng=46.709574070725&destinationName=SABIC",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001101",
+    "latitude": "24.8071265842095",
+    "longitude": "46.709574070725"
+  },
+  {
+    "name": "Uthman Bin Affan Road",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.8013858697821&destinationLng=46.6959645941687&destinationName=Uthman%20Bin%20Affan%20Road",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001100",
+    "latitude": "24.8013858697821",
+    "longitude": "46.6959645941687"
+  },
+  {
+    "name": "Ar Rabi",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7862336738237&destinationLng=46.6601577469387&destinationName=Ar%20Rabi",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001099",
+    "latitude": "24.7862336738237",
+    "longitude": "46.6601577469387"
+  },
+  {
+    "name": "KAFD",
+    "button_url": "https://rpt.sa/plan?destinationLat=24.7675640808748&destinationLng=46.6431256891494&destinationName=KAFD",
+    "station_details_url": "https://rpt.sa/stationdetails/tags/80001059",
+    "latitude": "24.7675640808748",
+    "longitude": "46.6431256891494"
+  }
+]

@@ -1,0 +1,382 @@
+{
+  "Al Batha 101": {
+    "lat": "24.6421384766775",
+    "lng": "46.7170031381257",
+    "source": "RPT"
+  },
+  "Al Batha 102": {
+    "lat": "24.6340058176823",
+    "lng": "46.7165090647194",
+    "source": "RPT"
+  },
+  "Ad-Dirah 605": {
+    "lat": "24.6317031011993",
+    "lng": "46.7106340827604",
+    "source": "RPT"
+  },
+  "Ash-Shomaisi 602": {
+    "lat": "24.630919188034",
+    "lng": "46.7030073859972",
+    "source": "RPT"
+  },
+  "Ash-Shomaisi 601": {
+    "lat": "24.6303802448803",
+    "lng": "46.6975366459161",
+    "source": "RPT"
+  },
+  "Al-Badeah 603": {
+    "lat": "24.6259461243507",
+    "lng": "46.6896943534847",
+    "source": "RPT"
+  },
+  "Al-Badeah 609": {
+    "lat": "24.6239862419433",
+    "lng": "46.6859034629852",
+    "source": "RPT"
+  },
+  "Al-Badeah 608": {
+    "lat": "24.6226633039472",
+    "lng": "46.6836756410802",
+    "source": "RPT"
+  },
+  "Al-Badeah 607": {
+    "lat": "24.6212913534603",
+    "lng": "46.6812771392713",
+    "source": "RPT"
+  },
+  "Al-Badeah 606": {
+    "lat": "24.6190292355551",
+    "lng": "46.6773874340905",
+    "source": "RPT"
+  },
+  "Al-Badeah 505": {
+    "lat": "24.6147743830566",
+    "lng": "46.6750518143515",
+    "source": "RPT"
+  },
+  "Madina Munwarah 414": {
+    "lat": "24.6102008676976",
+    "lng": "46.659457061017",
+    "source": "RPT"
+  },
+  "Madina Munwarah 413": {
+    "lat": "24.6074076742807",
+    "lng": "46.6546241247878",
+    "source": "RPT"
+  },
+  "Madina Munwarah 412": {
+    "lat": "24.6040590268749",
+    "lng": "46.6492342330823",
+    "source": "RPT"
+  },
+  "Madina Munwarah 41": {
+    "lat": "24.6040590268749",
+    "lng": "46.6492342330823",
+    "source": "RPT"
+  },
+  "Madina Munwarah 410": {
+    "lat": "24.5990685592012",
+    "lng": "46.6411044797599",
+    "source": "RPT"
+  },
+  "Madina Munwarah 409": {
+    "lat": "24.5976881819426",
+    "lng": "46.6388497083964",
+    "source": "RPT"
+  },
+  "Madina Munwarah 408": {
+    "lat": "24.5957033524556",
+    "lng": "46.6356157733732",
+    "source": "RPT"
+  },
+  "Hamza Bin Abdulmuttalib 207": {
+    "lat": "24.5904756673998",
+    "lng": "46.6231202077693",
+    "source": "RPT"
+  },
+  "Hamza Bin Abdulmuttalib 206": {
+    "lat": "24.5921011741083",
+    "lng": "46.6219164652884",
+    "source": "RPT"
+  },
+  "Hamza Bin Abdulmuttalib 205": {
+    "lat": "24.5949437180277",
+    "lng": "46.619832373829",
+    "source": "RPT"
+  },
+  "West Al-Uraija 602": {
+    "lat": "24.5941759108031",
+    "lng": "46.6156821572158",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 418": {
+    "lat": "24.587845405812",
+    "lng": "46.6018750512969",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 417": {
+    "lat": "24.585133401229",
+    "lng": "46.5973295759586",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 416": {
+    "lat": "24.5830830214278",
+    "lng": "46.5939069947257",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 415": {
+    "lat": "24.5790148378323",
+    "lng": "46.5872774279279",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 414": {
+    "lat": "24.5779691789369",
+    "lng": "46.5841423075859",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 413": {
+    "lat": "24.5778303017083",
+    "lng": "46.5785547865179",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 412": {
+    "lat": "24.5781162252465",
+    "lng": "46.5744135530576",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 411": {
+    "lat": "24.5783939789159",
+    "lng": "46.5707484266978",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 410": {
+    "lat": "24.5787861006948",
+    "lng": "46.5657088779532",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 409": {
+    "lat": "24.5790965295659",
+    "lng": "46.5616844254798",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 408": {
+    "lat": "24.5794478034134",
+    "lng": "46.5575252257138",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 407": {
+    "lat": "24.5799379513217",
+    "lng": "46.5511741366542",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 406": {
+    "lat": "24.5801666863559",
+    "lng": "46.5480659657707",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 405": {
+    "lat": "24.5804607736433",
+    "lng": "46.5444188057166",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 404": {
+    "lat": "24.580836550839",
+    "lng": "46.5392624759851",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 304": {
+    "lat": "24.580509788124",
+    "lng": "46.5392355265266",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 305": {
+    "lat": "24.5801421790508",
+    "lng": "46.5442121932013",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 306": {
+    "lat": "24.5798562601368",
+    "lng": "46.5478952858667",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 307": {
+    "lat": "24.5795948479872",
+    "lng": "46.5514975301565",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 308": {
+    "lat": "24.579006668656",
+    "lng": "46.5589176144043",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 309": {
+    "lat": "24.5787779315036",
+    "lng": "46.5617742570082",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 310": {
+    "lat": "24.5784511634184",
+    "lng": "46.5660951535255",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 311": {
+    "lat": "24.5781162252465",
+    "lng": "46.5705148647239",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 312": {
+    "lat": "24.5777812861791",
+    "lng": "46.5746471150315",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 313": {
+    "lat": "24.5774953618764",
+    "lng": "46.5789141126316",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 314": {
+    "lat": "24.5780998867762",
+    "lng": "46.5851304543986",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 315": {
+    "lat": "24.5792435745522",
+    "lng": "46.5882745578935",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 316": {
+    "lat": "24.5825847168839",
+    "lng": "46.5936824159046",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 317": {
+    "lat": "24.5844717285474",
+    "lng": "46.5967636373296",
+    "source": "RPT"
+  },
+  "Bilal Bin Rabah 318": {
+    "lat": "24.5878372372117",
+    "lng": "46.6022343774106",
+    "source": "RPT"
+  },
+  "West Al-Uraija 501": {
+    "lat": "24.5887031058792",
+    "lng": "46.6071571451683",
+    "source": "RPT"
+  },
+  "West Al-Uraija 502": {
+    "lat": "24.5929261719514",
+    "lng": "46.6141550212325",
+    "source": "RPT"
+  },
+  "Hamza Bin Abdulmuttalib 105": {
+    "lat": "24.5944209561737",
+    "lng": "46.6197964412176",
+    "source": "RPT"
+  },
+  "Hamza Bin Abdulmuttalib 106": {
+    "lat": "24.5917662724423",
+    "lng": "46.6217278190787",
+    "source": "RPT"
+  },
+  "Hamza Bin Abdulmuttalib 107": {
+    "lat": "24.5905165095354",
+    "lng": "46.6225902017516",
+    "source": "RPT"
+  },
+  "Madina Munwarah 308": {
+    "lat": "24.5960219074567",
+    "lng": "46.63664883595",
+    "source": "RPT"
+  },
+  "Madina Munwarah 309": {
+    "lat": "24.5975003187718",
+    "lng": "46.6390653040647",
+    "source": "RPT"
+  },
+  "Madina Munwarah 310": {
+    "lat": "24.5988725302221",
+    "lng": "46.6413021091224",
+    "source": "RPT"
+  },
+  "Madina Munwarah 311": {
+    "lat": "24.6012493608832",
+    "lng": "46.6452187637617",
+    "source": "RPT"
+  },
+  "Madina Munwarah 312": {
+    "lat": "24.6043693930858",
+    "lng": "46.6503032282706",
+    "source": "RPT"
+  },
+  "Madina Munwarah 313": {
+    "lat": "24.6061662349654",
+    "lng": "46.6534024160012",
+    "source": "RPT"
+  },
+  "Madina Munwarah 314": {
+    "lat": "24.6102580376717",
+    "lng": "46.6600140164932",
+    "source": "RPT"
+  },
+  "Al-Badeah 605": {
+    "lat": "24.614594712395",
+    "lng": "46.6753123257839",
+    "source": "RPT"
+  },
+  "Al-Badeah 506": {
+    "lat": "24.6190619018088",
+    "lng": "46.6778635411912",
+    "source": "RPT"
+  },
+  "Al-Badeah 507": {
+    "lat": "24.6209238641663",
+    "lng": "46.6810884930616",
+    "source": "RPT"
+  },
+  "Al-Badeah 508": {
+    "lat": "24.6219773305857",
+    "lng": "46.6829210562415",
+    "source": "RPT"
+  },
+  "Al-Badeah 509": {
+    "lat": "24.6236432593627",
+    "lng": "46.6858226146096",
+    "source": "RPT"
+  },
+  "Al-Badeah 503": {
+    "lat": "24.6259542904631",
+    "lng": "46.6905657193104",
+    "source": "RPT"
+  },
+  "Ash-Shomaisi 503": {
+    "lat": "24.6272118654071",
+    "lng": "46.6932606651631",
+    "source": "RPT"
+  },
+  "Ash-Shomaisi 504": {
+    "lat": "24.6280039678056",
+    "lng": "46.6986775063271",
+    "source": "RPT"
+  },
+  "Ash-Shomaisi 505": {
+    "lat": "24.6287062399605",
+    "lng": "46.7035373920149",
+    "source": "RPT"
+  },
+  "Ad-Dirah 505": {
+    "lat": "24.6314417973572",
+    "lng": "46.7105083186206",
+    "source": "RPT"
+  },
+  "King Faisal 210": {
+    "lat": "24.6341772948717",
+    "lng": "46.7152065075572",
+    "source": "RPT"
+  },
+  "King Faisal 208": {
+    "lat": "24.6407095839697",
+    "lng": "46.7148292151378",
+    "source": "RPT"
+  }
+}
