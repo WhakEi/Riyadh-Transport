@@ -78,6 +78,17 @@
         .stop {
             white-space: nowrap;
         }
+        /* GPS button styling */
+        button[onclick="getLocation()"] {
+            background: #28a745 !important;
+            padding: 12px;
+            margin-right: 10px;
+        }
+
+        #loading {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
         .dot {
             width: 8px;
             height: 8px;
@@ -106,9 +117,14 @@
 <body>
     <h1>Riyadh Public Transport Planner</h1>
     <div class="input-container">
-        <input id="start" placeholder="Start station" class="autocomplete">
-        <input id="end" placeholder="End station" class="autocomplete">
-        <button onclick="findRoute()">Find Route</button>
+    <button onclick="getLocation()" style="background: #28a745">Use My Location</button>
+    <input id="start" placeholder="Start station" class="autocomplete">
+    <input id="end" placeholder="End station" class="autocomplete">
+    <button onclick="findRoute()">Find Route</button>
+</div>
+    </div>
+    <div id="loading" style="display: none; color: #666; padding: 10px;">
+        ⏳ Finding your location...
     </div>
     <div id="route-options"></div>
     <div id="instructions"></div>
@@ -131,65 +147,183 @@
 
         // Find route function
         // Initialize autocomplete
+        let stationData = {};
+
         function initAutocomplete() {
-            $.get('/api/stations', function(stations) {
-                $("#start, #end").autocomplete({
-                    source: stations,
-                    focus: function(event, ui) {
-                        $(this).val(ui.item.label);
-                        return false;
-                    },
-                    select: function(event, ui) {
-                        $(this).val(ui.item.label);
-                        $(this).data('value', ui.item.value);
-                        return false;
-                    }
-                }).data('ui-autocomplete')._renderItem = function(ul, item) {
-                    return $('<li>')
-                        .append(`<div>${item.label} <small>(${item.type})</small></div>`)
-                        .appendTo(ul);
-                };
-            });
+    $.get('/api/stations', function(stations) {
+        // Populate station data
+        stations.forEach(station => {
+            stationData[station.value] = {
+                label: station.label,
+                type: station.type,
+                lat: station.lat,
+                lng: station.lng
+            };
+        });
+
+        // Initialize autocomplete
+        $("#start, #end").autocomplete({
+            source: stations,
+            focus: function(event, ui) {
+                $(this).val(ui.item.label);
+                return false;
+            },
+            select: function(event, ui) {
+                $(this).val(ui.item.label);
+                $(this).data('value', ui.item.value);
+                return false;
+            }
+        }).data('ui-autocomplete')._renderItem = function(ul, item) {
+            return $('<li>')
+                .append(`<div>${item.label} <small>(${item.type})</small></div>`)
+                .appendTo(ul);
+        };
+    });
+}
+        function isCoordinate(input) {
+    const coordinateRegex = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/;
+    return coordinateRegex.test(input.trim());
+}
+
+function parseCoordinate(input) {
+    const cleanedInput = input.trim().replace(/\s+/g, '');
+    const parts = cleanedInput.split(',');
+    if (parts.length !== 2) throw new Error('Invalid coordinate format');
+    const lat = parseFloat(parts[0]);
+    const lng = parseFloat(parts[1]);
+    if (isNaN(lat) || isNaN(lng)) throw new Error('Invalid coordinate values');
+    return [lat, lng];
+}
+        function getLocation() {
+            $('#loading').show();
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    setPosition,
+                    showGeoError,
+                    { enableHighAccuracy: true, timeout: 5000 }
+                );
+            } else {
+                showError("Geolocation is not supported by this browser");
+                $('#loading').hide();
+            }
+        }
+
+        function setPosition(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            $('#start').val(`Current Location`).data('value', `${lat},${lng}`);
+            $('#loading').hide();
+        }
+
+        function showGeoError(error) {
+            $('#loading').hide();
+            const messages = {
+                1: 'Please allow location access',
+                2: 'Position unavailable',
+                3: 'Location request timed out'
+            };
+            showError(messages[error.code] || "Location error occurred");
         }
 
         // Update findRoute function
         async function findRoute() {
-    const start = $('#start').data('value') || $('#start').val().trim();
-    const end = $('#end').data('value') || $('#end').val().trim();
+            const startInput = $('#start').data('value') || $('#start').val().trim();
+            const endInput = $('#end').data('value') || $('#end').val().trim();
 
-    try {
-        // Clear previous results
-        $('#instructions').html('');
-        $('#route-options').html('');
+            let startIsCoordinate = isCoordinate(startInput);
+            let endIsCoordinate = isCoordinate(endInput);
 
-        const response = await fetch('/route', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                start: start,
-                end: end
-            })
-        });
+            let startCoords, endCoords;
+            let startStationName, endStationName;
 
-        const data = await response.json();
+            // Process start input
+            try {
+                if (startIsCoordinate) {
+                    const [lat, lng] = parseCoordinate(startInput);
+                    startCoords = { lat, lng };
+                } else {
+                    startStationName = startInput;
+                    const station = stationData[startStationName];
+                    if (!station) throw new Error('Start station not found');
+                    startCoords = { lat: station.lat, lng: station.lng };
+                }
+            } catch (error) {
+                showError(error.message);
+                return;
+            }
 
-        if (!response.ok) {
-            throw new Error(data.error || 'Failed to find route');
+            // Process end input
+            try {
+                if (endIsCoordinate) {
+                    const [lat, lng] = parseCoordinate(endInput);
+                    endCoords = { lat, lng };
+                } else {
+                    endStationName = endInput;
+                    const station = stationData[endStationName];
+                    if (!station) throw new Error('End station not found');
+                    endCoords = { lat: station.lat, lng: station.lng };
+                }
+            } catch (error) {
+                showError(error.message);
+                return;
+            }
+
+            // Determine endpoint
+            if (!startIsCoordinate && !endIsCoordinate) {
+                // Both are stations: use /route
+                try {
+                    const response = await fetch('/route', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ start: startStationName, end: endStationName })
+                    });
+                    handleRouteResponse(response);
+                } catch (error) {
+                    showError(error.message);
+                }
+            } else {
+                // Use /route_from_coords
+                try {
+                    const response = await fetch('/route_from_coords', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            start_lat: startCoords.lat,
+                            start_lng: startCoords.lng,
+                            end_lat: endCoords.lat,
+                            end_lng: endCoords.lng
+                        })
+                    });
+                    handleRouteResponse(response);
+                } catch (error) {
+                    showError(error.message);
+                }
+            }
         }
 
-        if (!data.routes || data.routes.length === 0) {
-            throw new Error('No routes found');
+        async function handleRouteResponse(response) {
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to find route');
+            if (!data.routes || data.routes.length === 0) throw new Error('No routes found');
+            currentRoutes = data.routes;
+            displayRoute(0);
+            showRouteOptions();
         }
 
-        currentRoutes = data.routes;
-        displayRoute(0);
-        showRouteOptions();
+</script>
 
-    } catch (error) {
-        showError(error.message);
-        console.error('Route error:', error);
-    }
+<style>
+/* Add this missing CSS rule */
+.ui-autocomplete {
+    position: absolute;
+    z-index: 1001 !important;
+    background: white;
+    border: 1px solid #ddd;
+    max-height: 200px;
+    overflow-y: auto;
 }
+</style>
+<script>
 
         // Display route function
         function displayRoute(index) {
@@ -217,10 +351,14 @@
                       '#666';
 
         if (segment.type === 'walk') {
+            // Extract from and to information
+            const from = typeof segment.from === 'object' ? segment.from.label || segment.from.name || 'Unknown Location' : segment.from;
+            const to = typeof segment.to === 'object' ? segment.to.label || segment.to.name || 'Unknown Location' : segment.to;
+
             html += `
                 <div class="route-segment walk-segment">
                     <h3>🚶 Walk ${Math.round(segment.distance)}m</h3>
-                    <p>From ${segment.from} to ${segment.to}</p>
+                    <p>From ${from} to ${to}</p>
                 </div>
             `;
         } else {
@@ -239,8 +377,7 @@
             `;
         }
 
-        // Draw route in correct order
-        const coords = segment.coordinates
+const coords = segment.coordinates
             .filter(coord => coord?.lat && coord?.lng)
             .map(coord => [coord.lat, coord.lng]);
 

@@ -280,6 +280,172 @@ def find_route():
         print(f"Route error: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
 
+# Add new helper functions
+def find_route_path(start, end):
+    """Core route finding between two stations, returns path if exists."""
+    heap = []
+    start_lines = station_to_lines.get(start, [])
+    if not start_lines:
+        return None
+
+    for line in start_lines:
+        heapq.heappush(heap, (0, 0, [f"{start}|{line}"]))
+
+    visited = set()
+    max_iterations = 100000
+    found = False
+    best_path = None
+
+    while heap and not found and len(visited) < max_iterations:
+        cost, transfers, path = heapq.heappop(heap)
+        current_node = path[-1]
+
+        # Parse current node
+        if '|' in current_node:
+            current_station, current_line = current_node.split('|')
+        else:
+            current_station = current_node.replace('walk|', '')
+            current_line = 'walk'
+
+        if current_station == end:
+            best_path = path
+            found = True
+            break
+
+        if current_node in visited:
+            continue
+        visited.add(current_node)
+
+        for neighbor in adjacency.get(current_node, []):
+            if neighbor.startswith('walk|'):
+                target_station = neighbor.split('|')[1]
+                new_cost = cost + 50
+                new_transfers = transfers
+                new_path = path + [neighbor]
+
+                for target_line in station_to_lines.get(target_station, []):
+                    transition_node = f"{target_station}|{target_line}"
+                    heapq.heappush(heap, (new_cost + 10, new_transfers, new_path + [transition_node]))
+            else:
+                neighbor_station, neighbor_line = neighbor.split('|')
+                transfer_occurred = current_line != neighbor_line
+                new_cost = cost + (100 if transfer_occurred else 10)
+                new_transfers = transfers + (1 if transfer_occurred else 0)
+                heapq.heappush(heap, (new_cost, new_transfers, path + [neighbor]))
+
+    return best_path
+
+def find_nearby_stations(lat, lng, max_distance=1000):
+    """Find stations within max_distance meters from given coordinates."""
+    nearby = []
+    for name, data in STATIONS.items():
+        station_lat = data['lat']
+        station_lng = data['lng']
+        distance = haversine(lat, lng, station_lat, station_lng)
+        if distance <= max_distance:
+            duration = distance / 1.4  # Walking time in seconds (1.4 m/s)
+            nearby.append({
+                'name': name,
+                'distance': distance,
+                'duration': duration
+            })
+    # Sort by ascending distance
+    nearby.sort(key=lambda x: x['distance'])
+    return nearby
+
+# Add new endpoint for coordinate-based routing
+@app.route('/route_from_coords', methods=['POST'])
+def route_from_coordinates():
+    try:
+        data = request.get_json()
+        start_lat = data.get('start_lat')
+        start_lng = data.get('start_lng')
+        end_lat = data.get('end_lat')
+        end_lng = data.get('end_lng')
+
+        # Validate coordinates
+        if None in (start_lat, start_lng, end_lat, end_lng):
+            return jsonify({'error': 'Missing coordinates'}), 400
+
+        start_lat = float(start_lat)
+        start_lng = float(start_lng)
+        end_lat = float(end_lat)
+        end_lng = float(end_lng)
+
+        # Find nearby stations within 1km walking distance
+        start_stations = find_nearby_stations(start_lat, start_lng, 1000)
+        end_stations = find_nearby_stations(end_lat, end_lng, 1000)
+
+        if not start_stations:
+            return jsonify({'error': 'No stations within walking distance of start point'}), 404
+        if not end_stations:
+            return jsonify({'error': 'No stations within walking distance of end point'}), 404
+
+        best_route = None
+        min_total_time = float('inf')
+
+        # Try top 3 nearest stations for efficiency
+        for start_info in start_stations[:3]:
+            for end_info in end_stations[:3]:
+                start_name = start_info['name']
+                end_name = end_info['name']
+
+                # Find path between stations
+                path = find_route_path(start_name, end_name)
+                if not path:
+                    continue
+
+                # Format the base route
+                formatted_route = format_route(path)
+                if not formatted_route:
+                    continue
+
+                # Create walking segments
+                walk_start = {
+                    'type': 'walk',
+                    'from': {'lat': start_lat, 'lng': start_lng},
+                    'to': start_name,
+                    'distance': start_info['distance'],
+                    'duration': start_info['duration'],
+                    'coordinates': [
+                        {'lat': start_lat, 'lng': start_lng},
+                        {'lat': STATIONS[start_name]['lat'], 'lng': STATIONS[start_name]['lng']}
+                    ]
+                }
+                walk_end = {
+                    'type': 'walk',
+                    'from': end_name,
+                    'to': {'lat': end_lat, 'lng': end_lng},
+                    'distance': end_info['distance'],
+                    'duration': end_info['duration'],
+                    'coordinates': [
+                        {'lat': STATIONS[end_name]['lat'], 'lng': STATIONS[end_name]['lng']},
+                        {'lat': end_lat, 'lng': end_lng}
+                    ]
+                }
+
+                # Combine segments
+                total_time = formatted_route['total_time'] + walk_start['duration'] + walk_end['duration']
+                combined_segments = [walk_start] + formatted_route['segments'] + [walk_end]
+
+                if total_time < min_total_time:
+                    min_total_time = total_time
+                    best_route = {
+                        'segments': combined_segments,
+                        'total_time': total_time
+                    }
+
+        if best_route:
+            return jsonify({'routes': [best_route]})
+        else:
+            return jsonify({'error': 'No route found between nearby stations'}), 404
+
+    except ValueError:
+        return jsonify({'error': 'Invalid coordinate values'}), 400
+    except Exception as e:
+        print(f"Coordinate route error: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
 # Route formatting
 def format_route(path):
     segments = []
@@ -295,10 +461,14 @@ def format_route(path):
             from_station = path[path.index(node)-1].split('|')[0]
             to_station = node.split('|')[1]
 
+            # Ensure from_station and to_station are strings
+            from_station_name = from_station if isinstance(from_station, str) else from_station.get('name', 'Unknown Location')
+            to_station_name = to_station if isinstance(to_station, str) else to_station.get('name', 'Unknown Location')
+
             segments.append({
                 'type': 'walk',
-                'from': from_station,
-                'to': to_station,
+                'from': from_station_name,
+                'to': to_station_name,
                 'distance': haversine(
                     STATIONS[from_station]['lat'], STATIONS[from_station]['lng'],
                     STATIONS[to_station]['lat'], STATIONS[to_station]['lng']
@@ -350,7 +520,9 @@ def get_stations():
         stations.append({
             'value': name,
             'label': clean_name,
-            'type': data['type']
+            'type': data['type'],
+            'lat': data['lat'],
+            'lng': data['lng']
         })
     return jsonify(sorted(stations, key=lambda x: x['label']))
 
