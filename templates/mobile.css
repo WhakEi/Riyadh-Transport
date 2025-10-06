@@ -40,6 +40,8 @@ body, html {
     cursor: grab;
     display: flex;
     justify-content: center;
+    /* FIX: Prevent browser's default touch actions (like pull-to-refresh) on this element */
+    touch-action: none;
 }
 
 .grabber {
