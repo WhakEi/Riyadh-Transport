@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transit Navigator</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- FIX: Removed integrity and crossorigin attributes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="map"></div>
+    <div id="panel">
+        <div class="panel-header">
+            <h2>Riyadh Public Transport Planner (V2)</h2>
+            <form id="route-form">
+                <div class="input-group">
+                    <label for="start-input">Start</label>
+                    <input type="text" id="start-input" class="awesomplete" placeholder="Enter starting point" value="Transportation Center (Metro)">
+                </div>
+                <div class="input-group">
+                    <label for="end-input">End</label>
+                    <input type="text" id="end-input" class="awesomplete" placeholder="Enter destination" value="Airport T1-2 (Metro)">
+                </div>
+                <button type="submit">Find Route</button>
+            </form>
+        </div>
+        <div id="route-details" class="panel-content">
+            <!-- Route instructions will be injected here -->
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- FIX: Removed integrity and crossorigin attributes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
