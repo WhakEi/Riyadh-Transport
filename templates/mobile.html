@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RPTPV2 Mobile</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" />
+    <link rel="stylesheet" href="mobile.css">
+</head>
+<body>
+    <div id="map"></div>
+
+    <div id="panel" class="panel">
+        <div id="panel-handle" class="panel-handle">
+            <div class="grabber"></div>
+        </div>
+        <div id="panel-content" class="panel-content">
+            <div class="form-container">
+                <form id="route-form">
+                    <div class="input-group">
+                        <input type="text" id="start-input" class="awesomplete" placeholder="Enter starting point">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="end-input" class="awesomplete" placeholder="Enter destination">
+                    </div>
+                    <button type="submit">Find Route</button>
+                </form>
+            </div>
+            <div id="route-details">
+                <!-- Route instructions will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
+    <script src="mobile.js"></script>
+</body>
+</html>

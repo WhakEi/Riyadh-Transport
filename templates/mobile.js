@@ -12,54 +12,110 @@ window.onload = async () => {
     const routeForm = document.getElementById('route-form');
     let activeRouteLayers = new L.FeatureGroup().addTo(map);
 
-    // --- AUTOCOMPLETE SETUP ---
+    // --- ADVANCED BOTTOM SHEET PANEL LOGIC ---
+    const panel = document.getElementById('panel');
+    const panelHandle = document.getElementById('panel-handle');
+    const panelContent = document.getElementById('panel-content');
+
+    // FIX: expandedHeight is now almost the full screen height to ensure all content is visible.
+    // A small margin is left for the status bar.
+    const expandedHeight = window.innerHeight - 40; // 40px margin from the top
+    const collapsedHeight = panelHandle.offsetHeight + document.querySelector('.form-container').offsetHeight + 20;
+
+    let currentState = 'collapsed';
+    let startY, startHeight;
+
+    // Set initial panel position to collapsed
+    panelContent.style.height = `${expandedHeight - panelHandle.offsetHeight}px`;
+    panel.style.transform = `translateY(${window.innerHeight - collapsedHeight}px)`;
+
+    function setPanelState(state) {
+        let targetY;
+        if (state === 'expanded') {
+            targetY = window.innerHeight - expandedHeight;
+            currentState = 'expanded';
+        } else { // collapsed
+            targetY = window.innerHeight - collapsedHeight;
+            currentState = 'collapsed';
+        }
+        panel.style.transition = 'transform 0.4s ease-out';
+        panel.style.transform = `translateY(${targetY}px)`;
+    }
+
+    panelHandle.addEventListener('touchstart', (e) => {
+        startY = e.touches[0].clientY;
+        startHeight = panel.getBoundingClientRect().top;
+        panel.style.transition = 'none'; // Allow smooth dragging
+    });
+
+    panelHandle.addEventListener('touchmove', (e) => {
+        const currentY = e.touches[0].clientY;
+        let deltaY = currentY - startY;
+        let newTop = startHeight + deltaY;
+
+        // FIX: Update drag constraints to allow moving the panel higher.
+        const minTop = window.innerHeight - expandedHeight; // Top limit
+        const maxTop = window.innerHeight - collapsedHeight; // Bottom limit
+        if (newTop < minTop) newTop = minTop;
+        if (newTop > maxTop) newTop = maxTop;
+
+        panel.style.transform = `translateY(${newTop}px)`;
+    });
+
+    panelHandle.addEventListener('touchend', (e) => {
+        const endY = e.changedTouches[0].clientY;
+        const deltaY = endY - startY;
+
+        if (Math.abs(deltaY) > 100) {
+            if (deltaY < 0 && currentState === 'collapsed') {
+                setPanelState('expanded'); // Swiped up
+            } else if (deltaY > 0 && currentState === 'expanded') {
+                setPanelState('collapsed'); // Swiped down
+            }
+        } else {
+            setPanelState(currentState);
+        }
+    });
+
+    panelHandle.addEventListener('click', (e) => {
+        if (e.detail > 0) {
+             setPanelState(currentState === 'collapsed' ? 'expanded' : 'collapsed');
+        }
+    });
+
+
+    // --- The rest of the logic remains largely the same ---
+
     async function initializeAutocomplete() {
         try {
-            console.log("Fetching station list for autocomplete...");
             const response = await fetch(`${BACKEND_URL}/api/stations`);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch stations: ${response.status} ${response.statusText}`);
-            }
+            if (!response.ok) throw new Error(`Failed to fetch stations: ${response.status}`);
             const stationList = await response.json();
-            console.log(`Successfully fetched ${stationList.length} stations.`);
-
-            const startInput = document.getElementById('start-input');
-            const endInput = document.getElementById('end-input');
-
-            new Awesomplete(startInput, { list: stationList, minChars: 1 });
-            new Awesomplete(endInput, { list: stationList, minChars: 1 });
-
+            new Awesomplete(document.getElementById('start-input'), { list: stationList, minChars: 1 });
+            new Awesomplete(document.getElementById('end-input'), { list: stationList, minChars: 1 });
         } catch (error) {
             console.error("Could not initialize autocomplete:", error);
-            const detailsContainer = document.getElementById('route-details');
-            if (detailsContainer) {
-                const errorDiv = document.createElement('p');
-                errorDiv.style.color = 'orange';
-                errorDiv.textContent = 'Autocomplete is not available. Could not connect to the station list.';
-                detailsContainer.prepend(errorDiv);
-            }
         }
     }
 
-    // --- COORDINATE PARSING ---
     function parseCoordinates(input) {
         const coordRegex = /^\s*(-?\d{1,3}(\.\d+)?)\s*,\s*(-?\d{1,3}(\.\d+)?)\s*$/;
         const match = input.match(coordRegex);
         if (match) {
             const lat = parseFloat(match[1]);
             const lng = parseFloat(match[3]);
-            if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-                return { lat, lng };
-            }
+            if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) return { lat, lng };
         }
         return null;
     }
 
-    // --- ROUTE HANDLING ---
     async function handleFormSubmit(event) {
         event.preventDefault();
         const start = document.getElementById('start-input').value;
         const end = document.getElementById('end-input').value;
+
+        setPanelState('expanded');
+
         await fetchAndDisplayRoute(start, end);
     }
 
@@ -78,75 +134,58 @@ window.onload = async () => {
         let endpoint = '';
         let body = {};
 
-        // --- FIX: Revert to POST and limit coordinate precision ---
         if (startCoords && endCoords) {
-            console.log("Routing by coordinates using POST.");
-            endpoint = `${BACKEND_URL}/route_from_coords`;
+            endpoint = `${BACKEND_URL}/route_by_coords`;
             body = {
-                // Round to 13 decimal places to match backend expectation
                 start_lat: parseFloat(startCoords.lat.toFixed(13)),
                 start_lng: parseFloat(startCoords.lng.toFixed(13)),
                 end_lat: parseFloat(endCoords.lat.toFixed(13)),
                 end_lng: parseFloat(endCoords.lng.toFixed(13))
             };
         } else if (!startCoords && !endCoords) {
-            console.log("Routing by station name using POST.");
             endpoint = `${BACKEND_URL}/route`;
             body = { start, end };
         } else {
-            console.error("Mixed input types detected.");
-            detailsContainer.innerHTML = '<p style="color: red;">Error: Please use either two station names or two sets of coordinates (e.g., "24.617, 46.725"). Mixed inputs are not supported.</p>';
+            detailsContainer.innerHTML = '<p style="color: red;">Error: Mixed inputs are not supported.</p>';
             return;
         }
 
         try {
             const response = await fetch(endpoint, {
-                method: 'POST', // Always use POST
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Network response was not ok. Status: ${response.status}, Message: ${errorText}`);
-            }
+            if (!response.ok) throw new Error(`Network response was not ok. Status: ${response.status}`);
 
             const data = await response.json();
             displayRoute(data);
-
         } catch (error) {
             console.error("Failed to fetch route:", error);
-            detailsContainer.innerHTML = `<p style="color: red;">Error: Could not retrieve route.</p><p style-="font-size: 12px; color: #5f6368;">Please check the backend connection and input values.</p>`;
+            detailsContainer.innerHTML = `<p style="color: red;">Error: Could not retrieve route.</p>`;
         }
     }
 
     function displayRoute(data) {
-        // This function remains unchanged.
+        // This function is identical to the one in app.js
         activeRouteLayers.clearLayers();
         const detailsContainer = document.getElementById('route-details');
         detailsContainer.innerHTML = '';
-
         if (!data.routes || data.routes.length === 0) {
-            detailsContainer.innerHTML = '<p>No routes found for the selected locations.</p>';
+            detailsContainer.innerHTML = '<p>No routes found.</p>';
             return;
         }
-
         const route = data.routes[0];
         const allCoords = [];
-
         const lineColors = {
             metro: { '1': '#00aee6', '2': '#ef4938', '3': '#f68d39', '4': '#ffd10a', '5': '#37b23f', '6': '#984b9d' },
-            bus: '#18a034',
-            walk: '#6c757d',
-            default: '#555'
+            bus: '#18a034', walk: '#6c757d', default: '#555'
         };
-
         const summaryDiv = document.createElement('div');
         summaryDiv.className = 'route-summary';
         const totalMinutes = Math.round(route.total_time / 60);
         summaryDiv.innerHTML = `<p>${totalMinutes} min</p><span>Total journey time.</span>`;
         detailsContainer.appendChild(summaryDiv);
-
         route.segments.forEach((segment) => {
             let style = {};
             if (segment.type === 'metro') {
@@ -162,16 +201,12 @@ window.onload = async () => {
                 const color = lineColors.default;
                 style = { color, icon: '?', lineStyle: {} };
             }
-
             const latLngs = segment.coordinates.map(c => [c.lat, c.lng]);
             allCoords.push(...latLngs);
-
             const polylineOptions = { color: style.color, weight: 6, opacity: 0.8, ...style.lineStyle };
             L.polyline(latLngs, polylineOptions).addTo(activeRouteLayers);
-
             let instructionTitle = '', instructionDetails = '', endPointName = '';
             const durationMins = Math.round(segment.duration / 60);
-
             if (segment.type === 'walk') {
                 endPointName = segment.to || "your destination";
                 instructionTitle = `Walk to ${endPointName}`;
@@ -180,7 +215,6 @@ window.onload = async () => {
             } else {
                 const transportMode = segment.type.charAt(0).toUpperCase() + segment.type.slice(1);
                 instructionTitle = `Take ${transportMode} Line ${segment.line}`;
-
                 if (segment.stations && segment.stations.length > 0) {
                     endPointName = segment.stations[segment.stations.length - 1];
                     const stopsText = segment.stations.length > 1 ? `&bull; ${segment.stations.length - 1} stops` : '';
@@ -190,29 +224,15 @@ window.onload = async () => {
                     instructionDetails = `${durationMins} min`;
                 }
             }
-
             const instructionDiv = document.createElement('div');
             instructionDiv.className = 'instruction';
-            instructionDiv.innerHTML = `
-                <div class="instruction-icon">${style.icon}</div>
-                <div class="instruction-details">
-                    <h3>${instructionTitle}</h3>
-                    <p>${instructionDetails}</p>
-                    ${segment.type !== 'walk' ? `<p>Disembark at ${endPointName}</p>` : ''}
-                </div>
-            `;
+            instructionDiv.innerHTML = `<div class="instruction-icon">${style.icon}</div><div class="instruction-details"><h3>${instructionTitle}</h3><p>${instructionDetails}</p>${segment.type !== 'walk' ? `<p>Disembark at ${endPointName}</p>` : ''}</div>`;
             detailsContainer.appendChild(instructionDiv);
         });
-
-        if (allCoords.length > 0) {
-            map.fitBounds(L.latLngBounds(allCoords), { padding: [50, 50] });
-        }
+        if (allCoords.length > 0) map.fitBounds(L.latLngBounds(allCoords), { padding: [40, 40], paddingTop: 100 });
     }
 
     // --- INITIAL PAGE LOAD ---
     routeForm.addEventListener('submit', handleFormSubmit);
     await initializeAutocomplete();
-    const startValue = document.getElementById('start-input').value;
-    const endValue = document.getElementById('end-input').value;
-    fetchAndDisplayRoute(startValue, endValue);
 };
