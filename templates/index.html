@@ -6,7 +6,6 @@
     <title>RPTPV2</title>
     <script src="redirect.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- FIX: Removed integrity and crossorigin attributes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" />
     <link rel="stylesheet" href="style.css">
 </head>
@@ -18,13 +17,15 @@
             <form id="route-form">
                 <div class="input-group">
                     <label for="start-input">Start</label>
-                    <input type="text" id="start-input" class="awesomplete" placeholder="Enter starting point" value="Transportation Center (Metro)">
+                    <input type="text" id="start-input" class="awesomplete" placeholder="Finding your location...">
                 </div>
                 <div class="input-group">
                     <label for="end-input">End</label>
-                    <input type="text" id="end-input" class="awesomplete" placeholder="Enter destination" value="Airport T1-2 (Metro)">
+                    <input type="text" id="end-input" class="awesomplete" placeholder="Enter destination">
                 </div>
                 <button type="submit">Find Route</button>
+                <!-- NEW: Use My Location Button -->
+                <button type="button" id="use-my-location" class="secondary-button">Use My Location</button>
             </form>
         </div>
         <div id="route-details" class="panel-content">
@@ -34,6 +35,7 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
+    <!-- Ensure this points to your desktop JS file -->
     <script src="app.js"></script>
 </body>
 </html>

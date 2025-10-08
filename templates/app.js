@@ -1,5 +1,6 @@
 // --- CONFIGURATION ---
 const BACKEND_URL = 'http://mainserver.inirl.net:5000';
+const OSM_NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
 
 window.onload = async () => {
     // --- MAP INITIALIZATION ---
@@ -10,37 +11,239 @@ window.onload = async () => {
     }).addTo(map);
 
     const routeForm = document.getElementById('route-form');
+    const startInput = document.getElementById('start-input');
+    const endInput = document.getElementById('end-input');
     let activeRouteLayers = new L.FeatureGroup().addTo(map);
 
-    // --- AUTOCOMPLETE SETUP ---
-    async function initializeAutocomplete() {
-        try {
-            console.log("Fetching station list for autocomplete...");
-            const response = await fetch(`${BACKEND_URL}/api/stations`);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch stations: ${response.status} ${response.statusText}`);
-            }
-            const stationList = await response.json();
-            console.log(`Successfully fetched ${stationList.length} stations.`);
+    // --- GEOLOCATION FUNCTIONALITY ---
+    const useMyLocationBtn = document.getElementById('use-my-location');
 
-            const startInput = document.getElementById('start-input');
-            const endInput = document.getElementById('end-input');
-
-            new Awesomplete(startInput, { list: stationList, minChars: 1 });
-            new Awesomplete(endInput, { list: stationList, minChars: 1 });
-
-        } catch (error) {
-            console.error("Could not initialize autocomplete:", error);
-            const detailsContainer = document.getElementById('route-details');
-            if (detailsContainer) {
-                const errorDiv = document.createElement('p');
-                errorDiv.style.color = 'orange';
-                errorDiv.textContent = 'Autocomplete is not available. Could not connect to the station list.';
-                detailsContainer.prepend(errorDiv);
-            }
+    function setLocationFromGPS() {
+        if (!navigator.geolocation) {
+            startInput.placeholder = "Geolocation is not supported";
+            return;
         }
+
+        startInput.placeholder = "Finding your location...";
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                const coordString = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+                startInput.value = coordString;
+                startInput.placeholder = "Enter starting point";
+                map.setView([latitude, longitude], 13);
+            },
+            () => {
+                startInput.placeholder = "Could not get your location";
+                console.warn("Unable to retrieve location.");
+            }
+        );
     }
 
+    useMyLocationBtn.addEventListener('click', setLocationFromGPS);
+
+    // --- OSM Address Formatting ---
+    function formatOsmName(item) {
+        const address = item.address || {};
+        let mainName = item.name || address.road || address.amenity || address.shop || address.building || address.tourism || address.historic;
+        if (!mainName) {
+            mainName = item.display_name.split(',')[0];
+        }
+        const secondaryName = address.suburb || address.neighbourhood || address.quarter || '';
+        return { main: mainName, secondary: secondaryName };
+    }
+
+
+    // --- CUSTOM AUTOCOMPLETE IMPLEMENTATION ---
+    class CustomAutocomplete {
+        constructor(input, stationList) {
+            this.input = input;
+            this.stationList = stationList;
+            this.container = document.createElement('div');
+            this.container.className = 'autocomplete-suggestions';
+            this.input.parentNode.appendChild(this.container);
+
+            // --- DEBOUNCING AND RACE CONDITION FIX ---
+            this.debounceTimeout = null;
+            this.latestRequest = 0; // Used to track the latest request
+
+            this.input.addEventListener('input', this.onInput.bind(this));
+            this.input.addEventListener('keydown', this.onKeyDown.bind(this));
+            document.addEventListener('click', this.onDocumentClick.bind(this));
+
+            this.currentSelection = -1;
+            this.currentSuggestions = [];
+        }
+
+        onInput() {
+            // Clear the previous debounce timer
+            clearTimeout(this.debounceTimeout);
+
+            const query = this.input.value.trim();
+            if (query.length < 3) {
+                this.hide();
+                return;
+            }
+
+            // Set a new timer
+            this.debounceTimeout = setTimeout(() => {
+                this.fetchSuggestions(query);
+            }, 250); // 250ms delay
+        }
+
+        async fetchSuggestions(query) {
+            const thisRequest = ++this.latestRequest;
+
+            const stationPromise = this.getStationSuggestions(query);
+            const osmPromise = this.getOSMSuggestions(query);
+
+            const [stationResults, osmResults] = await Promise.all([stationPromise, osmPromise]);
+
+            // If this is not the latest request, ignore the results
+            if (thisRequest !== this.latestRequest) {
+                return;
+            }
+
+            this.currentSuggestions = [...stationResults, ...osmResults];
+            this.renderSuggestions();
+        }
+
+        getStationSuggestions(query) {
+            const lowerCaseQuery = query.toLowerCase();
+            return this.stationList
+                .filter(station => station.label.toLowerCase().includes(lowerCaseQuery))
+                .slice(0, 3)
+                .map(station => ({
+                    type: 'station',
+                    name: station.label,
+                    lat: station.lat,
+                    lng: station.lng
+                }));
+        }
+
+        async getOSMSuggestions(query) {
+            try {
+                const params = new URLSearchParams({
+                    q: `${query}, Riyadh`,
+                    format: 'json',
+                    addressdetails: 1,
+                    limit: 4,
+                    viewbox: '46.2,25.2,47.2,24.2',
+                    bounded: 1
+                });
+                const response = await fetch(`${OSM_NOMINATIM_URL}?${params}`);
+                if (!response.ok) return [];
+                const data = await response.json();
+
+                return data.map(item => ({
+                    type: 'map',
+                    name: formatOsmName(item),
+                    lat: parseFloat(item.lat),
+                    lng: parseFloat(item.lon)
+                }));
+            } catch (error) {
+                console.error("OSM search failed:", error);
+                return [];
+            }
+        }
+
+        renderSuggestions() {
+            if (this.currentSuggestions.length === 0) {
+                this.hide();
+                return;
+            }
+
+            this.container.innerHTML = '';
+            this.currentSuggestions.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'suggestion-item';
+                div.dataset.index = index;
+
+                const prefix = item.type === 'station' ? 'Station' : 'Map';
+                const prefixColor = item.type === 'station' ? '#007bff' : '#28a745';
+
+                let contentHtml;
+                if (item.type === 'map') {
+                    contentHtml = `
+                        <div class="suggestion-text">
+                            <div class="suggestion-main">${item.name.main}</div>
+                            ${item.name.secondary ? `<div class="suggestion-secondary">${item.name.secondary}</div>` : ''}
+                        </div>
+                    `;
+                } else {
+                    contentHtml = `<div class="suggestion-text">${item.name}</div>`;
+                }
+
+                div.innerHTML = `
+                    <span class="suggestion-prefix" style="color: ${prefixColor};">[${prefix}]</span>
+                    ${contentHtml}
+                `;
+                div.addEventListener('click', () => this.selectItem(index));
+                this.container.appendChild(div);
+            });
+
+            this.currentSelection = -1;
+            this.show();
+        }
+
+        onKeyDown(e) {
+            if (!this.container.offsetParent) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                this.currentSelection = Math.min(this.currentSelection + 1, this.currentSuggestions.length - 1);
+                this.updateSelectionHighlight();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                this.currentSelection = Math.max(this.currentSelection - 1, 0);
+                this.updateSelectionHighlight();
+            } else if (e.key === 'Enter' && this.currentSelection > -1) {
+                e.preventDefault();
+                this.selectItem(this.currentSelection);
+            } else if (e.key === 'Escape') {
+                this.hide();
+            }
+        }
+
+        updateSelectionHighlight() {
+            Array.from(this.container.children).forEach((el, i) => {
+                el.style.backgroundColor = i === this.currentSelection ? '#f0f0f0' : '';
+            });
+        }
+
+        selectItem(index) {
+            const item = this.currentSuggestions[index];
+            if (!item) return;
+
+            this.input.value = `${item.lat.toFixed(5)}, ${item.lng.toFixed(5)}`;
+            this.hide();
+        }
+
+        onDocumentClick(e) {
+            if (!this.input.contains(e.target) && !this.container.contains(e.target)) {
+                this.hide();
+            }
+        }
+
+        show() { this.container.style.display = 'block'; }
+        hide() { this.container.style.display = 'none'; }
+    }
+
+    async function initializeAutocomplete() {
+        let stationList = [];
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/stations`);
+            if (!response.ok) throw new Error(`Failed to fetch stations: ${response.status}`);
+            stationList = await response.json();
+        } catch (error) {
+            console.error("Could not initialize autocomplete:", error);
+        }
+        new CustomAutocomplete(startInput, stationList);
+        new CustomAutocomplete(endInput, stationList);
+    }
+
+    // ... (rest of the file is unchanged)
     // --- COORDINATE PARSING ---
     function parseCoordinates(input) {
         const coordRegex = /^\s*(-?\d{1,3}(\.\d+)?)\s*,\s*(-?\d{1,3}(\.\d+)?)\s*$/;
@@ -58,8 +261,8 @@ window.onload = async () => {
     // --- ROUTE HANDLING ---
     async function handleFormSubmit(event) {
         event.preventDefault();
-        const start = document.getElementById('start-input').value;
-        const end = document.getElementById('end-input').value;
+        const start = startInput.value;
+        const end = endInput.value;
         await fetchAndDisplayRoute(start, end);
     }
 
@@ -78,12 +281,10 @@ window.onload = async () => {
         let endpoint = '';
         let body = {};
 
-        // --- FIX: Revert to POST and limit coordinate precision ---
         if (startCoords && endCoords) {
             console.log("Routing by coordinates using POST.");
             endpoint = `${BACKEND_URL}/route_from_coords`;
             body = {
-                // Round to 13 decimal places to match backend expectation
                 start_lat: parseFloat(startCoords.lat.toFixed(13)),
                 start_lng: parseFloat(startCoords.lng.toFixed(13)),
                 end_lat: parseFloat(endCoords.lat.toFixed(13)),
@@ -101,30 +302,35 @@ window.onload = async () => {
 
         try {
             const response = await fetch(endpoint, {
-                method: 'POST', // Always use POST
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Network response was not ok. Status: ${response.status}, Message: ${errorText}`);
+            const data = await response.json();
+
+            if (!response.ok || data.error) {
+                const errorMessage = data.error || `An unknown error occurred (Status: ${response.status}).`;
+                throw new Error(errorMessage);
             }
 
-            const data = await response.json();
             displayRoute(data);
 
         } catch (error) {
             console.error("Failed to fetch route:", error);
-            detailsContainer.innerHTML = `<p style="color: red;">Error: Could not retrieve route.</p><p style-="font-size: 12px; color: #5f6368;">Please check the backend connection and input values.</p>`;
+            detailsContainer.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
         }
     }
 
     function displayRoute(data) {
-        // This function remains unchanged.
         activeRouteLayers.clearLayers();
         const detailsContainer = document.getElementById('route-details');
         detailsContainer.innerHTML = '';
+
+        if (data.error) {
+            detailsContainer.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+            return;
+        }
 
         if (!data.routes || data.routes.length === 0) {
             detailsContainer.innerHTML = '<p>No routes found for the selected locations.</p>';
@@ -209,10 +415,41 @@ window.onload = async () => {
         }
     }
 
+    // --- MAP CLICK HANDLER ---
+    map.on('click', function(e) {
+        const coordString = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
+
+        const popupContent = document.createElement('div');
+        popupContent.innerHTML = `
+            <div style="text-align: center;">
+                <strong>Set Location</strong><br>
+                <small>${coordString}</small>
+                <div style="margin-top: 8px;">
+                    <button id="popup-set-origin" class="popup-button">Set as Origin</button>
+                    <button id="popup-set-destination" class="popup-button">Set as Destination</button>
+                </div>
+            </div>`;
+
+        L.DomEvent.on(popupContent.querySelector('#popup-set-origin'), 'click', () => {
+            startInput.value = coordString;
+            map.closePopup();
+        });
+
+        L.DomEvent.on(popupContent.querySelector('#popup-set-destination'), 'click', () => {
+            endInput.value = coordString;
+            map.closePopup();
+        });
+
+        L.popup()
+            .setLatLng(e.latlng)
+            .setContent(popupContent)
+            .openOn(map);
+    });
+
     // --- INITIAL PAGE LOAD ---
     routeForm.addEventListener('submit', handleFormSubmit);
     await initializeAutocomplete();
-    const startValue = document.getElementById('start-input').value;
-    const endValue = document.getElementById('end-input').value;
-    fetchAndDisplayRoute(startValue, endValue);
+
+    // Get location on initial load, but don't fetch a route immediately
+    setLocationFromGPS();
 };

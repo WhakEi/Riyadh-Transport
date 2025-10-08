@@ -1,5 +1,6 @@
 // --- CONFIGURATION ---
 const BACKEND_URL = 'http://mainserver.inirl.net:5000';
+const OSM_NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
 
 window.onload = async () => {
     // --- MAP INITIALIZATION ---
@@ -10,94 +11,252 @@ window.onload = async () => {
     }).addTo(map);
 
     const routeForm = document.getElementById('route-form');
+    const startInput = document.getElementById('start-input');
+    const endInput = document.getElementById('end-input');
     let activeRouteLayers = new L.FeatureGroup().addTo(map);
 
-    // --- ADVANCED BOTTOM SHEET PANEL LOGIC ---
+    // --- BOTTOM SHEET PANEL LOGIC (Unchanged) ---
     const panel = document.getElementById('panel');
     const panelHandle = document.getElementById('panel-handle');
     const panelContent = document.getElementById('panel-content');
-
-    // FIX: expandedHeight is now almost the full screen height to ensure all content is visible.
-    // A small margin is left for the status bar.
-    const expandedHeight = window.innerHeight - 40; // 40px margin from the top
+    const expandedHeight = window.innerHeight - 40;
     const collapsedHeight = panelHandle.offsetHeight + document.querySelector('.form-container').offsetHeight + 20;
-
     let currentState = 'collapsed';
     let startY, startHeight;
-
-    // Set initial panel position to collapsed
     panelContent.style.height = `${expandedHeight - panelHandle.offsetHeight}px`;
     panel.style.transform = `translateY(${window.innerHeight - collapsedHeight}px)`;
-
     function setPanelState(state) {
         let targetY;
         if (state === 'expanded') {
             targetY = window.innerHeight - expandedHeight;
             currentState = 'expanded';
-        } else { // collapsed
+        } else {
             targetY = window.innerHeight - collapsedHeight;
             currentState = 'collapsed';
         }
         panel.style.transition = 'transform 0.4s ease-out';
         panel.style.transform = `translateY(${targetY}px)`;
     }
-
     panelHandle.addEventListener('touchstart', (e) => {
         startY = e.touches[0].clientY;
         startHeight = panel.getBoundingClientRect().top;
-        panel.style.transition = 'none'; // Allow smooth dragging
+        panel.style.transition = 'none';
     });
-
     panelHandle.addEventListener('touchmove', (e) => {
         const currentY = e.touches[0].clientY;
         let deltaY = currentY - startY;
         let newTop = startHeight + deltaY;
-
-        // FIX: Update drag constraints to allow moving the panel higher.
-        const minTop = window.innerHeight - expandedHeight; // Top limit
-        const maxTop = window.innerHeight - collapsedHeight; // Bottom limit
+        const minTop = window.innerHeight - expandedHeight;
+        const maxTop = window.innerHeight - collapsedHeight;
         if (newTop < minTop) newTop = minTop;
         if (newTop > maxTop) newTop = maxTop;
-
         panel.style.transform = `translateY(${newTop}px)`;
     });
-
     panelHandle.addEventListener('touchend', (e) => {
         const endY = e.changedTouches[0].clientY;
         const deltaY = endY - startY;
-
         if (Math.abs(deltaY) > 100) {
-            if (deltaY < 0 && currentState === 'collapsed') {
-                setPanelState('expanded'); // Swiped up
-            } else if (deltaY > 0 && currentState === 'expanded') {
-                setPanelState('collapsed'); // Swiped down
-            }
+            if (deltaY < 0 && currentState === 'collapsed') setPanelState('expanded');
+            else if (deltaY > 0 && currentState === 'expanded') setPanelState('collapsed');
         } else {
             setPanelState(currentState);
         }
     });
-
     panelHandle.addEventListener('click', (e) => {
         if (e.detail > 0) {
              setPanelState(currentState === 'collapsed' ? 'expanded' : 'collapsed');
         }
     });
 
+    // --- OSM Address Formatting ---
+    function formatOsmName(item) {
+        const address = item.address || {};
+        let mainName = item.name || address.road || address.amenity || address.shop || address.building || address.tourism || address.historic;
+        if (!mainName) {
+            mainName = item.display_name.split(',')[0];
+        }
+        const secondaryName = address.suburb || address.neighbourhood || address.quarter || '';
+        return { main: mainName, secondary: secondaryName };
+    }
 
-    // --- The rest of the logic remains largely the same ---
+    // --- CUSTOM AUTOCOMPLETE IMPLEMENTATION ---
+    class CustomAutocomplete {
+        constructor(input, stationList) {
+            this.input = input;
+            this.stationList = stationList;
+            this.container = document.createElement('div');
+            this.container.className = 'autocomplete-suggestions';
+            this.input.parentNode.appendChild(this.container);
+
+            // --- DEBOUNCING AND RACE CONDITION FIX ---
+            this.debounceTimeout = null;
+            this.latestRequest = 0;
+
+            this.input.addEventListener('input', this.onInput.bind(this));
+            this.input.addEventListener('keydown', this.onKeyDown.bind(this));
+            document.addEventListener('click', this.onDocumentClick.bind(this));
+
+            this.currentSelection = -1;
+            this.currentSuggestions = [];
+        }
+
+        onInput() {
+            clearTimeout(this.debounceTimeout);
+            const query = this.input.value.trim();
+            if (query.length < 3) {
+                this.hide();
+                return;
+            }
+            this.debounceTimeout = setTimeout(() => {
+                this.fetchSuggestions(query);
+            }, 250);
+        }
+
+        async fetchSuggestions(query) {
+            const thisRequest = ++this.latestRequest;
+
+            const stationPromise = this.getStationSuggestions(query);
+            const osmPromise = this.getOSMSuggestions(query);
+
+            const [stationResults, osmResults] = await Promise.all([stationPromise, osmPromise]);
+
+            if (thisRequest !== this.latestRequest) {
+                return;
+            }
+
+            this.currentSuggestions = [...stationResults, ...osmResults];
+            this.renderSuggestions();
+        }
+
+        getStationSuggestions(query) {
+            const lowerCaseQuery = query.toLowerCase();
+            return this.stationList
+                .filter(station => station.label.toLowerCase().includes(lowerCaseQuery))
+                .slice(0, 3)
+                .map(station => ({
+                    type: 'station',
+                    name: station.label,
+                    lat: station.lat,
+                    lng: station.lng
+                }));
+        }
+
+        async getOSMSuggestions(query) {
+            try {
+                const params = new URLSearchParams({
+                    q: `${query}, Riyadh`,
+                    format: 'json',
+                    addressdetails: 1,
+                    limit: 4,
+                    viewbox: '46.2,25.2,47.2,24.2',
+                    bounded: 1
+                });
+                const response = await fetch(`${OSM_NOMINATIM_URL}?${params}`);
+                if (!response.ok) return [];
+                const data = await response.json();
+                return data.map(item => ({
+                    type: 'map',
+                    name: formatOsmName(item),
+                    lat: parseFloat(item.lat),
+                    lng: parseFloat(item.lon)
+                }));
+            } catch (error) {
+                console.error("OSM search failed:", error);
+                return [];
+            }
+        }
+
+        renderSuggestions() {
+            if (this.currentSuggestions.length === 0) {
+                this.hide();
+                return;
+            }
+            this.container.innerHTML = '';
+            this.currentSuggestions.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'suggestion-item';
+                div.dataset.index = index;
+                const prefix = item.type === 'station' ? 'Station' : 'Map';
+                const prefixColor = item.type === 'station' ? '#007bff' : '#28a745';
+                let contentHtml;
+                if (item.type === 'map') {
+                    contentHtml = `
+                        <div class="suggestion-text">
+                            <div class="suggestion-main">${item.name.main}</div>
+                            ${item.name.secondary ? `<div class="suggestion-secondary">${item.name.secondary}</div>` : ''}
+                        </div>
+                    `;
+                } else {
+                    contentHtml = `<div class="suggestion-text">${item.name}</div>`;
+                }
+                div.innerHTML = `
+                    <span class="suggestion-prefix" style="color: ${prefixColor};">[${prefix}]</span>
+                    ${contentHtml}
+                `;
+                div.addEventListener('click', () => this.selectItem(index));
+                this.container.appendChild(div);
+            });
+            this.currentSelection = -1;
+            this.show();
+        }
+
+        onKeyDown(e) {
+            if (!this.container.offsetParent) return;
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                this.currentSelection = Math.min(this.currentSelection + 1, this.currentSuggestions.length - 1);
+                this.updateSelectionHighlight();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                this.currentSelection = Math.max(this.currentSelection - 1, 0);
+                this.updateSelectionHighlight();
+            } else if (e.key === 'Enter' && this.currentSelection > -1) {
+                e.preventDefault();
+                this.selectItem(this.currentSelection);
+            } else if (e.key === 'Escape') {
+                this.hide();
+            }
+        }
+
+        updateSelectionHighlight() {
+            Array.from(this.container.children).forEach((el, i) => {
+                el.style.backgroundColor = i === this.currentSelection ? '#f0f0f0' : '';
+            });
+        }
+
+        selectItem(index) {
+            const item = this.currentSuggestions[index];
+            if (!item) return;
+            this.input.value = `${item.lat.toFixed(5)}, ${item.lng.toFixed(5)}`;
+            this.hide();
+        }
+
+        onDocumentClick(e) {
+            if (!this.input.contains(e.target) && !this.container.contains(e.target)) {
+                this.hide();
+            }
+        }
+
+        show() { this.container.style.display = 'block'; }
+        hide() { this.container.style.display = 'none'; }
+    }
 
     async function initializeAutocomplete() {
+        let stationList = [];
         try {
+            console.log("Fetching station list for autocomplete...");
             const response = await fetch(`${BACKEND_URL}/api/stations`);
             if (!response.ok) throw new Error(`Failed to fetch stations: ${response.status}`);
-            const stationList = await response.json();
-            new Awesomplete(document.getElementById('start-input'), { list: stationList, minChars: 1 });
-            new Awesomplete(document.getElementById('end-input'), { list: stationList, minChars: 1 });
+            stationList = await response.json();
+            console.log(`Successfully fetched ${stationList.length} stations.`);
         } catch (error) {
             console.error("Could not initialize autocomplete:", error);
         }
+        new CustomAutocomplete(startInput, stationList);
+        new CustomAutocomplete(endInput, stationList);
     }
 
+    // --- (The rest of the file is unchanged) ---
     function parseCoordinates(input) {
         const coordRegex = /^\s*(-?\d{1,3}(\.\d+)?)\s*,\s*(-?\d{1,3}(\.\d+)?)\s*$/;
         const match = input.match(coordRegex);
@@ -111,31 +270,23 @@ window.onload = async () => {
 
     async function handleFormSubmit(event) {
         event.preventDefault();
-        const start = document.getElementById('start-input').value;
-        const end = document.getElementById('end-input').value;
-
         setPanelState('expanded');
-
-        await fetchAndDisplayRoute(start, end);
+        await fetchAndDisplayRoute(startInput.value, endInput.value);
     }
 
     async function fetchAndDisplayRoute(start, end) {
         const detailsContainer = document.getElementById('route-details');
         detailsContainer.innerHTML = '<p>Searching for the best route...</p>';
-
         if (!start || !end) {
             detailsContainer.innerHTML = '<p style="color: orange;">Please enter both a start and end location.</p>';
             return;
         }
-
         const startCoords = parseCoordinates(start);
         const endCoords = parseCoordinates(end);
-
         let endpoint = '';
         let body = {};
-
         if (startCoords && endCoords) {
-            endpoint = `${BACKEND_URL}/route_by_coords`;
+            endpoint = `${BACKEND_URL}/route_from_coords`;
             body = {
                 start_lat: parseFloat(startCoords.lat.toFixed(13)),
                 start_lng: parseFloat(startCoords.lng.toFixed(13)),
@@ -149,28 +300,32 @@ window.onload = async () => {
             detailsContainer.innerHTML = '<p style="color: red;">Error: Mixed inputs are not supported.</p>';
             return;
         }
-
         try {
             const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             });
-            if (!response.ok) throw new Error(`Network response was not ok. Status: ${response.status}`);
-
             const data = await response.json();
+            if (!response.ok || data.error) {
+                const errorMessage = data.error || `An unknown error occurred (Status: ${response.status}).`;
+                throw new Error(errorMessage);
+            }
             displayRoute(data);
         } catch (error) {
             console.error("Failed to fetch route:", error);
-            detailsContainer.innerHTML = `<p style="color: red;">Error: Could not retrieve route.</p>`;
+            detailsContainer.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
         }
     }
 
     function displayRoute(data) {
-        // This function is identical to the one in app.js
         activeRouteLayers.clearLayers();
         const detailsContainer = document.getElementById('route-details');
         detailsContainer.innerHTML = '';
+        if (data.error) {
+            detailsContainer.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+            return;
+        }
         if (!data.routes || data.routes.length === 0) {
             detailsContainer.innerHTML = '<p>No routes found.</p>';
             return;
@@ -232,7 +387,61 @@ window.onload = async () => {
         if (allCoords.length > 0) map.fitBounds(L.latLngBounds(allCoords), { padding: [40, 40], paddingTop: 100 });
     }
 
+    const locationOverlay = document.getElementById('location-overlay');
+    const setOriginBtn = document.getElementById('overlay-set-origin');
+    const setDestinationBtn = document.getElementById('overlay-set-destination');
+    const cancelBtn = document.getElementById('overlay-cancel');
+    let clickedCoords = '';
+    function showLocationOverlay(coordString) {
+        clickedCoords = coordString;
+        locationOverlay.classList.add('visible');
+    }
+    function hideLocationOverlay() {
+        locationOverlay.classList.remove('visible');
+        clickedCoords = '';
+    }
+    map.on('click', function(e) {
+        const coordString = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
+        showLocationOverlay(coordString);
+    });
+    setOriginBtn.addEventListener('click', () => {
+        if (clickedCoords) startInput.value = clickedCoords;
+        hideLocationOverlay();
+    });
+    setDestinationBtn.addEventListener('click', () => {
+        if (clickedCoords) endInput.value = clickedCoords;
+        hideLocationOverlay();
+    });
+    cancelBtn.addEventListener('click', hideLocationOverlay);
+    locationOverlay.addEventListener('click', function(e) {
+        if (e.target === locationOverlay) hideLocationOverlay();
+    });
+
+    const useMyLocationBtn = document.getElementById('use-my-location');
+    function setLocationFromGPS() {
+        if (!navigator.geolocation) {
+            startInput.placeholder = "Geolocation is not supported";
+            return;
+        }
+        startInput.placeholder = "Finding your location...";
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                const coordString = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+                startInput.value = coordString;
+                startInput.placeholder = "Enter starting point";
+                map.setView([latitude, longitude], 13);
+            },
+            () => {
+                startInput.placeholder = "Could not get your location";
+                console.warn("Unable to retrieve location.");
+            }
+        );
+    }
+    useMyLocationBtn.addEventListener('click', setLocationFromGPS);
+
     // --- INITIAL PAGE LOAD ---
     routeForm.addEventListener('submit', handleFormSubmit);
     await initializeAutocomplete();
+    setLocationFromGPS();
 };

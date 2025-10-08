@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RPTPV2 Mobile</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" />
+    <!-- Awesomplete CSS is no longer needed -->
     <link rel="stylesheet" href="mobile.css">
 </head>
 <body>
     <div id="map"></div>
 
+    <!-- Main sliding panel for routing -->
     <div id="panel" class="panel">
         <div id="panel-handle" class="panel-handle">
             <div class="grabber"></div>
@@ -19,12 +20,15 @@
             <div class="form-container">
                 <form id="route-form">
                     <div class="input-group">
-                        <input type="text" id="start-input" class="awesomplete" placeholder="Enter starting point">
+                        <!-- Removed awesomplete class -->
+                        <input type="text" id="start-input" placeholder="Finding your location...">
                     </div>
                     <div class="input-group">
-                        <input type="text" id="end-input" class="awesomplete" placeholder="Enter destination">
+                        <!-- Removed awesomplete class -->
+                        <input type="text" id="end-input" placeholder="Enter destination">
                     </div>
                     <button type="submit">Find Route</button>
+                    <button type="button" id="use-my-location" class="secondary-button">Use My Location</button>
                 </form>
             </div>
             <div id="route-details">
@@ -33,8 +37,18 @@
         </div>
     </div>
 
+    <!-- Full-screen overlay for setting location -->
+    <div id="location-overlay" class="location-overlay">
+        <div class="location-panel">
+            <p>Set this location as...</p>
+            <button id="overlay-set-origin" class="location-button">Origin</button>
+            <button id="overlay-set-destination" class="location-button">Destination</button>
+            <button id="overlay-cancel" class="location-button cancel">Cancel</button>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
+    <!-- Awesomplete JS is no longer needed -->
     <script src="mobile.js"></script>
 </body>
 </html>

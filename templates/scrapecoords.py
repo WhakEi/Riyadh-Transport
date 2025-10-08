@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright
 from typing import Dict, Union
 
 # Configuration
-RPT_URL = "https://rpt.sa/en/web/guest/plan"
+RPT_URL = "https://sitprd.rpt.sa/en/web/guest/plan"
 INPUT_DELAY = 50  # Reduced keystroke delay
 TIMEOUT = 10000  # Reduced to 10 seconds
 HEADLESS = True
@@ -87,7 +87,7 @@ def main():
         os.makedirs('rpt_coordinates', exist_ok=True)
 
         try:
-            bus_files = [f for f in os.listdir() if f.startswith('bus_') and f.endswith('.json')]
+            bus_files = [f for f in os.listdir() if f.startswith('bus_23') and f.endswith('.json')]
 
             for bus_file in bus_files:
                 print(f"\nProcessing file: {bus_file}")

@@ -2,8 +2,8 @@ import json
 from pathlib import Path
 from typing import Dict, List, Set
 
-def validate_stations_with_fallback(exc_dir: str = "exc", 
-                                  geo_dir: str = "geocoded_stops",
+def validate_stations_with_fallback(exc_dir: str = "../exc",
+                                  geo_dir: str = "../geocoded_stops",
                                   fallback_name: str = "missing.json"):
     # Validate and load fallback data
     fallback_path = Path(geo_dir) / fallback_name

@@ -12,7 +12,7 @@ from datetime import datetime
 # Configuration
 os.environ["TESSDATA_PREFIX"] = "/usr/share/tessdata"
 pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
-DEVICE_ID = "emulator-5554"
+DEVICE_ID = "LHS7N19403000843"
 MAX_CONSECUTIVE_DUPLICATES = 3
 HASH_THRESHOLD = 10
 SWIPE_DURATION = 1000
@@ -34,7 +34,18 @@ def capture_screen():
         )
         with open(filename, "wb") as f:
             f.write(result.stdout)
-        return cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
+
+        img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
+        if img is None:
+            print(f"Failed to read image: {filename}")
+            return None
+
+        # Crop the image to remove status and navigation bars
+        # Original size: 1080x2340
+        # Crop y from 73 to 2184
+        cropped_img = img[73:2184, :]
+
+        return cropped_img
     except Exception as e:
         print(f"Capture error: {str(e)[:100]}")
         return None
