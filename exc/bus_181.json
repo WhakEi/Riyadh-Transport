@@ -1,5 +1,6 @@
 {
   "North Al-Mathar 603": [
+    "As-Sinaiyah 501",
     "Ad Dar 402",
     "Ad Dar 401",
     "Omar Bin Al Khatab 403",
@@ -29,7 +30,7 @@
     "North Al-Mathar 606",
     "North Al-Mathar 603"
   ],
-  "Ad Dar 302": [
+  "Railway Station": [
     "North Al-Mathar 503",
     "North Al-Mathar 504",
     "North Al-Mathar 506",
@@ -58,6 +59,7 @@
     "Omar Bin Al Khatab 303",
     "Shuaib Al Qayni 101",
     "Ad Dar 301",
-    "Ad Dar 302"
+    "Ad Dar 302",
+    "As-Sinaiyah 601"
   ]
 }

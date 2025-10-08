@@ -1,5 +1,6 @@
 {
   "Al Haeer 104": [
+    "National Museum C",
     "Al Batha 101",
     "Al Batha 102",
     "Al Batha 103",
@@ -13,7 +14,7 @@
     "Al Haeer 102",
     "Al Haeer 104"
   ],
-  "Al Batha 201": [
+  "National Museum": [
     "Al Haeer 204",
     "Al Haeer 203",
     "Al Haeer 201",
@@ -25,6 +26,7 @@
     "Al Batha 204",
     "Al Batha 203",
     "Al Batha 202",
-    "Al Batha 201"
+    "Al Batha 201",
+    "National Museum G"
   ]
 }
