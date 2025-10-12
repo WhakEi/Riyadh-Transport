@@ -23,14 +23,14 @@ body, html {
 #panel {
     position: absolute;
     top: 20px;
-    left: 20px;
+    right: 20px; /* UPDATED: Changed from left to right */
     width: 380px;
     max-height: calc(100% - 40px);
     background: var(--background-color);
     border-radius: var(--border-radius);
     box-shadow: var(--panel-shadow);
     z-index: 1000;
-    display: flex; /* This makes #panel a flex container */
+    display: flex;
     flex-direction: column;
     transition: transform 0.3s ease-in-out;
 }
@@ -114,7 +114,8 @@ body, html {
 
 .station-icon {
     font-size: 24px;
-    margin-right: 16px;
+    margin-left: 16px;
+    margin-right: 0;
     width: 30px;
     text-align: center;
     flex-shrink: 0;
@@ -209,7 +210,8 @@ body, html {
 .suggestion-prefix {
     font-weight: 600;
     font-size: 0.9em;
-    margin-right: 10px;
+    margin-left: 10px;
+    margin-right: 0px;
     flex-shrink: 0;
 }
 
@@ -511,7 +513,8 @@ body, html {
     border: none;
     cursor: pointer;
     padding: 0;
-    margin-right: 15px;
+    margin-left: 15px;
+    margin-right: 0;
     color: #5f6368;
     margin-top: 4px; /* Align with badge */
 }
@@ -600,6 +603,7 @@ body, html {
     content: '●';
     color: #ccc;
     font-size: 12px;
+    margin-left: 8px; /* arabic layout*/
 }
 
 .direction-option {

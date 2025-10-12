@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -12,7 +12,7 @@
 
     <!-- Settings Button -->
     <div class="leaflet-control-container">
-        <div class="leaflet-top leaflet-right">
+        <div class="leaflet-top leaflet-left">
             <div class="leaflet-control">
                 <button id="settings-btn" class="settings-button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -27,9 +27,9 @@
             <!-- Main View with Tabs -->
             <div id="panel-main-view">
                 <nav class="tab-nav">
-                    <button id="route-tab" class="tab-button active">Route</button>
-                    <button id="stations-tab" class="tab-button">Stations</button>
-                    <button id="lines-tab" class="tab-button">Lines</button> <!-- NEW -->
+                    <button id="route-tab" class="tab-button active">البحث عن مسار</button>
+                    <button id="stations-tab" class="tab-button">محطات</button>
+                    <button id="lines-tab" class="tab-button">المسارات</button> <!-- NEW -->
                 </nav>
                 <div id="tab-content">
                     <div id="route-content" class="tab-pane active">
@@ -39,11 +39,11 @@
                                 <div class="input-group"><input type="text" id="end-input" placeholder="Enter destination"></div>
                                 <button type="submit" class="button-with-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                                    <span>Find Route</span>
+                                    <span>أبحث عن طريق</span>
                                 </button>
                                 <button type="button" id="use-my-location" class="secondary-button button-with-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                    <span>Use My Location</span>
+                                    <span>إستخدم موقعي</span>
                                 </button>
                             </form>
                         </div>
@@ -67,7 +67,7 @@
                     <button id="station-detail-back-btn" class="back-button">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                     </button>
-                    <h3 id="station-detail-name">Station Name</h3>
+                    <h3 id="station-detail-name">إسم محطة</h3>
                 </div>
                 <div id="station-detail-content" class="detail-content"></div>
             </div>
@@ -87,18 +87,18 @@
     <!-- Location Selection Overlay -->
     <div id="location-overlay" class="bottom-overlay">
         <div class="bottom-panel">
-            <p>Set this location as...</p>
-            <button id="overlay-set-origin" class="bottom-panel-button">Origin</button>
-            <button id="overlay-set-destination" class="bottom-panel-button">Destination</button>
-            <button id="overlay-set-stations" class="bottom-panel-button">Stations Nearby</button>
-            <button id="overlay-cancel" class="bottom-panel-button cancel">Cancel</button>
+            <p>عين هذا الموقك كـ...</p>
+            <button id="overlay-set-origin" class="bottom-panel-button">أصل</button>
+            <button id="overlay-set-destination" class="bottom-panel-button">وجهة</button>
+            <button id="overlay-set-stations" class="bottom-panel-button">أبحث عن محطات قريبة</button>
+            <button id="overlay-cancel" class="bottom-panel-button cancel">إلغاء</button>
         </div>
     </div>
 
     <!-- NEW Direction Selection Overlay -->
     <div id="direction-overlay" class="bottom-overlay">
         <div id="direction-panel" class="bottom-panel">
-            <p>Select Direction</p>
+            <p>إختر إتجاه</p>
             <!-- Options will be populated by JS -->
             <button id="direction-cancel" class="bottom-panel-button cancel">Cancel</button>
         </div>
@@ -109,24 +109,24 @@
         <div class="settings-panel">
             <h3>Settings</h3>
             <div class="settings-group">
-                <label for="language-select">Language</label>
+                <label for="language-select">اللغة</label>
                 <select id="language-select">
-                    <option value="en">English</option>
-                    <option value="ar">Arabic</option>
+                    <option value="en">إنجليزية (English)</option>
+                    <option value="ar" selected>العربية</option>
                 </select>
             </div>
             <div class="settings-group">
-                <label for="layout-select">Layout</label>
+                <label for="layout-select">النمط</label>
                 <select id="layout-select">
-                    <option value="desktop">Desktop</option>
-                    <option value="mobile" selected>Mobile</option>
-                    <option value="legacy">Legacy</option>
+                    <option value="desktop">حاسوب</option>
+                    <option value="mobile" selected>هاتف</option>
                 </select>
             </div>
             <div class="settings-info">
-                <p>Welcome to the second release of RPTP (This name could change in the future). This is a project that plans on making transporting in Riyadh easier. Keep in mind this is an early release so we don't recommend fully relying on this (for now at least)</p>
+                <p>السلام عليكم ورحمة الله وبراكاته
+                مرحبًا بكم في الإصدار الثاني من RPTP. هذا مشروع يهدف إلى تسهيل التنقل في الرياض. يرجى ملاحظة أن هذا إصدار مبكر، لذا لا ننصح بالاعتماد عليه بشكل كامل حاليا.</p>
             </div>
-            <button id="settings-close-btn" class="settings-close-button">Close</button>
+            <button id="settings-close-btn" class="settings-close-button">إغلاق</button>
         </div>
     </div>
 

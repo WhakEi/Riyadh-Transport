@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riyadh Public Transport Planner</title>
+    <subtitle>⚠️ ATTENTION: This version is no longer supported with updates and is only a fallback site to use in case the main site is not functioning. While this version is functional, it is very barebones, we recommend <a href="/index.html">returning to the main site</a>.</subtitle>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <style>
@@ -150,7 +151,7 @@
         let stationData = {};
 
         function initAutocomplete() {
-    $.get('/api/stations', function(stations) {
+    $.get('http://localhost:5000/api/stations', function(stations) {
         // Populate station data
         stations.forEach(station => {
             stationData[station.value] = {
@@ -272,7 +273,7 @@ function parseCoordinate(input) {
             if (!startIsCoordinate && !endIsCoordinate) {
                 // Both are stations: use /route
                 try {
-                    const response = await fetch('/route', {
+                    const response = await fetch('http://localhost:5000/route', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ start: startStationName, end: endStationName })

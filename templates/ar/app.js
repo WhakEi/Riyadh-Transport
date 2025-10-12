@@ -1,4 +1,5 @@
 // --- CONFIGURATION ---
+const BACKEND_URL = 'http://mainserver.inirl.net:5001';
 const OSM_NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
 
 window.onload = async () => {
@@ -66,16 +67,16 @@ window.onload = async () => {
 
     function setLocationFromGPS() {
         if (!navigator.geolocation) {
-            startInput.placeholder = "Geolocation is not supported";
+            startInput.placeholder = "تقنية GPS ليست مدعومة على هذا النظام";
             return;
         }
-        startInput.placeholder = "Finding your location...";
+        startInput.placeholder = "جاري البحث على موقعك...";
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
                 const coordString = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
                 startInput.value = coordString;
-                startInput.placeholder = "Enter starting point";
+                startInput.placeholder = "من إين ستغادر؟";
                 map.setView([latitude, longitude], 13);
                 currentStationsLatLng = { lat: latitude, lng: longitude };
                 if (stationsTab.classList.contains('active')) {
@@ -83,7 +84,7 @@ window.onload = async () => {
                 }
             },
             () => {
-                startInput.placeholder = "Could not get your location";
+                startInput.placeholder = "فشل الحصول على موقعك";
                 console.warn("Unable to retrieve location.");
             }
         );
@@ -95,25 +96,25 @@ window.onload = async () => {
     async function fetchNearbyStations() {
         if (!currentStationsLatLng) {
             const stationsList = document.getElementById('stations-list');
-            stationsList.innerHTML = '<p>Use the "My Location" button or click on the map to set a point to search for nearby stations.</p>';
+            stationsList.innerHTML = '<p>اضغط على زر "إستخدم موقعي" أو إختر موقعاً على الخريطة للحصول على محطات قريبة.</p>';
             return;
         }
 
         const stationsList = document.getElementById('stations-list');
-        stationsList.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Finding nearby stations...</p></div>`;
+        stationsList.innerHTML = `<div class="loader-container"><div class="loader"></div><p>جاري البحث على محطات قريبة...</p></div>`;
 
         try {
-            const response = await fetch(`/nearbystations`, {
+            const response = await fetch(`${BACKEND_URL}/nearbystations`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(currentStationsLatLng)
             });
-            if (!response.ok) throw new Error(`Failed to fetch stations: ${response.status}`);
+            if (!response.ok) throw new Error(`تعذر الحصول على محطات: ${response.status}`);
             stationsData = await response.json();
             displayStations(stationsData);
         } catch (error) {
             console.error("Failed to fetch nearby stations:", error);
-            stationsList.innerHTML = '<p style="color: red;">Error loading nearby stations.</p>';
+            stationsList.innerHTML = '<p style="color: red;">حدث خطأ أثناء تحميل المحطات.</p>';
         }
     }
 
@@ -124,89 +125,107 @@ window.onload = async () => {
         stationMarkersLayer.clearLayers();
 
         if (!data || data.length === 0) {
-            stationsList.innerHTML = '<p>No nearby stations found within 1.5 km.</p>';
+            stationsList.innerHTML = '<p>لا يوجد محطات تبعد أقل من 1.5 كيلومتر</p>';
             return;
         }
 
         const stationCoords = [];
 
         data.forEach(station => {
+            // CORRECTED: Match `station.name` from `/nearbystations` with `s.name` from `/api/stations`
             const fullStation = allStations.find(s => s.label === station.name);
-            if (!fullStation) return;
+            if (!fullStation) {
+                console.warn(`Could not find coordinates for station: ${station.name}`);
+                return; // Skip if no coords found
+            }
 
             const { lat, lng } = fullStation;
             stationCoords.push([lat, lng]);
 
             const stationDiv = document.createElement('div');
             stationDiv.className = 'station-item';
+            // CORRECTED: Use Math.round on duration, not duration/60, as API gives seconds.
             stationDiv.innerHTML = `
                 <div class="station-icon">${station.type === 'bus' ? '🚌' : '🚇'}</div>
                 <div class="station-details">
                     <h4>${station.name}</h4>
-                    <p>${Math.round(station.distance)} m away</p>
-                    <p>${Math.round(station.duration / 60)} min walk</p>
+                    <p>تبعد ${Math.round(station.distance)} متراً</p>
+                    <p>${Math.round(station.duration / 60)} دقيقة مشياً</p>
                 </div>
             `;
 
             const marker = L.marker([lat, lng]).addTo(stationMarkersLayer);
-            marker.bindPopup(`<b>${station.name}</b><br>${Math.round(station.distance)}m away`);
+            marker.bindPopup(`<b>${station.name}</b><br>تبعد ${Math.round(station.distance)} متراً`);
 
+            // CORRECTED: A single, clean handler for both list items and markers.
             const handleStationClick = () => {
+                // Highlight the corresponding item in the list
                 document.querySelectorAll('.station-item').forEach(el => el.classList.remove('highlight'));
                 stationDiv.classList.add('highlight');
                 stationDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                // Pan map and open popup
                 map.setView([lat, lng], 16);
                 marker.openPopup();
+
+                // Show the station detail view, which triggers the API call
                 showStationDetails(station);
             };
 
+            // Assign the single, correct handler to both elements
             stationDiv.addEventListener('click', handleStationClick);
             marker.on('click', handleStationClick);
+
             stationsList.appendChild(stationDiv);
         });
 
-        if (currentStationsLatLng) stationCoords.push([currentStationsLatLng.lat, currentStationsLatLng.lng]);
-        if (stationCoords.length > 0) map.fitBounds(L.latLngBounds(stationCoords), { padding: [50, 50] });
+        if (currentStationsLatLng) {
+            stationCoords.push([currentStationsLatLng.lat, currentStationsLatLng.lng]);
+        }
+
+        if (stationCoords.length > 0) {
+            map.fitBounds(L.latLngBounds(stationCoords), { padding: [50, 50] });
+        }
     }
 
+    // --- STATION DETAIL VIEW LOGIC ---
     async function showStationDetails(station, fromView) {
-        previousView = fromView; // UPDATED: Set the previous view
-        hideAllViews();
-        stationDetailView.classList.remove('hidden');
+        previousView = fromView; // Set where we came from
+        showView(stationDetailView); // Use showView to hide others
 
         const stationDetailName = document.getElementById('station-detail-name');
         const stationDetailContent = document.getElementById('station-detail-content');
 
         stationDetailName.textContent = station.name;
-        stationDetailContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading lines...</p></div>`;
+        stationDetailContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p>جاري تحميل المسارات...</p></div>`;
 
         const cleanedStationName = station.name.replace(/\s*\((Bus|Metro)\)$/, '').trim();
 
         try {
-            const response = await fetch(`/searchstation`, {
+            const response = await fetch(`${BACKEND_URL}/searchstation`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ station_name: cleanedStationName })
             });
+
             if (!response.ok) throw new Error(`API error: ${response.status}`);
             const data = await response.json();
             renderStationLines(data);
         } catch (error) {
             console.error("Failed to fetch station details:", error);
-            stationDetailContent.innerHTML = '<p style="color: red;">Could not load station details.</p>';
+            stationDetailContent.innerHTML = '<p style="color: red;">فشل تحميل معلومات عن المحطات.</p>';
         }
     }
 
-
- // --- NEW/UPDATED: LINES TAB LOGIC ---
+     // --- NEW/UPDATED: LINES TAB LOGIC ---
     async function fetchAllLines() {
         const linesList = document.getElementById('lines-list');
         linesList.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading all lines...</p></div>`;
 
         try {
             const [metroLinesRes, busLinesRes] = await Promise.all([
-                fetch(`/mtrlines`),
-                fetch(`/buslines`)
+                fetch(`${BACKEND_URL}/mtrlines`),
+                fetch(`${BACKEND_URL}/buslines`)
             ]);
             const metroLinesData = await metroLinesRes.json();
             const busLinesData = await busLinesRes.json();
@@ -214,13 +233,13 @@ window.onload = async () => {
             const busLineNumbers = busLinesData.lines.split(',');
 
             const metroPromises = metroLineNumbers.map(line =>
-                fetch(`/viewmtr`, {
+                fetch(`${BACKEND_URL}/viewmtr`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ line })
                 }).then(res => res.json()).then(data => ({ type: 'metro', line, data }))
             );
 
             const busPromises = busLineNumbers.map(line =>
-                fetch(`/viewbus`, {
+                fetch(`${BACKEND_URL}/viewbus`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ line })
                 }).then(res => res.json()).then(data => ({ type: 'bus', line, data }))
             );
@@ -233,7 +252,7 @@ window.onload = async () => {
                     terminus = `${data.stations[0]} - ${data.stations[data.stations.length - 1]}`;
                 } else if (type === 'bus') {
                     const keys = Object.keys(data);
-                    if (keys.length === 1) terminus = `${keys[0]} Ring`;
+                    if (keys.length === 1) terminus = `المسار الدائري ${keys[0]}`;
                     else if (keys.length > 1) terminus = `${keys[1]} - ${keys[0]}`;
                 }
                 return { type, line, terminus };
@@ -251,7 +270,7 @@ window.onload = async () => {
             renderLinesList(allLinesData);
         } catch (error) {
             console.error("Failed to fetch all lines:", error);
-            linesList.innerHTML = '<p style="color: red;">Error loading lines.</p>';
+            linesList.innerHTML = '<p style="color: red;">حدث خطأ أثناء تحميل المسارات.</p>';
         }
     }
 
@@ -259,7 +278,7 @@ window.onload = async () => {
         const linesList = document.getElementById('lines-list');
         linesList.innerHTML = '';
         if (!lines || lines.length === 0) {
-            linesList.innerHTML = '<p>No lines found.</p>';
+            linesList.innerHTML = '<p>فشل الحصول على مسارات.</p>';
             return;
         }
 
@@ -296,7 +315,7 @@ window.onload = async () => {
         renderLinesList(filteredLines);
     });
     const lineColors = {
-        metro: { 'Blue Line': '#00aee6', 'Red Line': '#ef4938', 'Orange Line': '#f68d39', 'Yellow Line': '#ffd10a', 'Green Line': '#37b23f', 'Purple Line': '#984b9d', '1': '#00aee6', '2': '#ef4938', '3': '#f68d39', '4': '#ffd10a', '5': '#37b23f', '6': '#984b9d'  },
+        metro: { 'المسار الأزرق': '#00aee6', 'المسار الأحمر': '#ef4938', 'المسار البرتقالي': '#f68d39', 'المسار الأصفر': '#ffd10a', 'المسار الأخضر': '#37b23f', 'المسار البتفسجي': '#984b9d', '1': '#00aee6', '2': '#ef4938', '3': '#f68d39', '4': '#ffd10a', '5': '#37b23f', '6': '#984b9d'  },
         bus: '#18a034',
         walk: '#6c757d',
         default: '#555'
@@ -305,6 +324,10 @@ window.onload = async () => {
     // --- BACK BUTTONS AND VIEW MANAGEMENT ---
     function hideAllViews() {
         [panelMainView, stationDetailView, lineDetailView, directionSelectionView].forEach(v => v.classList.add('hidden'));
+    }
+    function showView(viewToShow) {
+        hideAllViews();
+        viewToShow.classList.remove('hidden');
     }
 
     function showMainPanel() {
@@ -321,7 +344,7 @@ window.onload = async () => {
 
     // --- NEW: LINE DETAIL LOGIC ---
     function handleLineClick(line) {
-        const isRingRoute = line.terminus.endsWith('Ring');
+        const isRingRoute = line.terminus.startsWith('المسار الدائري ');
 
         if (!isRingRoute) {
             showDirectionSelection(line);
@@ -344,8 +367,8 @@ window.onload = async () => {
 
 
         content.innerHTML = `
-            <button class="direction-option" data-direction-key="${forwardKey}">${start} → ${end}</button>
-            <button class="direction-option" data-direction-key="${backwardKey}">${end} → ${start}</button>
+            <button class="direction-option" data-direction-key="${forwardKey}">${start} ← ${end}</button>
+            <button class="direction-option" data-direction-key="${backwardKey}">${end} ← ${start}</button>
         `;
 
         content.querySelectorAll('.direction-option').forEach(button => {
@@ -385,12 +408,12 @@ window.onload = async () => {
 
         try {
             const endpoint = line.type === 'metro' ? '/viewmtr' : '/viewbus';
-            const response = await fetch(`${endpoint}`, {
+            const response = await fetch(`${BACKEND_URL}${endpoint}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ line: line.line })
             });
-            if (!response.ok) throw new Error('Failed to fetch line data');
+            if (!response.ok) throw new Error('فشل الحصول على بيانات المسار');
             const data = await response.json();
 
             let stationNames;
@@ -408,7 +431,7 @@ window.onload = async () => {
 
         } catch (error) {
             console.error("Failed to load line details:", error);
-            lineDetailContent.innerHTML = '<p style="color: red;">Could not load line details.</p>';
+            lineDetailContent.innerHTML = '<p style="color: red;">فشل تحميل تفاصيل المسار.</p>';
         }
     }
 
@@ -487,7 +510,7 @@ window.onload = async () => {
         if (data.metro_lines && data.metro_lines.length > 0) {
             const metroContainer = document.createElement('div');
             metroContainer.className = 'line-list-container';
-            metroContainer.innerHTML = `<h4>🚇 Metro Lines</h4>`;
+            metroContainer.innerHTML = `<h4>🚇 مسارات قطار</h4>`;
             const metroGrid = document.createElement('div');
             metroGrid.className = 'line-grid';
             data.metro_lines.forEach(line => {
@@ -504,7 +527,7 @@ window.onload = async () => {
         if (data.bus_lines && data.bus_lines.length > 0) {
             const busContainer = document.createElement('div');
             busContainer.className = 'line-list-container';
-            busContainer.innerHTML = `<h4>🚌 Bus Lines</h4>`;
+            busContainer.innerHTML = `<h4>🚌 مسارات حافلات</h4>`;
             const busGrid = document.createElement('div');
             busGrid.className = 'line-grid';
             data.bus_lines.forEach(line => {
@@ -519,7 +542,7 @@ window.onload = async () => {
         }
 
         if ((!data.metro_lines || data.metro_lines.length === 0) && (!data.bus_lines || data.bus_lines.length === 0)) {
-            stationDetailContent.innerHTML = '<p>No lines found for this station.</p>';
+            stationDetailContent.innerHTML = '<p>لا يوجد مسارات لهذه المحطة.</p>';
         }
     }
 
@@ -727,8 +750,8 @@ window.onload = async () => {
 
     async function initializeAutocomplete() {
         try {
-            const response = await fetch(`/api/stations`);
-            if (!response.ok) throw new Error(`Failed to fetch stations: ${response.status}`);
+            const response = await fetch(`${BACKEND_URL}/api/stations`);
+            if (!response.ok) throw new Error(`فشل الحصول على المحطات: ${response.status}`);
             allStations = await response.json();
         } catch (error) {
             console.error("Could not initialize autocomplete:", error);
@@ -775,10 +798,10 @@ window.onload = async () => {
 
         findRouteBtn.style.display = 'none';
         useMyLocationBtn.style.display = 'none';
-        detailsContainer.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Searching for the best route...</p></div>`;
+        detailsContainer.innerHTML = `<div class="loader-container"><div class="loader"></div><p>نعمل على إيجاد أفضل مسار لك...</p></div>`;
 
         if (!start || !end) {
-            detailsContainer.innerHTML = '<p style="color: orange;">Please enter both a start and end location.</p>';
+            detailsContainer.innerHTML = '<p style="color: orange;">الرجاء إدخال الأصل والوجهة.</p>';
             findRouteBtn.style.display = 'block';
             useMyLocationBtn.style.display = 'block';
             return;
@@ -789,13 +812,13 @@ window.onload = async () => {
         let endpoint = '', body = {};
 
         if (startCoords && endCoords) {
-            endpoint = `/route_from_coords`;
+            endpoint = `${BACKEND_URL}/route_from_coords`;
             body = { start_lat: startCoords.lat, start_lng: startCoords.lng, end_lat: endCoords.lat, end_lng: endCoords.lng };
         } else if (!startCoords && !endCoords) {
-            endpoint = `/route`;
+            endpoint = `${BACKEND_URL}/route`;
             body = { start, end };
         } else {
-            detailsContainer.innerHTML = '<p style="color: red;">Error: Please use either two station names or two sets of coordinates. Mixed inputs are not supported.</p>';
+            detailsContainer.innerHTML = '<p style="color: red;">خطأ: يرجى استخدام اسمي محطتين أو مجموعتين من الإحداثيات. لا يتم دعم المدخلات المختلطة.</p>';
             findRouteBtn.style.display = 'block';
             useMyLocationBtn.style.display = 'block';
             return;
@@ -807,7 +830,7 @@ window.onload = async () => {
             if (!response.ok || data.error) throw new Error(data.error || `An unknown error occurred (Status: ${response.status}).`);
             displayRoute(data);
         } catch (error) {
-            console.error("Failed to fetch route:", error);
+            console.error("فشل العثور على طريق:", error);
             detailsContainer.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
         } finally {
             findRouteBtn.style.display = 'block';
@@ -829,7 +852,7 @@ window.onload = async () => {
         const allCoords = [];
         const summaryDiv = document.createElement('div');
         summaryDiv.className = 'route-summary';
-        summaryDiv.innerHTML = `<p>${Math.round(route.total_time / 60)} min</p><span>Total journey time.</span>`;
+        summaryDiv.innerHTML = `<p>${Math.round(route.total_time / 60)} دقيقة</p><span>إجمالي مدة الرحلة</span>`;
         detailsContainer.appendChild(summaryDiv);
 
         route.segments.forEach((segment) => {
@@ -854,21 +877,21 @@ window.onload = async () => {
             let instructionTitle = '', instructionDetails = '', endPointName = '';
 
             if (segment.type === 'walk') {
-                endPointName = segment.to || "your destination";
-                instructionTitle = `Walk to ${endPointName}`;
-                instructionDetails = `${durationMins} min (${Math.round(segment.distance || 0)} m)`;
+                endPointName = segment.to || "وجهتك";
+                instructionTitle = `إمشي إلى ${endPointName}`;
+                instructionDetails = `${durationMins} دقيقة (${Math.round(segment.distance || 0)} متر)`;
             } else {
                 if (segment.type === "metro") {
-                    instructionTitle = `Take the ${segment.line}`;
+                    instructionTitle = `إتجه على متن ${segment.line}`;
                 }
                 else {
-                    instructionTitle = `Take ${segment.type.charAt(0).toUpperCase() + segment.type.slice(1)} Line ${segment.line}`;
+                    instructionTitle = `إتجه على متن حافلة رقم ${segment.line}`;
                 }
                 endPointName = segment.stations && segment.stations.length > 0 ? segment.stations[segment.stations.length - 1] : "next stop";
-                const stopsText = segment.stations && segment.stations.length > 1 ? `&bull; ${segment.stations.length - 1} stops` : '';
-                instructionDetails = `${durationMins} min ${stopsText}`;
+                const stopsText = segment.stations && segment.stations.length > 1 ? `&bull; ${segment.stations.length - 1} محطة` : '';
+                instructionDetails = `${durationMins} دقيقة ${stopsText}`;
             }
-            instructionDiv.innerHTML = `<div class="instruction-icon">${style.icon}</div><div class="instruction-details"><h3>${instructionTitle}</h3><p>${instructionDetails}</p>${segment.type !== 'walk' ? `<p>Disembark at ${endPointName}</p>` : ''}</div>`;
+            instructionDiv.innerHTML = `<div class="instruction-icon">${style.icon}</div><div class="instruction-details"><h3>${instructionTitle}</h3><p>${instructionDetails}</p>${segment.type !== 'walk' ? `<p>إنزل عند محطة ${endPointName}</p>` : ''}</div>`;
             detailsContainer.appendChild(instructionDiv);
         });
 
@@ -899,7 +922,7 @@ window.onload = async () => {
     map.on('click', function(e) {
         const coordString = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
         const popupContent = document.createElement('div');
-        popupContent.innerHTML = `<div style="text-align: center;"><strong>Set Location</strong><br><small>${coordString}</small><div style="margin-top: 8px;"><button id="popup-set-origin" class="popup-button">Set as Origin</button><button id="popup-set-destination" class="popup-button">Set as Destination</button><button id="popup-set-stations" class="popup-button">Stations nearby</button></div></div>`;
+        popupContent.innerHTML = `<div style="text-align: center;"><strong>موقع على الخريطة</strong><br><small>${coordString}</small><div style="margin-top: 8px;"><button id="popup-set-origin" class="popup-button">تعيين كأصل</button><button id="popup-set-destination" class="popup-button">تعيين كوجهة</button><button id="popup-set-stations" class="popup-button">محطات قريبة</button></div></div>`;
         L.DomEvent.on(popupContent.querySelector('#popup-set-origin'), 'click', () => { startInput.value = coordString; map.closePopup(); });
         L.DomEvent.on(popupContent.querySelector('#popup-set-destination'), 'click', () => { endInput.value = coordString; map.closePopup(); });
         L.DomEvent.on(popupContent.querySelector('#popup-set-stations'), 'click', () => {
