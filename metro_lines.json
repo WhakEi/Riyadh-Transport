@@ -3,36 +3,48 @@
     "line_number": "1",
     "source": "SAB Bank",
     "destination": "Ad Dar Al Baida",
+    "name": "Blue Line",
+    "name_ar": "المسار الأزرق",
     "details_url": "https://rpt.sa/en/routedetails/tags/02001?dir=H"
   },
   {
     "line_number": "2",
     "source": "King Saud University",
     "destination": "King Fahad Sport City",
+    "name": "Red Line",
+    "name_ar": "المسار الأحمر",
     "details_url": "https://rpt.sa/en/routedetails/tags/02002?dir=H"
   },
   {
     "line_number": "3",
     "source": "Jeddah Road",
     "destination": "Khashm Al An",
+    "name": "Orange Line",
+    "name_ar": "المسار البرتقالي",
     "details_url": "https://rpt.sa/en/routedetails/tags/02003?dir=H"
   },
   {
     "line_number": "4",
     "source": "Airport T1-2",
     "destination": "KAFD",
+    "name": "Yellow Line",
+    "name_ar": "المسار الأصفر",
     "details_url": "https://rpt.sa/en/routedetails/tags/02004?dir=H"
   },
   {
     "line_number": "5",
     "source": "Ministry of Education",
     "destination": "National Museum",
+    "name": "Green Line",
+    "name_ar": "المسار اﻷخضر",
     "details_url": "https://rpt.sa/en/routedetails/tags/02005?dir=H"
   },
   {
     "line_number": "6",
     "source": "KAFD",
     "destination": "An Naseem",
+    "name": "Purple Line",
+    "name_ar": "المسار البنفسجي",
     "details_url": "https://rpt.sa/en/routedetails/tags/02006?dir=H"
   }
 ]

@@ -1,6 +1,7 @@
 [
   {
     "name": "Jeddah Road",
+    "name_ar": "طريق جده",
     "button_url": "https://rpt.sa/plan?destinationLat=24.5915048851537&destinationLng=46.5434755746682&destinationName=Jeddah%20Road",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001077",
     "latitude": "24.5915048851537",
@@ -8,6 +9,7 @@
   },
   {
     "name": "Tuwaiq",
+    "name_ar": "طويق",
     "button_url": "https://rpt.sa/plan?destinationLat=24.5854683206364&destinationLng=46.5596991487016&destinationName=Tuwaiq",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001078",
     "latitude": "24.5854683206364",
@@ -15,6 +17,7 @@
   },
   {
     "name": "Ad Douh",
+    "name_ar": "الدوح",
     "button_url": "https://rpt.sa/plan?destinationLat=24.5825438721612&destinationLng=46.5883823557276&destinationName=Ad%20Douh",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001079",
     "latitude": "24.5825438721612",
@@ -22,6 +25,7 @@
   },
   {
     "name": "Western Station",
+    "name_ar": "المحطة الغربية",
     "button_url": null,
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001080",
     "latitude": "24.58201689833443",
@@ -29,6 +33,7 @@
   },
   {
     "name": "Aishah bint Abi Bakr Street",
+    "name_ar": "شارع عائشة بنت أبي بكر",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6005632700693&destinationLng=46.6437994256126&destinationName=Aishah%20bint%20Abi%20Bakr%20Street",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001081",
     "latitude": "24.6005632700693",
@@ -36,6 +41,7 @@
   },
   {
     "name": "Dhahrat Al Badiah",
+    "name_ar": "ظهرة البديعة",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6067297846024&destinationLng=46.6539324220189&destinationName=Dhahrat%20Al%20Badiah",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001082",
     "latitude": "24.6067297846024",
@@ -43,6 +49,7 @@
   },
   {
     "name": "Sultanah",
+    "name_ar": "سلطانة",
     "button_url": null,
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001083",
     "latitude": "24.615012618486638",
@@ -50,6 +57,7 @@
   },
   {
     "name": "Al Jarradiyah",
+    "name_ar": "الجرادية",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6182534095198&destinationLng=46.6974108817763&destinationName=Al%20Jarradiyah",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001084",
     "latitude": "24.6182534095198",
@@ -57,6 +65,7 @@
   },
   {
     "name": "Courts Complex",
+    "name_ar": "مجمع المحاكم",
     "button_url": null,
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001085",
     "latitude": "24.626738218462982",
@@ -64,6 +73,7 @@
   },
   {
     "name": "Qasr Al Hokm",
+    "name_ar": "قصر الحكم",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6289103881024&destinationLng=46.7162395701341&destinationName=Qasr%20Al%20Hokm",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000429",
     "latitude": "24.6289103881024",
@@ -71,6 +81,7 @@
   },
   {
     "name": "Al Hilla",
+    "name_ar": "الحلة",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6322502043489&destinationLng=46.7218809901192&destinationName=Al%20Hilla",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001087",
     "latitude": "24.6322502043489",
@@ -78,6 +89,7 @@
   },
   {
     "name": "Al Margab",
+    "name_ar": "المرقب",
     "button_url": null,
     "station_details_url": "https://rpt.sa/stationdetails/tags/",
     "latitude": "24.63458488432367",
@@ -85,6 +97,7 @@
   },
   {
     "name": "As Salhiyah",
+    "name_ar": "الصالحية",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6377619308035&destinationLng=46.7329123018097&destinationName=As%20Salhiyah",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001088",
     "latitude": "24.6377619308035",
@@ -92,6 +105,7 @@
   },
   {
     "name": "First Industrial City",
+    "name_ar": "المدينة الصناعية الأولى",
     "button_url": "https://rpt.sa/plan?destinationLat=24.645192169723&destinationLng=46.7394161044676&destinationName=First%20Industrial%20City",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001089",
     "latitude": "24.645192169723",
@@ -99,6 +113,7 @@
   },
   {
     "name": "Railway",
+    "name_ar": "سكة الحديد",
     "button_url": null,
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001090",
     "latitude": "24.649426738694675",
@@ -106,6 +121,7 @@
   },
   {
     "name": "Al Malaz",
+    "name_ar": "الملز",
     "button_url": null,
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001091",
     "latitude": "24.661455010201916",
@@ -113,6 +129,7 @@
   },
   {
     "name": "Jarir District",
+    "name_ar": "حي جرير",
     "button_url": null,
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001092",
     "latitude": "24.673222348599285",
@@ -120,6 +137,7 @@
   },
   {
     "name": "Al Rajhi Grand Mosque",
+    "name_ar": "جامع الراجحي",
     "button_url": null,
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001093",
     "latitude": "24.680153983940578",
@@ -127,6 +145,7 @@
   },
   {
     "name": "Harun ar Rashid Road",
+    "name_ar": "طريق هارون الرشيد",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6860342551325&destinationLng=46.7959920010693&destinationName=Harun%20ar%20Rashid%20Road",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001094",
     "latitude": "24.6860342551325",
@@ -134,9 +153,26 @@
   },
   {
     "name": "An Naseem",
+    "name_ar": "النسيم",
     "button_url": "https://rpt.sa/plan?destinationLat=24.7004968033788&destinationLng=46.8274689686293&destinationName=An%20Naseem",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001095",
     "latitude": "24.7004968033788",
     "longitude": "46.8274689686293"
+  },
+  {
+    "name": "Hassan Bin Thabit Street",
+    "name_ar": "شارع حسان بن ثابت",
+    "button_url": null,
+    "station_details_url": "https://sitprd.rpt.sa/stationdetails/tags/80001096",
+    "latitude": "24.71272167803221",
+    "longitude": "46.84742975250702"
+  },
+  {
+    "name": "Khashm Al An",
+    "name_ar": "خشم العانس",
+    "button_url": null,
+    "station_details_url": "https://sitprd.rpt.sa/stationdetails/tags/80001096",
+    "latitude": "24.721255460317725",
+    "longitude": "46.86032212552282"
   }
 ]

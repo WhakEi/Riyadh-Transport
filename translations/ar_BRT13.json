@@ -1,0 +1,72 @@
+{
+    "Ar-Rawabi": {
+        "Khalid Bin AlWaleed Road A": {
+            "name": "طريق خالد بن الوليد أ"
+        },
+        "Khalid Bin Al Walid 02 A": {
+            "name": "خالد بن الوليد 02 أ"
+        },
+        "Khalid Bin Al Walid 03 A": {
+            "name": "خالد بن الوليد 03 أ"
+        },
+        "Khalid Bin Al Walid 04 A": {
+            "name": "خالد بن الوليد 04 أ"
+        },
+        "Khalid Bin Al Walid 05 A": {
+            "name": "خالد بن الوليد 05 أ"
+        },
+        "Khalid Bin Al Walid 06 A": {
+            "name": "خالد بن الوليد 06 أ"
+        },
+        "Imam Shafiee 07 A": {
+            "name": "الامام الشافعي 07 أ"
+        },
+        "Imam Shafiee 08 A": {
+            "name": "الامام الشافعي 08 أ"
+        },
+        "Imam Shafiee 09 A": {
+            "name": "الامام الشافعي 09 أ"
+        },
+        "Imam Shafiee 10 A": {
+            "name": "الامام الشافعي 10 أ"
+        },
+        "Imam Shafiee 11 A": {
+            "name": "الامام الشافعي 11 أ"
+        }
+    },
+    "Khalid Bin AlWaleed Station": {
+        "Imam Shafiee 11 B": {
+            "name": "الامام الشافعي 11 ب"
+        },
+        "Imam Shafiee 10 B": {
+            "name": "الامام الشافعي 10 ب"
+        },
+        "Imam Shafiee 09 B": {
+            "name": "الامام الشافعي 09 ب"
+        },
+        "Imam Shafiee 08 B": {
+            "name": "الامام الشافعي 08 ب"
+        },
+        "Imam Shafiee 07 B": {
+            "name": "الامام الشافعي 07 ب"
+        },
+        "Khalid Bin Al Walid 06 B": {
+            "name": "خالد بن الوليد 06 ب"
+        },
+        "Khalid Bin Al Walid 05 B": {
+            "name": "خالد بن الوليد 05 ب"
+        },
+        "Khalid Bin Al Walid 04 B": {
+            "name": "خالد بن الوليد 04 ب"
+        },
+        "Khalid Bin Al Walid 03 B": {
+            "name": "خالد بن الوليد 03 ب"
+        },
+        "Khalid Bin Al Walid 02 B": {
+            "name": "خالد بن الوليد 02 ب"
+        },
+        "Khalid Bin Alwaleed Road D": {
+            "name": "خالد بن الوليد د"
+        }
+    }
+}

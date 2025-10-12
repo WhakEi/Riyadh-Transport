@@ -1,0 +1,255 @@
+{
+    "National Museum": {
+        "Khalid Bin Alwaleed Road B": {
+            "name": "طريق خالد بن الوليد ب"
+        },
+        "Khalid Bin Al Walid 207": {
+            "name": "خالد بن الوليد 207"
+        },
+        "Khalid Bin Al Walid 206": {
+            "name": "خالد بن الوليد 206"
+        },
+        "Al-Hamra 602": {
+            "name": "الحمراء 602"
+        },
+        "Al-Hamra 601": {
+            "name": "الحمراء 601"
+        },
+        "Al-Ezdihar 604": {
+            "name": "الإزدهار 604"
+        },
+        "Al-Ezdihar 602": {
+            "name": "الإزدهار 602"
+        },
+        "Al-Ezdihar 601": {
+            "name": "الإزدهار 601"
+        },
+        "Othman Bin Affan 213": {
+            "name": "عثمان بن عفان 213"
+        },
+        "Othman Bin Affan 212": {
+            "name": "عثمان بن عفان 212"
+        },
+        "Othman Bin Affan 112": {
+            "name": "عثمان بن عفان 112"
+        },
+        "Othman Bin Affan 113": {
+            "name": "عثمان بن عفان 113"
+        },
+        "Al-Nuzha 602": {
+            "name": "النزهة 602"
+        },
+        "Al-Nuzha 601": {
+            "name": "النزهة 601"
+        },
+        "Al-Maseef 602": {
+            "name": "المصيف 602"
+        },
+        "Al-Maseef 601": {
+            "name": "المصيف 601"
+        },
+        "Al-Murooj 603": {
+            "name": "المروج 603"
+        },
+        "Al-Murooj 602": {
+            "name": "المروج 602"
+        },
+        "Al-Murooj 601": {
+            "name": "المروج 601"
+        },
+        "Al-Nakheel 607": {
+            "name": "النخيل 607"
+        },
+        "Al-Nakheel 606": {
+            "name": "النخيل 606"
+        },
+        "Al-Nakheel 605": {
+            "name": "النخيل 605"
+        },
+        "Al-Muhammadiyah 501": {
+            "name": "المحمدية 501"
+        },
+        "Al-Muhammadiyah 502": {
+            "name": "المحمدية 502"
+        },
+        "Al-Muhammadiyah 503": {
+            "name": "المحمدية 503"
+        },
+        "Ar-Raed 501": {
+            "name": "الرائد 501"
+        },
+        "Ar-Raed 502": {
+            "name": "الرائد 502"
+        },
+        "Ar-Raed 503": {
+            "name": "الرائد 503"
+        },
+        "Ar-Raed 504": {
+            "name": "الرائد 504"
+        },
+        "North Al-Mathar 501": {
+            "name": "المعذر الشمالي 501"
+        },
+        "North Al-Mathar 502": {
+            "name": "المعذر الشمالي 502"
+        },
+        "North Al-Mathar 503": {
+            "name": "المعذر الشمالي 503"
+        },
+        "North Al-Mathar 504": {
+            "name": "المعذر الشمالي 504"
+        },
+        "North Al-Mathar 505": {
+            "name": "المعذر الشمالي 505"
+        },
+        "Al-Mathar 501": {
+            "name": "المعذر 501"
+        },
+        "Al-Mathar 503": {
+            "name": "المعذر 503"
+        },
+        "King Khalid 106": {
+            "name": "الملك خالد 106"
+        },
+        "King Khalid 107": {
+            "name": "الملك خالد 107"
+        },
+        "King Saud 301": {
+            "name": "الملك سعود 301"
+        },
+        "An-Namuthajiyah 501": {
+            "name": "النموذجية 501"
+        },
+        "An-Namuthajiyah 503": {
+            "name": "النموذجية 503"
+        },
+        "Amr Bin Al Aas 307": {
+            "name": "عمرو بن العاص 307"
+        },
+        "Nasseriya 303": {
+            "name": "الناصريه 303"
+        },
+        "Nasseriya 304": {
+            "name": "الناصريه 304"
+        },
+        "Nasseriya 305": {
+            "name": "الناصريه 305"
+        }
+    },
+    "Khalid Bin Alwaleed Station": {
+        "Nasseriya 305": {
+            "name": "الناصريه 305"
+        },
+        "Nasseriya 404": {
+            "name": "الناصريه 404"
+        },
+        "Nasseriya 403": {
+            "name": "الناصريه 403"
+        },
+        "An-Namuthajiyah 603": {
+            "name": "النموذجية 603"
+        },
+        "An-Namuthajiyah 602": {
+            "name": "النموذجية 602"
+        },
+        "King Saud 401": {
+            "name": "الملك سعود 401"
+        },
+        "King Khalid 207": {
+            "name": "الملك خالد 207"
+        },
+        "King Khalid 206": {
+            "name": "الملك خالد 206"
+        },
+        "Al-Mathar 602": {
+            "name": "المعذر 602"
+        },
+        "Al-Mathar 601": {
+            "name": "المعذر 601"
+        },
+        "North Al-Mathar 605": {
+            "name": "المعذر الشمالي 605"
+        },
+        "North Al-Mathar 603": {
+            "name": "المعذر الشمالي 603"
+        },
+        "North Al-Mathar 602": {
+            "name": "المعذر الشمالي 602"
+        },
+        "North Al-Mathar 601": {
+            "name": "المعذر الشمالي 601"
+        },
+        "Ar-Raed 604": {
+            "name": "الرائد 604"
+        },
+        "Ar-Raed 603": {
+            "name": "الرائد 603"
+        },
+        "Ar-Raed 602": {
+            "name": "الرائد 602"
+        },
+        "Ar-Raed 601": {
+            "name": "الرائد 601"
+        },
+        "Al-Muhammadiyah 603": {
+            "name": "المحمدية 603"
+        },
+        "Al-Muhammadiyah 602": {
+            "name": "المحمدية 602"
+        },
+        "Al-Muhammadiyah 601": {
+            "name": "المحمدية 601"
+        },
+        "Al-Nakheel 505": {
+            "name": "النخيل 505"
+        },
+        "Al-Nakheel 506": {
+            "name": "النخيل 506"
+        },
+        "Al-Nakheel 507": {
+            "name": "النخيل 507"
+        },
+        "Al-Murooj 501": {
+            "name": "المروج 501"
+        },
+        "Al-Murooj 502": {
+            "name": "المروج 502"
+        },
+        "Al-Murooj 503": {
+            "name": "المروج 503"
+        },
+        "Al-Maseef 501": {
+            "name": "المصيف 501"
+        },
+        "Al-Maseef 502": {
+            "name": "المصيف 502"
+        },
+        "Al-Nuzha 501": {
+            "name": "النزهة 501"
+        },
+        "Al-Ezdihar 503": {
+            "name": "الإزدهار 503"
+        },
+        "Al-Ezdihar 504": {
+            "name": "الإزدهار 504"
+        },
+        "Al-Hamra 501": {
+            "name": "الحمراء 502"
+        },
+        "Al-Hamra 502": {
+            "name": "طريق خالد بن الوليد د"
+        },
+        "Khalid Bin Al Walid 105": {
+            "name": "خالد بن الوليد 105"
+        },
+        "Khalid Bin Al Walid 106": {
+            "name": "خالد بن الوليد 106"
+        },
+        "Khalid Bin Al Walid 107": {
+            "name": "خالد بن الوليد 107"
+        },
+        "Khalid Bin Alwaleed Road D": {
+            "name": "طريق خالد بن الوليد د"
+        }
+    }
+}

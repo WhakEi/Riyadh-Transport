@@ -1,0 +1,16 @@
+{
+    "Embassies": {
+        "King Abdullah 401": {
+            "name": "الملك عبدالله 401"
+        },
+        "Al Fazari Station": {
+            "name": "محطة الفزاري"
+        },
+        "Al Kindi Station": {
+            "name": "محطة الكندي"
+        },
+        "Oud Station": {
+            "name": "محطة عود"
+        }
+    }
+}

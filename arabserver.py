@@ -14,6 +14,7 @@ CORS(app)
 METRO_LINES_FILE = 'metro_lines.json'
 EXC_DIR = 'exc'
 GEOCODED_DIR = 'geocoded_stops'
+TRANSLATIONS_DIR = 'translations'
 WALKING_DISTANCE = 500  # meters
 
 # Defined metro transfer stations (normalized names)
@@ -35,11 +36,22 @@ STATIONS = {}
 adjacency = {}
 line_stations = {}
 station_to_lines = {}
-LINE_ENGLISH_NAMES = {}
+TRANSLATIONS = {}
+LINE_NAME_TRANSLATIONS = {}
+REVERSE_TRANSLATIONS = {} # For searching by Arabic name
+KEY_TRANSLATIONS = {} # For translating direction keys
 
 # Helper functions
 def normalize_name(name):
     return unicodedata.normalize('NFKC', name.strip()).title()
+
+def translate_name(name):
+    """Return the Arabic translation if it exists, otherwise return the original name."""
+    return TRANSLATIONS.get(name, name)
+
+def translate_line_name(line_key, default_name):
+    """Return the Arabic translation for a line if it exists, otherwise return the default."""
+    return LINE_NAME_TRANSLATIONS.get(line_key, default_name)
 
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371000  # Earth radius in meters
@@ -57,6 +69,46 @@ def clean_line_name(line):
         line = line.split('_dir')[0]
     return line.replace('bus_', '').replace('metro_', '')
 
+# Data loading
+def load_key_translations():
+    """Loads translations for direction keys from key.json."""
+    key_file = Path(TRANSLATIONS_DIR) / 'key.json'
+    if not key_file.exists():
+        print("ℹ️ No key.json found in translations, skipping key translation.")
+        return
+    try:
+        with open(key_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        for key, translation_data in data.items():
+            if 'name' in translation_data:
+                normalized_key = normalize_name(key)
+                KEY_TRANSLATIONS[normalized_key] = translation_data['name']
+        print(f"Loaded {len(KEY_TRANSLATIONS)} key translations.")
+    except Exception as e:
+        print(f"Error loading key translations: {str(e)}")
+
+def load_translations():
+    """Load Arabic station name translations for buses."""
+    translations_path = Path(TRANSLATIONS_DIR)
+    if not translations_path.exists():
+        print("ℹ️ No translations directory found for buses, skipping.")
+        return
+
+    for translation_file in translations_path.glob('ar_*.json'):
+        try:
+            with open(translation_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+
+            for direction, stops in data.items():
+                for english_name, translation_data in stops.items():
+                    normalized_english_name = normalize_name(english_name) + " (Bus)"
+                    arabic_name = translation_data['name']
+                    TRANSLATIONS[normalized_english_name] = arabic_name
+                    REVERSE_TRANSLATIONS[arabic_name] = normalized_english_name
+        except Exception as e:
+            print(f"Error loading bus translation file {translation_file}: {str(e)}")
+
+    print(f"Loaded {len(TRANSLATIONS)} bus translations.")
 
 
 def load_metro_data():
@@ -67,9 +119,8 @@ def load_metro_data():
         for line_info in metro_config:
             line_num = line_info['line_number']
             line_key = f"metro_{line_num}"
-
-            if 'name' in line_info:
-                LINE_ENGLISH_NAMES[line_key] = line_info['name']
+            if 'name_ar' in line_info:
+                LINE_NAME_TRANSLATIONS[line_key] = line_info['name_ar']
 
             stations_file = f"line_{line_num}_stations.json"
             if not os.path.exists(stations_file):
@@ -86,6 +137,13 @@ def load_metro_data():
                     name += " (Metro)"
                 elif not name.endswith("(Metro)"):
                     name += " (Metro)"
+
+                # Store metro station translation
+                if 'name_ar' in s:
+                    arabic_name = s['name_ar']
+                    TRANSLATIONS[name] = arabic_name
+                    REVERSE_TRANSLATIONS[arabic_name] = name
+
 
                 lat = float(s['latitude'])
                 lng = float(s['longitude'])
@@ -247,14 +305,22 @@ def nearby_stations_endpoint():
         if None in (lat, lng):
             return jsonify({'error': 'Missing lat/lng coordinates'}), 400
 
-        nearby = find_nearby_stations(float(lat), float(lng), max_distance=1500)
+        nearby_stations = find_nearby_stations(float(lat), float(lng), max_distance=1500)
 
-        # Enhance with station type
-        for station in nearby:
-            station_data = STATIONS.get(station['name'], {})
-            station['type'] = station_data.get('type')
+        # Translate names and add station type
+        results = []
+        for station in nearby_stations:
+            station_name = station['name']
+            station_data = STATIONS.get(station_name, {})
 
-        return jsonify(nearby)
+            results.append({
+                'name': translate_name(station_name),
+                'type': station_data.get('type'),
+                'distance': station['distance'],
+                'duration': station['duration']
+            })
+
+        return jsonify(results)
 
     except (ValueError, TypeError):
         return jsonify({'error': 'Invalid coordinate format'}), 400
@@ -271,32 +337,47 @@ def search_station_endpoint():
         if not station_name:
             return jsonify({'error': 'Missing station_name'}), 400
 
-        normalized_name = normalize_name(station_name)
+        # Find the internal English name, whether the input is Arabic or English
+        internal_name = REVERSE_TRANSLATIONS.get(station_name) # Check if input is Arabic
+        if not internal_name:
+             # If not found, assume input is English and normalize it
+             normalized_input = normalize_name(station_name)
+             internal_name_metro = f"{normalized_input} (Metro)"
+             internal_name_bus = f"{normalized_input} (Bus)"
+             if internal_name_metro in STATIONS:
+                 internal_name = internal_name_metro
+             elif internal_name_bus in STATIONS:
+                 internal_name = internal_name_bus
 
-        # Check for both metro and bus versions of the name
-        metro_name = f"{normalized_name} (Metro)"
-        bus_name = f"{normalized_name} (Bus)"
+        if not internal_name or internal_name not in station_to_lines:
+             return jsonify({'error': f'Station "{station_name}" not found'}), 404
 
-        metro_lines = station_to_lines.get(metro_name, [])
-        bus_lines = station_to_lines.get(bus_name, [])
+        lines = station_to_lines.get(internal_name, [])
+        station_type = STATIONS.get(internal_name, {}).get('type')
 
-        # Clean up line numbers
-        cleaned_metro_lines = sorted(list(set([clean_line_name(line) for line in metro_lines])))
-        cleaned_bus_lines = sorted(list(set([clean_line_name(line) for line in bus_lines])))
+        cleaned_lines = sorted(list(set([clean_line_name(line) for line in lines])))
 
-        if not cleaned_metro_lines and not cleaned_bus_lines:
-            return jsonify({'error': f'Station "{station_name}" not found'}), 404
-
-        return jsonify({
+        response = {
             'station_name': station_name,
-            'metro_lines': cleaned_metro_lines,
-            'bus_lines': cleaned_bus_lines
-        })
+            'metro_lines': [],
+            'bus_lines': []
+        }
+
+        if station_type == 'metro':
+            response['metro_lines'] = cleaned_lines
+        elif station_type == 'bus':
+            response['bus_lines'] = cleaned_lines
+
+        # Handle cases where a station name is shared (e.g., Transportation Centers)
+        if not response['metro_lines'] and not response['bus_lines']:
+             response['bus_lines'] = cleaned_lines
+
+
+        return jsonify(response)
 
     except Exception as e:
         print(f"Search station error: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
-
 
 @app.route('/viewbus', methods=['POST'])
 def view_line_endpoint():
@@ -307,19 +388,27 @@ def view_line_endpoint():
         if not reqline:
             return jsonify({'error': 'Missing line number in request'}), 400
 
-        # Construct the file path safely
         bus_file_path = Path(EXC_DIR) / f"bus_{reqline}.json"
 
-        # Check if the file exists
         if not bus_file_path.exists():
             return jsonify({'error': f'Line {reqline} not found'}), 404
 
-        # Open the file and load the JSON data
         with open(bus_file_path, 'r', encoding='utf-8') as f:
             line_data = json.load(f)
 
-        # Return the contents of the file
-        return jsonify(line_data)
+        # Create a new dictionary to hold the fully translated data
+        translated_data = {}
+        for direction_key, station_list in line_data.items():
+            # Translate the direction key itself
+            translated_key = KEY_TRANSLATIONS.get(direction_key, direction_key)
+
+            # Translate the list of station names
+            translated_stations = [translate_name(normalize_name(name) + " (Bus)") for name in station_list]
+
+            # Add the translated key and list to the new dictionary
+            translated_data[translated_key] = translated_stations
+
+        return jsonify(translated_data)
 
     except Exception as e:
         print(f"View line error: {str(e)}")
@@ -346,7 +435,7 @@ def view_mtr_endpoint():
             line_data = json.load(f)
 
         # Extract only the "name" value from each station dictionary in the list
-        station_names = [station.get('name') for station in line_data if 'name' in station]
+        station_names = [station.get('name_ar') for station in line_data if 'name_ar' in station]
 
         # Return the list of station names
         return jsonify({'stations': station_names})
@@ -395,8 +484,7 @@ def find_route():
 
             if current_station == end:
                 print(f"Route found: {path}")
-                return jsonify({'routes': [format_route(path)],
-                                'warning': 'This API is deprecated and may be disabled in the future'})
+                return jsonify({'routes': [format_route(path)]})
 
             if current_node in visited:
                 continue
@@ -427,7 +515,7 @@ def find_route():
                     new_transfers = transfers + (1 if transfer_occurred else 0)
                     heapq.heappush(heap, (new_cost, new_transfers, path + [neighbor]))
 
-        return jsonify({'error': 'Internal server error'}), 500
+        return jsonify({'خطأ': 'فشل العثور على مسار'}), 404
 
     except Exception as e:
         print(f"Route error: {str(e)}")
@@ -536,9 +624,9 @@ def route_from_coordinates():
                 break
 
         if not start_stations:
-            return jsonify({'error': 'No stations within 2km of start point'}), 404
+            return jsonify({'خطأ': 'لا يوجد محطة تبعد أقل من كيلومتران عن نقطة الأصل'}), 404
         if not end_stations:
-            return jsonify({'error': 'No stations within 2km of end point'}), 404
+            return jsonify({'خطأ': 'لا يوجد محطة تبعد أقل من كيلومتران عن الوجهة'}), 404
 
         best_route = None
         min_total_time = float('inf')
@@ -563,7 +651,7 @@ def route_from_coordinates():
                 walk_start = {
                     'type': 'walk',
                     'from': {'lat': start_lat, 'lng': start_lng},
-                    'to': start_name,
+                    'to': translate_name(start_name),
                     'distance': start_info['distance'],
                     'duration': start_info['duration'],
                     'coordinates': [
@@ -573,7 +661,7 @@ def route_from_coordinates():
                 }
                 walk_end = {
                     'type': 'walk',
-                    'from': end_name,
+                    'from': translate_name(end_name),
                     'to': {'lat': end_lat, 'lng': end_lng},
                     'distance': end_info['distance'],
                     'duration': end_info['duration'],
@@ -597,7 +685,7 @@ def route_from_coordinates():
         if best_route:
             return jsonify({'routes': [best_route]})
         else:
-            return jsonify({'error': 'No route found between nearby stations'}), 404
+            return jsonify({'خطأ': 'تعذر وجود مسار يصل بين المحطات'}), 404
 
     except ValueError:
         return jsonify({'error': 'Invalid coordinate values'}), 400
@@ -643,8 +731,9 @@ def format_route(path):
             station, line_key = node.split('|')
             line_type = 'metro' if 'metro' in line_key else 'bus'
 
+            # Use translated line name for metro, otherwise use number
             if line_type == 'metro':
-                display_line_name = LINE_ENGLISH_NAMES.get(line_key, clean_line_name(line_key))
+                display_line_name = translate_line_name(line_key, clean_line_name(line_key))
             else:
                 display_line_name = clean_line_name(line_key)
 
@@ -682,11 +771,11 @@ def format_route(path):
     # Pass 3: Translate names and calculate durations
     for seg in merged_segments:
         if seg['type'] == 'walk':
-            seg['from'] = seg['from']
-            seg['to'] = seg['to']
+            seg['from'] = translate_name(seg['from'])
+            seg['to'] = translate_name(seg['to'])
             seg['duration'] = seg['distance'] / 1.3
         else:
-            seg['stations'] = [s for s in seg['stations']]
+            seg['stations'] = [translate_name(s) for s in seg['stations']]
             seg['duration'] = len(seg['stations']) * 120
 
     return {
@@ -699,10 +788,10 @@ def format_route(path):
 def get_stations():
     stations = []
     for name, data in STATIONS.items():
-        clean_name = name.replace(" (Metro)", "").replace(" (Bus)", "")
+        clean_name = name.replace(" (محطة قطار)", "").replace(" (محطة حافلة)", "")
         stations.append({
             'value': name,
-            'label': name, # Use translated name for the label
+            'label': translate_name(name), # Use translated name for the label
             'type': data['type'],
             'lat': data['lat'],
             'lng': data['lng']
@@ -712,9 +801,9 @@ def get_stations():
 @app.route('/debug/stations')
 def debug_stations():
     return jsonify({
-        'adjacency': adjacency,
         'stations': STATIONS,
-        'warning': 'THIS API IS DEPRECATED AND WILL BE REMOVED IN THE FUTURE, PLEASE USE /api/stations INSTEAD'
+        'adjacency': adjacency,
+        'line_stations': line_stations
     })
 
 @app.route('/buslines', methods=['GET'])
@@ -767,11 +856,6 @@ def get_mtr_lines():
         print(f"Get metro lines error: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
 
-# Frontend serving
-@app.route('/')
-def serve_frontend():
-    return send_from_directory('templates', 'index.html')
-
 @app.route('/<path:path>')
 def serve_static(path):
     return send_from_directory('templates', path)
@@ -781,8 +865,11 @@ if __name__ == '__main__':
     print("Loading transport data...")
     load_metro_data()
     load_bus_data()
+    print("Loading translations...")
+    load_translations()
+    load_key_translations()
     print("Building connections...")
     build_connections()
     print(f"Loaded {len(STATIONS)} stations")
     print(f"Loaded {len(line_stations)} lines")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)

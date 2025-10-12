@@ -1,6 +1,7 @@
 [
   {
     "name": "SAB Bank",
+    "name_ar": "بنك الأول",
     "button_url": "https://rpt.sa/plan?destinationLat=24.8294508688713&destinationLng=46.6165804725&destinationName=SAB%20Bank",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001057",
     "latitude": "24.8294508688713",
@@ -8,6 +9,7 @@
   },
   {
     "name": "DR SULAIMAN AL HABIB",
+    "name_ar": "د.سليمان الحبيب",
     "button_url": "https://rpt.sa/plan?destinationLat=24.8114727153221&destinationLng=46.6257792210107&destinationName=DR%20SULAIMAN%20AL%20HABIB",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001058",
     "latitude": "24.8114727153221",
@@ -15,6 +17,7 @@
   },
   {
     "name": "KAFD",
+    "name_ar": "المركز المالي",
     "button_url": "https://rpt.sa/plan?destinationLat=24.7675640808748&destinationLng=46.6431256891494&destinationName=KAFD",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001059",
     "latitude": "24.7675640808748",
@@ -22,6 +25,7 @@
   },
   {
     "name": "Al Murooj",
+    "name_ar": "المروج",
     "button_url": "https://rpt.sa/plan?destinationLat=24.7545695619798&destinationLng=46.6543725965082&destinationName=Al%20Murooj",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000416",
     "latitude": "24.7545695619798",
@@ -29,6 +33,7 @@
   },
   {
     "name": "King Fahd District",
+    "name_ar": "حي الملك فهد",
     "button_url": "https://rpt.sa/plan?destinationLat=24.7453183983739&destinationLng=46.6590258696806&destinationName=King%20Fahd%20District",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000417",
     "latitude": "24.7453183983739",
@@ -36,6 +41,7 @@
   },
   {
     "name": "King Fahd District 2",
+    "name_ar": "حي الملك فهد 2",
     "button_url": "https://rpt.sa/plan?destinationLat=24.7366131915674&destinationLng=46.6634545640319&destinationName=King%20Fahd%20District%202",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000418",
     "latitude": "24.7366131915674",
@@ -43,6 +49,7 @@
   },
   {
     "name": "stc",
+    "name_ar": "stc اﻹتصاﻻت السعودية",
     "button_url": "https://rpt.sa/plan?destinationLat=24.7267324106664&destinationLng=46.6668052800421&destinationName=stc",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000419",
     "latitude": "24.7267324106664",
@@ -50,6 +57,7 @@
   },
   {
     "name": "Al Wurud 2",
+    "name_ar": "الورود 2",
     "button_url": null,
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001060",
     "latitude": "24.721478517912292",
@@ -57,6 +65,7 @@
   },
   {
     "name": "Al Urubah",
+    "name_ar": "العروبة",
     "button_url": null,
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000420",
     "latitude": "24.71398497207908",
@@ -64,6 +73,7 @@
   },
   {
     "name": "Alinma Bank",
+    "name_ar": "مصرف اﻹنماء",
     "button_url": "https://rpt.sa/plan?destinationLat=24.703516423827&destinationLng=46.6801811946245&destinationName=Alinma%20Bank",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000421",
     "latitude": "24.703516423827",
@@ -71,6 +81,7 @@
   },
   {
     "name": "Bank Albilad",
+    "name_ar": "بنك البلاد",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6966609637474&destinationLng=46.6836936073859&destinationName=Bank%20Albilad",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000422",
     "latitude": "24.6966609637474",
@@ -78,6 +89,7 @@
   },
   {
     "name": "King Fahd Library",
+    "name_ar": "مكتبة الملك فهد",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6900744700124&destinationLng=46.6870353402433&destinationName=King%20Fahd%20Library",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000423",
     "latitude": "24.6900744700124",
@@ -85,6 +97,7 @@
   },
   {
     "name": "Ministry of Interior",
+    "name_ar": "وزارة الداخلية",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6744515800686&destinationLng=46.6948955989804&destinationName=Ministry%20of%20Interior",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000424",
     "latitude": "24.6744515800686",
@@ -92,6 +105,7 @@
   },
   {
     "name": "Al Muorabba",
+    "name_ar": "المربع",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6648026108218&destinationLng=46.7022887337698&destinationName=Al%20Muorabba",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000425",
     "latitude": "24.6648026108218",
@@ -99,6 +113,7 @@
   },
   {
     "name": "Passport Department",
+    "name_ar": "الجوازات",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6598064045809&destinationLng=46.7042201116309&destinationName=Passport%20Department",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000426",
     "latitude": "24.6598064045809",
@@ -106,6 +121,7 @@
   },
   {
     "name": "National Museum",
+    "name_ar": "المتحف الوطني",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6453391370238&destinationLng=46.7131583487091&destinationName=National%20Museum",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000427",
     "latitude": "24.6453391370238",
@@ -113,6 +129,7 @@
   },
   {
     "name": "Al Batha",
+    "name_ar": "البطحاء",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6369127324989&destinationLng=46.7147124341509&destinationName=Al%20Bat%E2%80%99ha",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000428",
     "latitude": "24.6369127324989",
@@ -120,6 +137,7 @@
   },
   {
     "name": "Qasr Al Hokm",
+    "name_ar": "قصر الحكم",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6289103881024&destinationLng=46.7162395701341&destinationName=Qasr%20Al%20Hokm",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000429",
     "latitude": "24.6289103881024",
@@ -127,6 +145,7 @@
   },
   {
     "name": "Al Owd",
+    "name_ar": "العود",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6255296519103&destinationLng=46.7215126808526&destinationName=Al%20Owd",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000430",
     "latitude": "24.6255296519103",
@@ -134,6 +153,7 @@
   },
   {
     "name": "Skirinah",
+    "name_ar": "سكيرينة",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6178940779355&destinationLng=46.7252227229765&destinationName=Skirinah",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000431",
     "latitude": "24.6178940779355",
@@ -141,6 +161,7 @@
   },
   {
     "name": "Manfouhah",
+    "name_ar": "منفوحة",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6105765556207&destinationLng=46.7273876628116&destinationName=Manfouhah",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000432",
     "latitude": "24.6105765556207",
@@ -148,6 +169,7 @@
   },
   {
     "name": "Al Iman Hospital",
+    "name_ar": "مستشفى اﻹيمان",
     "button_url": "https://rpt.sa/plan?destinationLat=24.6007184576064&destinationLng=46.735688096038&destinationName=Al%20Iman%20Hospital",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000433",
     "latitude": "24.6007184576064",
@@ -155,6 +177,7 @@
   },
   {
     "name": "Transportation Center",
+    "name_ar": "مركز النقل العام",
     "button_url": "https://rpt.sa/plan?destinationLat=24.5982436018417&destinationLng=46.7451563391339&destinationName=Transportation%20Center",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000438",
     "latitude": "24.5982436018417",
@@ -162,6 +185,7 @@
   },
   {
     "name": "Al Aziziah",
+    "name_ar": "العزيزية",
     "button_url": "https://rpt.sa/plan?destinationLat=24.5872572652275&destinationLng=46.7608229576912&destinationName=Al%20Aziziah",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001061",
     "latitude": "24.5872572652275",
@@ -169,6 +193,7 @@
   },
   {
     "name": "Ad Dar Al Baida",
+    "name_ar": "الدار البيضاء",
     "button_url": "https://rpt.sa/plan?destinationLat=24.5599955526824&destinationLng=46.7763009300387&destinationName=Ad%20Dar%20Al%20Baida",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80000440",
     "latitude": "24.5599955526824",

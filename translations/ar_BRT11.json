@@ -1,0 +1,144 @@
+{
+    "Al-Kharj": {
+        "Ar-Rabi 602": {
+            "name": "الربيع 602"
+        },
+        "King Abdulaziz 03 A": {
+            "name": "الملك عبدالعزيز 03 أ"
+        },
+        "King Abdulaziz 04 A": {
+            "name": "الملك عبدالعزيز 04 أ"
+        },
+        "King Abdulaziz 06 A": {
+            "name": "الملك عبدالعزيز 05 أ"
+        },
+        "King Abdulaziz 07 A": {
+            "name": "الملك عبدالعزيز 07 أ"
+        },
+        "King Abdulaziz 08 A": {
+            "name": "الملك عبدالعزيز 08 أ"
+        },
+        "King Abdulaziz 09 A": {
+            "name": "الملك عبدالعزيز 09 أ"
+        },
+        "Salahuddin Al Ayubi 11 A": {
+            "name": "صلاح الدين الأيوبي 11 أ"
+        },
+        "Salahuddin Al Ayubi 12 A": {
+            "name": "صلاح الدين الأيوبي 12 أ"
+        },
+        "Salahuddin Al Ayubi 13 A": {
+            "name": "صلاح الدين الأيوبي 13 أ"
+        },
+        "Salahuddin Al Ayubi 14 A": {
+            "name": "صلاح الدين الأيوبي 14 أ"
+        },
+        "Salahuddin Al Ayubi 15 A": {
+            "name": "صلاح الدين الأيوبي 15 أ"
+        },
+        "Salahuddin Al Ayubi 16 A": {
+            "name": "صلاح الدين الأيوبي 16 أ"
+        },
+        "Ali Ibn Abi Talib 17 A": {
+            "name": "صلاح الدين الأيوبي 17 أ"
+        },
+        "Ali Ibn Abi Talib 18 A": {
+            "name": "علي بن أبي طالب 18 أ"
+        },
+        "Ali Ibn Abi Talib 19 A": {
+            "name": "علي بن أبي طالب 19 أ"
+        },
+        "Ali Ibn Abi Talib 20 A": {
+            "name": "علي بن أبي طالب 20 أ"
+        },
+        "Ali Ibn Abi Talib D": {
+            "name": "علي بن أبي طالب د"
+        },
+        "Al-Khalidiah 22 B": {
+            "name": "الخالدية 22 ب"
+        },
+        "Al Kharj 24 A": {
+            "name": "الخرج 24 أ"
+        },
+        "Al Kharj 26 A": {
+            "name": "الخرج 26 أ"
+        },
+        "Al Kharj D": {
+            "name": "الخرج د"
+        }
+    },
+    "Ar-Rabi": {
+        "Al Kharj A": {
+            "name": "الخرج أ"
+        },
+        "Al Kharj 26 B": {
+            "name": "الخرج 26 ب"
+        },
+        "Al Kharj 24 B": {
+            "name": "الخرج 24 ب"
+        },
+        "Al-Khalidiah 22 A": {
+            "name": "الخالدية 22 أ"
+        },
+        "Ali Ibn Abi Talib A": {
+            "name": "علي بن أبي طالب أ"
+        },
+        "Ali Ibn Abi Talib 20 B": {
+            "name": "علي بن أبي طالب 20 ب"
+        },
+        "Ali Ibn Abi Talib 19 B": {
+            "name": "علي بن أبي طالب 19 ب"
+        },
+        "Ali Ibn Abi Talib 18 B": {
+            "name": "علي بن أبي طالب 18 ب"
+        },
+        "Ali Ibn Abi Talib 17 B": {
+            "name": "علي بن أبي طالب 17 ب"
+        },
+        "Salahuddin Al Ayubi 16 B": {
+            "name": "صلاح الدين الأيوبي 16 ب"
+        },
+        "Salahuddin Al Ayubi 15 B": {
+            "name": "صلاح الدين الأيوبي 15 ب"
+        },
+        "Salahuddin Al Ayubi 14 B": {
+            "name": "صلاح الدين الأيوبي 14 ب"
+        },
+        "Salahuddin Al Ayubi 13 B": {
+            "name": "صلاح الدين الأيوبي 13 ب"
+        },
+        "Salahuddin Al Ayubi 12 B": {
+            "name": "صلاح الدين الأيوبي 12 ب"
+        },
+        "Salahuddin Al Ayubi 11 B": {
+            "name": "صلاح الدين الأيوبي 11 ب"
+        },
+        "Salahuddin Al Ayubi 10 B": {
+            "name": "صلاح الدين الأيوبي 10 ب"
+        },
+        "King Abdulaziz 09 B": {
+            "name": "الملك عبدالعزيز 09 ب"
+        },
+        "King Abdulaziz 08 B": {
+            "name": "الملك عبدالعزيز 08 ب"
+        },
+        "King Abdulaziz 07 B": {
+            "name": "الملك عبدالعزيز 07 ب"
+        },
+        "King Abdulaziz 06 B": {
+            "name": "الملك عبدالعزيز 06 ب"
+        },
+        "King Abdulaziz 05 B": {
+            "name": "الملك عبدالعزيز 05 ب"
+        },
+        "King Abdulaziz 04 B": {
+            "name": "الملك عبدالعزيز 04 ب"
+        },
+        "King Abdulaziz 03 B": {
+            "name": "الملك عبدالعزيز 03 ب"
+        },
+        "Ar-Rabi 602": {
+            "name": "الربيع 602"
+        }
+    }
+}

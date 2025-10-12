@@ -1,0 +1,249 @@
+{
+    "Dirab": {
+        "Transportation Center": {
+            "name": "مركز النقل العام"
+        },
+        "Abi Hafs bin Shaheen 101": {
+            "name": "أبي حفص بن شاهين 101"
+        },
+        "Al-Basala 301": {
+            "name": "البساله 301"
+        },
+        "Al-Basala 302": {
+            "name": "البساله 302"
+        },
+        "Ash Shabab 101": {
+            "name": "الشباب 101"
+        },
+        "Ash Shabab 102": {
+            "name": "الشباب 102"
+        },
+        "Ash Shabab 103": {
+            "name": "الشباب 103"
+        },
+        "An-Nasar 402": {
+            "name": "النصر 402"
+        },
+        "An-Nasar 401": {
+            "name": "النصر 401"
+        },
+        "Al Haeer 106": {
+            "name": "الحائر 106"
+        },
+        "Al Haeer 108": {
+            "name": "الحائر 108"
+        },
+        "Al Haeer 110": {
+            "name": "الحائر 110"
+        },
+        "Arfat 412": {
+            "name": "عرفات 412"
+        },
+        "Arfat 411": {
+            "name": "عرفات 411"
+        },
+        "Arfat 410": {
+            "name": "عرفات 410"
+        },
+        "Arfat 409": {
+            "name": "عرفات 409"
+        },
+        "Arfat 408": {
+            "name": "عرفات 408"
+        },
+        "Arfat 407": {
+            "name": "عرفات 407"
+        },
+        "Arfat 406": {
+            "name": "عرفات 406"
+        },
+        "Arfat 405": {
+            "name": "عرفات 405"
+        },
+        "Arfat 403": {
+            "name": "عرفات 403"
+        },
+        "Arfat 401": {
+            "name": "عرفات 401"
+        },
+        "Imam Muslim 203": {
+            "name": "الامام مسلم 203"
+        },
+        "Imam Muslim 201": {
+            "name": "الامام مسلم 201"
+        },
+        "Al Khalifah Al Mamoon 301": {
+            "name": "الخليفة المأمون 301"
+        },
+        "Al Khalil bin Ahmed 205": {
+            "name": "الخليل بن احمد 205"
+        },
+        "Al Khalil bin Ahmed 204": {
+            "name": "الخليل بن احمد 204"
+        },
+        "Al Khalil bin Ahmed 203": {
+            "name": "الخليل بن احمد 203"
+        },
+        "Al Khalil bin Ahmed 202": {
+            "name": "الخليل بن احمد 202"
+        },
+        "Al Khalil bin Ahmed 201": {
+            "name": "الخليل بن احمد 201"
+        },
+        "Dirab 413": {
+            "name": "ديراب 413"
+        },
+        "Dirab 412": {
+            "name": "ديراب 412"
+        },
+        "Dirab 41": {
+            "name": "ديراب 411"
+        },
+        "Dirab 410": {
+            "name": "ديراب 410"
+        },
+        "Dirab 408": {
+            "name": "ديراب 408"
+        },
+        "Dirab 407": {
+            "name": "ديراب 407"
+        },
+        "Dirab 406": {
+            "name": "ديراب 406"
+        },
+        "Dirab 405": {
+            "name": "ديراب 405"
+        },
+        "Dirab 404": {
+            "name": "ديراب 404"
+        },
+        "Dirab 402": {
+            "name": "ديراب 402"
+        },
+        "Dirab 401": {
+            "name": "ديراب 401"
+        }
+    },
+    "Transportation Center": {
+        "Dirab 301": {
+            "name": "ديراب 301"
+        },
+        "Dirab 302": {
+            "name": "ديراب 302"
+        },
+        "Dirab 303": {
+            "name": "ديراب 303"
+        },
+        "Dirab 304": {
+            "name": "ديراب 304"
+        },
+        "Dirab 305": {
+            "name": "ديراب 305"
+        },
+        "Dirab 306": {
+            "name": "ديراب 306"
+        },
+        "Dirab 307": {
+            "name": "ديراب 307"
+        },
+        "Dirab 309": {
+            "name": "ديراب 309"
+        },
+        "Dirab 310": {
+            "name": "ديراب 310"
+        },
+        "Dirab 311": {
+            "name": "ديراب 311"
+        },
+        "Dirab 312": {
+            "name": "ديراب 312"
+        },
+        "Dirab 313": {
+            "name": "ديراب 313"
+        },
+        "Al Khalil bin Ahmed 101": {
+            "name": "الخليل بن احمد 101"
+        },
+        "Al Khalil bin Ahmed 102": {
+            "name": "الخليل بن احمد 102"
+        },
+        "Al Khalil bin Ahmed 103": {
+            "name": "الخليل بن احمد 103"
+        },
+        "Al Khalil bin Ahmed 104": {
+            "name": "الخليل بن احمد 104"
+        },
+        "Al Khalil bin Ahmed 106": {
+            "name": "الخليل بن احمد 106"
+        },
+        "Al Khalifah Al Mamoon 401": {
+            "name": "الخليفة المأمون 401"
+        },
+        "Imam Muslim 102": {
+            "name": "الامام مسلم 102"
+        },
+        "Arfat 301": {
+            "name": "عرفات 301"
+        },
+        "Arfat 302": {
+            "name": "عرفات 302"
+        },
+        "Arfat 304": {
+            "name": "عرفات 304"
+        },
+        "Arfat 306": {
+            "name": "عرفات 306"
+        },
+        "Arfat 307": {
+            "name": "عرفات 307"
+        },
+        "Arfat 308": {
+            "name": "عرفات 308"
+        },
+        "Arfat 309": {
+            "name": "عرفات 309"
+        },
+        "Arfat 310": {
+            "name": "عرفات 310"
+        },
+        "Arfat 311": {
+            "name": "عرفات 311"
+        },
+        "Al Haeer 210": {
+            "name": "الحائر 210"
+        },
+        "Al Haeer 209": {
+            "name": "الحائر 209"
+        },
+        "Al Haeer 207": {
+            "name": "الحائر 207"
+        },
+        "Al Haeer 205": {
+            "name": "الحائر 205"
+        },
+        "An-Nasar 301": {
+            "name": "الشباب 201"
+        },
+        "An-Nasar 302": {
+            "name": "البساله 402"
+        },
+        "Ash Shabab 203": {
+            "name": "الشباب 203"
+        },
+        "Ash Shabab 202": {
+            "name": "الشباب 202"
+        },
+        "Ash Shabab 201": {
+            "name": "الشباب 201"
+        },
+        "Al-Basala 402": {
+            "name": "البسالة 402"
+        },
+        "Abi Saad Al Wazir 201": {
+            "name": "أبي سعد الوزير 201"
+        },
+        "Transportation Center": {
+            "name": "مركز النقل العام"
+        }
+    }
+}

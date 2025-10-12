@@ -1,0 +1,309 @@
+{
+    "Irqah": {
+        "Transportation Center": {
+            "name": "مركز النقل العام"
+        },
+        "Abi Hafs bin Shaheen 101": {
+            "name": "أبي حفص بن شاهين 101"
+        },
+        "Al Haeer 201": {
+            "name": "الحائر 201"
+        },
+        "Southern Ring 401": {
+            "name": "الدائري الجنوبي 401"
+        },
+        "Al Faryan 205": {
+            "name": "آل فريان 205"
+        },
+        "Al Faryan 204": {
+            "name": "آل فريان 204"
+        },
+        "Al Faryan 203": {
+            "name": "آل فريان 203"
+        },
+        "Al-Yamamah 602": {
+            "name": "اليمامة 602"
+        },
+        "Al-Yamamah 601": {
+            "name": "اليمامة 601"
+        },
+        "Utayqah 616": {
+            "name": "عتيقة 616"
+        },
+        "Suwaidi Al Am 410": {
+            "name": "السويدي العام 410"
+        },
+        "Suwaidi Al Am 409": {
+            "name": "السويدي العام 409"
+        },
+        "Suwaidi Al Am 408": {
+            "name": "السويدي العام 408"
+        },
+        "Sultanah 206": {
+            "name": "سلطانة 206"
+        },
+        "Sultanah 205": {
+            "name": "سلطانة 205"
+        },
+        "Sultanah 204": {
+            "name": "سلطانة 204"
+        },
+        "Sultanah 203": {
+            "name": "سلطانة 203"
+        },
+        "Madina Munwarah 315": {
+            "name": "المدينة المنورة 315"
+        },
+        "Madina Munwarah 316": {
+            "name": "المدينة المنورة 316"
+        },
+        "Madina Munwarah 317": {
+            "name": "المدينة المنورة 317"
+        },
+        "Assir 202": {
+            "name": "عسير 202"
+        },
+        "Assir 201": {
+            "name": "عسير 201"
+        },
+        "Olaishah 604": {
+            "name": "عليشة 604"
+        },
+        "Olaishah 602": {
+            "name": "عليشة 602"
+        },
+        "Al-Fakhiriyah 601": {
+            "name": "الفاخرية 601"
+        },
+        "An-Namuthajiyah 603": {
+            "name": "النموذجية 603"
+        },
+        "An-Namuthajiyah 602": {
+            "name": "النموذجية 602"
+        },
+        "Takhassusi 220": {
+            "name": "التخصصي 220"
+        },
+        "Takhassusi 219": {
+            "name": "التخصصي 219"
+        },
+        "Takhassusi 218": {
+            "name": "التخصصي 218"
+        },
+        "Takhassusi 217": {
+            "name": "التخصصي 217"
+        },
+        "Takhassusi 216": {
+            "name": "التخصصي 216"
+        },
+        "Takhassusi 215": {
+            "name": "التخصصي 215"
+        },
+        "Takhassusi 213": {
+            "name": "التخصصي 213"
+        },
+        "Takhassusi 212": {
+            "name": "التخصصي 212"
+        },
+        "Takhassusi 210": {
+            "name": "التخصصي 210"
+        },
+        "Takhassusi 209": {
+            "name": "التخصصي 209"
+        },
+        "Takhassusi 208": {
+            "name": "التخصصي 208"
+        },
+        "King Abdullah 408": {
+            "name": "الملك عبدالله 408"
+        },
+        "King Abdullah 406": {
+            "name": "الملك عبدالله 406"
+        },
+        "King Abdullah 405": {
+            "name": "الملك عبدالله 405"
+        },
+        "King Abdullah 404": {
+            "name": "الملك عبدالله 404"
+        },
+        "King Abdullah 403": {
+            "name": "الملك عبدالله 403"
+        },
+        "King Abdullah 402": {
+            "name": "الملك عبدالله 402"
+        },
+        "Irqah 609": {
+            "name": "عرقة 609"
+        },
+        "Irqah 608": {
+            "name": "عرقة 608"
+        },
+        "Irqah 607": {
+            "name": "عرقة 607"
+        },
+        "Irqah 606": {
+            "name": "عرقة 606"
+        },
+        "Irqah 605": {
+            "name": "عرقة 605"
+        },
+        "Irqah 604": {
+            "name": "عرقة 604"
+        },
+        "Irqah 603": {
+            "name": "عرقة 603"
+        },
+        "Irqah 602": {
+            "name": "عرقة 602"
+        },
+        "Irqah 601": {
+            "name": "عرقة 601"
+        }
+    },
+    "Transportation Center": {
+        "Irqah 501": {
+            "name": "عرقة 501"
+        },
+        "Irqah 502": {
+            "name": "عرقة 502"
+        },
+        "Irqah 503": {
+            "name": "عرقة 503"
+        },
+        "Irqah 504": {
+            "name": "عرقة 504"
+        },
+        "Irqah 505": {
+            "name": "عرقة 505"
+        },
+        "Irqah 506": {
+            "name": "عرقة 506"
+        },
+        "Irqah 507": {
+            "name": "عرقة 507"
+        },
+        "Irqah 508": {
+            "name": "عرقة 508"
+        },
+        "Irqah 509": {
+            "name": "عرقة 509"
+        },
+        "Al-Khuzama 501": {
+            "name": "الخزامى 501"
+        },
+        "King Abdullah 302": {
+            "name": "الملك عبدالله 302"
+        },
+        "King Abdullah 304": {
+            "name": "الملك عبدالله 304"
+        },
+        "King Abdullah 305": {
+            "name": "الملك عبدالله 305"
+        },
+        "King Abdullah 307": {
+            "name": "الملك عبدالله 307"
+        },
+        "King Abdullah 309": {
+            "name": "الملك عبدالله 309"
+        },
+        "Takhassusi 108": {
+            "name": "التخصصي 108"
+        },
+        "Takhassusi 109": {
+            "name": "التخصصي 109"
+        },
+        "Takhassusi 110": {
+            "name": "التخصصي 110"
+        },
+        "Takhassusi 111": {
+            "name": "التخصصي 111"
+        },
+        "Takhassusi 112": {
+            "name": "التخصصي 112"
+        },
+        "Takhassusi 113": {
+            "name": "التخصصي 113"
+        },
+        "Takhassusi 114": {
+            "name": "التخصصي 114"
+        },
+        "Takhassusi 115": {
+            "name": "التخصصي 115"
+        },
+        "Takhassusi 116": {
+            "name": "التخصصي 116"
+        },
+        "Takhassusi 117": {
+            "name": "التخصصي 117"
+        },
+        "Takhassusi 120": {
+            "name": "التخصصي 120"
+        },
+        "An-Namuthajiyah 503": {
+            "name": "النموذجية 503"
+        },
+        "Al-Fakhiriyah 501": {
+            "name": "الفاخرية 501"
+        },
+        "Olaishah 501": {
+            "name": "عليشة 501"
+        },
+        "Olaishah 503": {
+            "name": "عليشة 503"
+        },
+        "Assir 101": {
+            "name": "عسير 101"
+        },
+        "Madina Munwarah 417": {
+            "name": "المدينة المنورة 417"
+        },
+        "Madina Munwarah 416": {
+            "name": "المدينة المنورة 416"
+        },
+        "Madina Munwarah 415": {
+            "name": "المدينة المنورة 415"
+        },
+        "Sultanah 103": {
+            "name": "سلطانة 103"
+        },
+        "Sultanah 104": {
+            "name": "سلطانة 104"
+        },
+        "Sultanah 105": {
+            "name": "سلطانة 105"
+        },
+        "Sultanah 106": {
+            "name": "سلطانة 106"
+        },
+        "Suwaidi Al Am 308": {
+            "name": "السويدي العام 308"
+        },
+        "Suwaidi Al Am 309": {
+            "name": "السويدي العام 309"
+        },
+        "Utayqah 516": {
+            "name": "عتيقة 516"
+        },
+        "Al-Yamamah 501": {
+            "name": "اليمامة 501"
+        },
+        "Al-Yamamah 502": {
+            "name": "اليمامة 502"
+        },
+        "Al Faryan 103": {
+            "name": "آل فريان 103"
+        },
+        "Al Faryan 104": {
+            "name": "آل فريان 104"
+        },
+        "Al Faryan 105": {
+            "name": "آل فريان 105"
+        },
+        "Southern Ring 301": {
+            "name": "الدائري الجنوبي 301"
+        },
+        "Transportation Center": {
+            "name": "مركز النقل العام"
+        }
+    }
+}

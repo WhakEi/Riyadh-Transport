@@ -1,6 +1,7 @@
 [
   {
     "name": "KAFD",
+    "name_ar": "المركز المالي",
     "button_url": "https://rpt.sa/plan?destinationLat=24.7675640808748&destinationLng=46.6431256891494&destinationName=KAFD",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001059",
     "latitude": "24.7675640808748",
@@ -8,6 +9,7 @@
   },
   {
     "name": "Ar Rabi",
+    "name_ar": "الربيع",
     "button_url": "https://rpt.sa/plan?destinationLat=24.7862336738237&destinationLng=46.6601577469387&destinationName=Ar%20Rabi",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001099",
     "latitude": "24.7862336738237",
@@ -15,6 +17,7 @@
   },
   {
     "name": "Uthman Bin Affan Road",
+    "name_ar": "طريق عثمان بن عفان",
     "button_url": "https://rpt.sa/plan?destinationLat=24.8013858697821&destinationLng=46.6959645941687&destinationName=Uthman%20Bin%20Affan%20Road",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001100",
     "latitude": "24.8013858697821",
@@ -22,6 +25,7 @@
   },
   {
     "name": "SABIC",
+    "name_ar": "سابك",
     "button_url": "https://rpt.sa/plan?destinationLat=24.8071265842095&destinationLng=46.709574070725&destinationName=SABIC",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001101",
     "latitude": "24.8071265842095",
@@ -29,6 +33,7 @@
   },
   {
     "name": "Granadia",
+    "name_ar": "غرناطية",
     "button_url": "https://rpt.sa/plan?destinationLat=24.7864457194747&destinationLng=46.7292022596857&destinationName=Granadia",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001119",
     "latitude": "24.7864457194747",
@@ -36,6 +41,7 @@
   },
   {
     "name": "Al Yarmuk",
+    "name_ar": "اليرموك",
     "button_url": "https://rpt.sa/plan?destinationLat=24.7913226694253&destinationLng=46.7663206472307&destinationName=Al%20Yarmuk",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001120",
     "latitude": "24.7913226694253",
@@ -43,6 +49,7 @@
   },
   {
     "name": "Al Hamra",
+    "name_ar": "الحمراء",
     "button_url": "https://rpt.sa/plan?destinationLat=24.7763894633984&destinationLng=46.7767770371393&destinationName=Al%20Hamra",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001073",
     "latitude": "24.7763894633984",
@@ -50,6 +57,7 @@
   },
   {
     "name": "Al Andalus",
+    "name_ar": "الأندلس",
     "button_url": "https://rpt.sa/plan?destinationLat=24.756780276022&destinationLng=46.7903505810843&destinationName=Al%20Andalus",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001121",
     "latitude": "24.756780276022",
@@ -57,6 +65,7 @@
   },
   {
     "name": "Khurais Road",
+    "name_ar": "طريق خريص",
     "button_url": "https://rpt.sa/plan?destinationLat=24.7407170341613&destinationLng=46.7987228795334&destinationName=Khurais%20Road",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001122",
     "latitude": "24.7407170341613",
@@ -64,6 +73,7 @@
   },
   {
     "name": "As Salam",
+    "name_ar": "السلام",
     "button_url": "https://rpt.sa/plan?destinationLat=24.7227015446979&destinationLng=46.8112004788316&destinationName=As%20Salam",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001123",
     "latitude": "24.7227015446979",
@@ -71,6 +81,7 @@
   },
   {
     "name": "An Naseem",
+    "name_ar": "النسيم",
     "button_url": "https://rpt.sa/plan?destinationLat=24.7004968033788&destinationLng=46.8274689686293&destinationName=An%20Naseem",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001095",
     "latitude": "24.7004968033788",
