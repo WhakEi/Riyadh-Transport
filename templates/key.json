@@ -1,0 +1,263 @@
+{
+    "King Saud University": {
+        "name": "جامعة الملك سعود"
+    },
+    "Al Batha": {
+        "name": "البطحاء"
+    },
+    "As Sahafa": {
+        "name": "الصحافة"
+    },
+    "Transportation Center": {
+        "name": "مركز النقل العام"
+    },
+    "North Vegetable Market": {
+        "name": "سوق الشمال للخضار"
+    },
+    "Al-Andalus": {
+        "name": "الأندلس"
+    },
+    "Ar-Rabi": {
+        "name": "الربيع"
+    },
+    "Al-Kharj": {
+        "name": "الخرج"
+    },
+    "As-Suwaidi Al-Gharbi": {
+        "name": "السويدي الغربي"
+    },
+    "Ali Ibn Abi Talib Station": {
+        "name": "محطة علي بن أبي طالب"
+    },
+    "Khalid Bin Alwaleed Station": {
+        "name": "محطة خالد بن وليد"
+    },
+    "Ar-Rawabi": {
+        "name": "الروابي"
+    },
+    "Tuwaiq": {
+        "name": "طويق"
+    },
+    "Olaishah": {
+        "name": "عليشة"
+    },
+    "New Industrial City": {
+        "name": "الصناعية الجديدة"
+    },
+    "National Guard Hospital": {
+        "name": "مستشفى الحرس الوطني"
+    },
+    "Al-Wisham": {
+        "name": "الوشام"
+    },
+    "Al-Faiha": {
+        "name": "الفيحاء"
+    },
+    "National Museum": {
+        "name": "المتحف الوطني"
+    },
+    "Qasr Al Hokm": {
+        "name": "قصر الحكم"
+    },
+    "Railway Station": {
+        "name": "محطة سكة الحديد"
+    },
+    "North Al-Mathar": {
+        "name": "المعذر الشمالي"
+    },
+    "Laban": {
+        "name": "لبن"
+    },
+    "Stc": {
+        "name": "محطة الإتصالات السعودية (stc)"
+    },
+    "Al-Malqa": {
+        "name": "الملقا"
+    },
+    "Riyadh Exhibition Center": {
+        "name": "مركز الرياض للمعارض"
+    },
+    "Al-Awwal Bank": {
+        "name": "محطة البنك الأول"
+    },
+    "Abu Dhabi Square": {
+        "name": "ميدان أبو ظبي"
+    },
+    "Kafd": {
+        "name": "المركز المالي"
+    },
+    "Al-Yarmuk": {
+        "name": "محطة اليرموك"
+    },
+    "Dirab": {
+        "name": "ديراب"
+    },
+    "Hassan Bin Thabit Station": {
+        "name": "محطة حسان بن ثابت"
+    },
+    "Al-Khaleej Station": {
+        "name": "محطة الخليج"
+    },
+    "Irqah": {
+        "name": "عرقة"
+    },
+    "Western Al-Uraija": {
+        "name": "العريجاء الغربي"
+    },
+    "Manfuha": {
+        "name": "محطة منفوحة"
+    },
+    "Al-Mansurah": {
+        "name": "المنصورة"
+    },
+    "Utayqah": {
+        "name": "عتيقة"
+    },
+    "Skirinah": {
+        "name": "محطة سكيرينة"
+    },
+    "Al-Khalidiyah": {
+        "name": "الخالدية"
+    },
+    "Al-Hada": {
+        "name": "الهدا"
+    },
+    "Al-Dirah": {
+        "name": "الديرة"
+    },
+    "Al-Mathar": {
+        "name": "المعذر"
+    },
+    "Az-Zahraa": {
+        "name": "الزهراء"
+    },
+    "Al-Wizarat": {
+        "name": "الوزارات"
+    },
+    "Al-Malaz": {
+        "name": "الملز"
+    },
+    "Western Umm Al Hamam": {
+        "name": "أم الحمام الغربي"
+    },
+    "King Fahd Library": {
+        "name": "مكتبة الملك فهد"
+    },
+    "Al-Wurud": {
+        "name": "الورود"
+    },
+    "King Fahd District": {
+        "name": "حي الملك فهد"
+    },
+    "Al-Aqiq": {
+        "name": "العقيق"
+    },
+    "Al-Yasmeen": {
+        "name": "الياسمين"
+    },
+    "At-Taawun": {
+        "name": "التعاون"
+    },
+    "Al-Ezdihar": {
+        "name": "الإزدهار"
+    },
+    "Al-Muanisiyah": {
+        "name": "المونسية"
+    },
+    "Ksu Womens' Faculties": {
+        "name": "جامعة الملك سعود: كلية الطالبات"
+    },
+    "Ksu Mens' Faculties": {
+        "name": "جامعة الملك سعود: كلية الطلاب"
+    },
+    "Embassies": {
+        "name": "السفارات"
+    },
+    "Ar-Rawdah": {
+        "name": "الروضة"
+    },
+    "Al-Quds": {
+        "name": "القدس"
+    },
+    "Ministry Of Environment Water And Agriculture": {
+        "name": "وزارة البيئة والمياه والزراعة"
+    },
+    "Ishbiliyah": {
+        "name": "إشبيلية"
+    },
+    "Al-Khaleej": {
+        "name": "الخليج"
+    },
+    "Al-Nakheel": {
+        "name": "النخيل"
+    },
+    "Al-Nahda": {
+        "name": "النهضة"
+    },
+    "Al Nadwah": {
+        "name": "الندوة"
+    },
+    "Granadia": {
+        "name": "محطة غرناطية"
+    },
+    "Al-Yarmuk Station": {
+        "name": "محطة اليرموك"
+    },
+    "Ar-Rayan": {
+        "name": "الريان"
+    },
+    "As-Salam": {
+        "name": "السلام"
+    },
+    "As-Sulai": {
+        "name": "السلي"
+    },
+    "Al-Jazeerah": {
+        "name": "الجزيرة"
+    },
+    "West An-Naseem": {
+        "name": "النسيم الغربي"
+    },
+    "Badr": {
+        "name": "بدر"
+    },
+    "Ash-Shifa": {
+        "name": "الشفا"
+    },
+    "Ad-Dar Al-Baida": {
+        "name": "الدار البيضاء"
+    },
+    "Al-Iskan": {
+        "name": "الإسكان"
+    },
+    "New Industrial City Second": {
+        "name": "الثاني للصناعية الجديدة"
+    },
+    "Dahrat Al-Badeah": {
+        "name": "ظهرة البديعة"
+    },
+    "Ayesha Bint Abi Bakr": {
+        "name": "عائشة بنت أبي بكر"
+    },
+    "Sultanah": {
+        "name": "سلطانة"
+    },
+    "Al-Dreihmiah": {
+        "name": "الدريهميه"
+    },
+    "Al-Uraija": {
+        "name": "العريجاء"
+    },
+    "Ad-Douh": {
+        "name": "محطة الدوح"
+    },
+    "Khadijah Bint Khuwailid": {
+        "name": "خديجة بنت خويلد"
+    },
+    "Ibn-Hazam": {
+        "name": "إبن حزم"
+    },
+    "Middle Al-Uraija": {
+        "name": "العريجاء الوسطى"
+    }
+}
