@@ -772,6 +772,10 @@ def get_mtr_lines():
 def serve_frontend():
     return send_from_directory('templates', 'index.html')
 
+@app.route('/ar')
+def serve_arabic():
+    return send_from_directory('templates/ar', 'index.html')
+
 @app.route('/<path:path>')
 def serve_static(path):
     return send_from_directory('templates', path)
