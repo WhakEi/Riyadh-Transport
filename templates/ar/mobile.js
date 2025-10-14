@@ -189,7 +189,7 @@ window.onload = async () => {
             stationCoords.push([lat, lng]);
             const stationDiv = document.createElement('div');
             stationDiv.className = 'station-item';
-            stationDiv.innerHTML = `<div class="station-icon">${station.type === 'bus' ? '🚌' : '🚇'}</div><div class="station-details"><h4>${station.name}</h4><p>${Math.round(station.distance)} m away</p><p>${Math.round(station.duration / 60)} min walk</p></div>`;
+            stationDiv.innerHTML = `<div class="station-icon">${station.type === 'bus' ? '🚌' : '🚇'}</div><div class="station-details"><h4>${station.name}</h4><p>${Math.round(station.distance)} متر</p><p>${Math.round(station.duration / 60)} دقائق مشيًا</p></div>`;
             const marker = L.marker([lat, lng]).addTo(stationMarkersLayer);
             marker.bindPopup(`<b>${station.name}</b>`);
             const handleStationClick = () => {
@@ -213,7 +213,7 @@ window.onload = async () => {
         const stationDetailName = document.getElementById('station-detail-name');
         const stationDetailContent = document.getElementById('station-detail-content');
         stationDetailName.textContent = station.name;
-        stationDetailContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading lines...</p></div>`;
+        stationDetailContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p>جاري تحميل المسار...</p></div>`;
         const cleanedStationName = station.name.replace(/\s*\((Bus|Metro)\)$/, '').trim();
         try {
             const response = await fetch(`${BACKEND_URL}/searchstation`, {
@@ -260,7 +260,7 @@ window.onload = async () => {
 
     async function fetchAllLines() {
         const linesList = document.getElementById('lines-list');
-        linesList.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading all lines...</p></div>`;
+        linesList.innerHTML = `<div class="loader-container"><div class="loader"></div><p>جاري تحميل جميع المسارات...</p></div>`;
         try {
             const [metroLinesRes, busLinesRes] = await Promise.all([
                 fetch(`${BACKEND_URL}/mtrlines`), fetch(`${BACKEND_URL}/buslines`)
@@ -275,7 +275,7 @@ window.onload = async () => {
                 if (type === 'metro' && data.stations && data.stations.length > 0) terminus = `${data.stations[0]} - ${data.stations[data.stations.length - 1]}`;
                 else if (type === 'bus') {
                     const keys = Object.keys(data);
-                    if (keys.length === 1) terminus = `${keys[0]} Ring`;
+                    if (keys.length === 1) terminus = `المسار الدائري ${keys[0]}`;
                     else if (keys.length > 1) terminus = `${keys[1]} - ${keys[0]}`;
                 }
                 return { type, line, terminus };
@@ -631,7 +631,7 @@ window.onload = async () => {
             } else {
                 title = segment.type === 'walk' ? `إمشي إلى ${segment.to || "وجهتك"}` : `إتجه على متن حافلة رقم ${segment.line}`;
             }
-            let details = segment.type === 'walk' ? `${durationMins} دقيقة (${Math.round(segment.distance || 0)} متر)` : `${durationMins} دقيقة ${segment.stations && segment.stations.length > 1 ? `&bull; ${segment.stations.length - 1} stops` : ''}`;
+            let details = segment.type === 'walk' ? `${durationMins} دقيقة (${Math.round(segment.distance || 0)} متر)` : `${durationMins} دقائق ${segment.stations && segment.stations.length > 1 ? `&bull; ${segment.stations.length - 1} محطة` : ''}`;
             const endPoint = segment.type !== 'walk' ? `<p>إنزل عند محطة ${segment.stations && segment.stations.length > 0 ? segment.stations[segment.stations.length - 1] : "next stop"}</p>` : '';
             segmentsContainer.innerHTML += `<div class="instruction"><div class="instruction-icon">${icon}</div><div class="instruction-details"><h3>${title}</h3><p>${details}</p>${endPoint}</div></div>`;
         });
@@ -703,7 +703,7 @@ window.onload = async () => {
     });
 
     layoutSelect.addEventListener('change', (e) => {
-        if (e.target.value === 'desktop') window.location.href = '/index.html';
+        if (e.target.value === 'desktop') window.location.href = '/ar/index.html';
         else if (e.target.value === 'legacy') window.location.href = '/legacy.html';
     });
 

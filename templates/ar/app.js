@@ -220,7 +220,7 @@ window.onload = async () => {
      // --- NEW/UPDATED: LINES TAB LOGIC ---
     async function fetchAllLines() {
         const linesList = document.getElementById('lines-list');
-        linesList.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading all lines...</p></div>`;
+        linesList.innerHTML = `<div class="loader-container"><div class="loader"></div><p>جاري تحميل جميع المسارات...</p></div>`;
 
         try {
             const [metroLinesRes, busLinesRes] = await Promise.all([
@@ -315,7 +315,7 @@ window.onload = async () => {
         renderLinesList(filteredLines);
     });
     const lineColors = {
-        metro: { 'المسار الأزرق': '#00aee6', 'المسار الأحمر': '#ef4938', 'المسار البرتقالي': '#f68d39', 'المسار الأصفر': '#ffd10a', 'المسار الأخضر': '#37b23f', 'المسار البتفسجي': '#984b9d', '1': '#00aee6', '2': '#ef4938', '3': '#f68d39', '4': '#ffd10a', '5': '#37b23f', '6': '#984b9d'  },
+        metro: { 'المسار الأزرق': '#00aee6', 'المسار الأحمر': '#ef4938', 'المسار البرتقالي': '#f68d39', 'المسار الأصفر': '#ffd10a', 'المسار الأخضر': '#37b23f', 'المسار البنفسجي': '#984b9d', '1': '#00aee6', '2': '#ef4938', '3': '#f68d39', '4': '#ffd10a', '5': '#37b23f', '6': '#984b9d'  },
         bus: '#18a034',
         walk: '#6c757d',
         default: '#555'
@@ -404,7 +404,7 @@ window.onload = async () => {
         lineDetailName.appendChild(terminus);
 
         const lineDetailContent = document.getElementById('line-detail-content');
-        lineDetailContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading stations...</p></div>`;
+        lineDetailContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p>جاري تحميل جميع المحطات...</p></div>`;
 
         try {
             const endpoint = line.type === 'metro' ? '/viewmtr' : '/viewbus';
@@ -614,7 +614,7 @@ window.onload = async () => {
 
         async getOSMSuggestions(query) {
             try {
-                const params = new URLSearchParams({ q: `${query}, Riyadh`, format: 'json', addressdetails: 1, limit: 4, viewbox: '46.2,25.2,47.2,24.2', bounded: 1 });
+                const params = new URLSearchParams({ q: `${query}, Riyadh`, format: 'json', addressdetails: 1, limit: 4, viewbox: '46.2,25.2,47.2,24.2', bounded: 1, 'accept-language': 'ar' });
                 const response = await fetch(`${OSM_NOMINATIM_URL}?${params}`);
                 if (!response.ok) return [];
                 const data = await response.json();
@@ -914,7 +914,7 @@ window.onload = async () => {
     document.getElementById('layout-select').addEventListener('change', (e) => {
         const path = window.location.pathname;
         if (e.target.value === 'desktop' && (path.endsWith('/mobile.html') || path.endsWith('/legacy.html'))) window.location.href = '/index.html';
-        else if (e.target.value === 'mobile') window.location.href = '/mobile.html';
+        else if (e.target.value === 'mobile') window.location.href = '/ar/mobile.html';
         else if (e.target.value === 'legacy') window.location.href = '/legacy.html';
     });
 
