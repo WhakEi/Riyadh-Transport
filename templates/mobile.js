@@ -260,7 +260,7 @@ window.onload = async () => {
         linesList.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading all lines...</p></div>`;
         try {
             const [metroLinesRes, busLinesRes] = await Promise.all([
-                fetch(`$/mtrlines`), fetch(`/buslines`)
+                fetch(`/mtrlines`), fetch(`/buslines`)
             ]);
             const metroLinesData = await metroLinesRes.json();
             const busLinesData = await busLinesRes.json();
