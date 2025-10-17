@@ -2,7 +2,21 @@
 const BACKEND_URL = 'http://mainserver.inirl.net:5001';
 const OSM_NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
 
+// --- NEW: APPWRITE CONFIGURATION ---
+const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1'; // Or your self-hosted endpoint
+const APPWRITE_PROJECT_ID = '68f141dd000f83849c21'; // Replace with your Project ID
+const APPWRITE_DATABASE_ID = '68f146de0013ba3e183a'; // Replace with your Database ID
+const APPWRITE_ALERTS_COLLECTION_ID = 'arabic'; // Replace with your Collection ID
+
 window.onload = async () => {
+    // --- APPWRITE INITIALIZATION ---
+    const { Client, Databases, ID, Query } = Appwrite; // Add Query
+    const client = new Client();
+    client
+        .setEndpoint(APPWRITE_ENDPOINT)
+        .setProject(APPWRITE_PROJECT_ID);
+    const databases = new Databases(client);
+
     // --- MAP INITIALIZATION ---
     const map = L.map('map', { zoomControl: false }).setView([24.7136, 46.6753], 11);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -220,7 +234,7 @@ window.onload = async () => {
      // --- NEW/UPDATED: LINES TAB LOGIC ---
     async function fetchAllLines() {
         const linesList = document.getElementById('lines-list');
-        linesList.innerHTML = `<div class="loader-container"><div class="loader"></div><p>جاري تحميل جميع المسارات...</p></div>`;
+        linesList.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading all lines...</p></div>`;
 
         try {
             const [metroLinesRes, busLinesRes] = await Promise.all([
@@ -315,7 +329,7 @@ window.onload = async () => {
         renderLinesList(filteredLines);
     });
     const lineColors = {
-        metro: { 'المسار الأزرق': '#00aee6', 'المسار الأحمر': '#ef4938', 'المسار البرتقالي': '#f68d39', 'المسار الأصفر': '#ffd10a', 'المسار الأخضر': '#37b23f', 'المسار البنفسجي': '#984b9d', '1': '#00aee6', '2': '#ef4938', '3': '#f68d39', '4': '#ffd10a', '5': '#37b23f', '6': '#984b9d'  },
+        metro: { 'المسار الأزرق': '#00aee6', 'المسار الأحمر': '#ef4938', 'المسار البرتقالي': '#f68d39', 'المسار الأصفر': '#ffd10a', 'المسار الأخضر': '#37b23f', 'المسار البتفسجي': '#984b9d', '1': '#00aee6', '2': '#ef4938', '3': '#f68d39', '4': '#ffd10a', '5': '#37b23f', '6': '#984b9d'  },
         bus: '#18a034',
         walk: '#6c757d',
         default: '#555'
@@ -404,7 +418,7 @@ window.onload = async () => {
         lineDetailName.appendChild(terminus);
 
         const lineDetailContent = document.getElementById('line-detail-content');
-        lineDetailContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p>جاري تحميل جميع المحطات...</p></div>`;
+        lineDetailContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading stations...</p></div>`;
 
         try {
             const endpoint = line.type === 'metro' ? '/viewmtr' : '/viewbus';
@@ -614,7 +628,7 @@ window.onload = async () => {
 
         async getOSMSuggestions(query) {
             try {
-                const params = new URLSearchParams({ q: `${query}, Riyadh`, format: 'json', addressdetails: 1, limit: 4, viewbox: '46.2,25.2,47.2,24.2', bounded: 1, 'accept-language': 'ar' });
+                const params = new URLSearchParams({ q: `${query}, Riyadh`, format: 'json', addressdetails: 1, limit: 4, viewbox: '46.2,25.2,47.2,24.2', bounded: 1 });
                 const response = await fetch(`${OSM_NOMINATIM_URL}?${params}`);
                 if (!response.ok) return [];
                 const data = await response.json();
@@ -898,6 +912,77 @@ window.onload = async () => {
         if (allCoords.length > 0) map.fitBounds(L.latLngBounds(allCoords), { padding: [50, 50] });
     }
 
+    // --- ALERTS MENU LOGIC ---
+    const alertsBtn = document.getElementById('alerts-btn');
+    const alertsOverlay = document.getElementById('alerts-overlay');
+    const alertsCloseBtn = document.getElementById('alerts-close-btn');
+    const alertsContent = document.getElementById('alerts-content');
+    const notificationDot = document.getElementById('alerts-notification-dot');
+
+    alertsBtn.addEventListener('click', () => {
+        alertsOverlay.classList.add('visible');
+        notificationDot.classList.add('hidden'); // Hide dot when panel is opened
+    });
+    alertsCloseBtn.addEventListener('click', () => alertsOverlay.classList.remove('visible'));
+    alertsOverlay.addEventListener('click', (e) => { if (e.target === alertsOverlay) alertsOverlay.classList.remove('visible'); });
+
+    async function fetchAndRenderAlerts() {
+        try {
+            // Fetch documents sorted by creation date, newest first, limit 10
+            const response = await databases.listDocuments(
+                APPWRITE_DATABASE_ID,
+                APPWRITE_ALERTS_COLLECTION_ID,
+                [Query.orderDesc('$createdAt'), Query.limit(10)]
+            );
+            const alerts = response.documents;
+
+            alertsContent.innerHTML = ''; // Clear previous content
+
+            if (alerts.length === 0) {
+                alertsContent.innerHTML = '<p>لا يوجد إشعارات حاليا.</p>';
+                notificationDot.classList.add('hidden'); // Ensure dot is hidden if no alerts
+                return;
+            }
+
+            // --- Notification Dot Logic ---
+            const latestAlertId = alerts[0].$id;
+            const lastSeenAlertId = localStorage.getItem('lastSeenAlertId');
+
+            if (latestAlertId !== lastSeenAlertId) {
+                notificationDot.classList.remove('hidden');
+            }
+
+            alertsBtn.addEventListener('click', () => {
+                alertsOverlay.classList.add('visible');
+                notificationDot.classList.add('hidden'); // Hide dot when panel is opened
+                localStorage.setItem('lastSeenAlertId', latestAlertId); // Mark latest alert as "seen"
+            });
+            // --- End Notification Dot Logic ---
+
+
+            alerts.forEach(alert => {
+                const alertItem = document.createElement('div');
+                alertItem.className = 'alert-item';
+
+                const alertDate = new Date(alert.$createdAt).toLocaleString(undefined, {
+                    dateStyle: 'medium',
+                    timeStyle: 'short'
+                });
+
+                alertItem.innerHTML = `
+                    <h4>${alert.title}</h4>
+                    <p>${alert.message.replace(/\n/g, '<br>')}</p>
+                    <small>${alertDate}</small>
+                `;
+                alertsContent.appendChild(alertItem);
+            });
+
+        } catch (error) {
+            console.error("Failed to fetch alerts:", error);
+            alertsContent.innerHTML = '<p style="color: red;">Could not load alerts.</p>';
+        }
+    }
+
     // --- SETTINGS MENU LOGIC ---
     const settingsBtn = document.getElementById('settings-btn');
     const settingsOverlay = document.getElementById('settings-overlay');
@@ -914,7 +999,7 @@ window.onload = async () => {
     document.getElementById('layout-select').addEventListener('change', (e) => {
         const path = window.location.pathname;
         if (e.target.value === 'desktop' && (path.endsWith('/mobile.html') || path.endsWith('/legacy.html'))) window.location.href = '/index.html';
-        else if (e.target.value === 'mobile') window.location.href = '/ar/mobile.html';
+        else if (e.target.value === 'mobile') window.location.href = '/mobile.html';
         else if (e.target.value === 'legacy') window.location.href = '/legacy.html';
     });
 
@@ -939,4 +1024,12 @@ window.onload = async () => {
     await initializeAutocomplete();
     setLocationFromGPS();
     map.removeLayer(stationMarkersLayer);
+    fetchAndRenderAlerts(); // Fetch alerts on initial load
+
+    // --- REALTIME ALERTS ---
+    client.subscribe(`databases.${APPWRITE_DATABASE_ID}.collections.${APPWRITE_ALERTS_COLLECTION_ID}.documents`, response => {
+        console.log("Realtime event received:", response);
+        // A document was created, updated, or deleted. Just refetch all.
+        fetchAndRenderAlerts();
+    });
 };

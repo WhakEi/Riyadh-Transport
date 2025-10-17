@@ -4,6 +4,8 @@
     --text-color: #3c4043;
     --panel-shadow: 0 -2px 10px rgba(0,0,0,0.15);
     --border-radius: 16px;
+    --warning-color: #d93025;
+    --warning-background: #fce8e6;
 }
 
 body, html {
@@ -335,15 +337,56 @@ body, html {
 
 .button-with-icon { display: flex; align-items: center; justify-content: center; gap: 10px; }
 
-/* --- Settings --- */
-.settings-button { background-color: white; width: 44px; height: 44px; border-radius: 50%; border: none; box-shadow: 0 1px 5px rgba(0,0,0,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.settings-button:active { background-color: #f4f4f4; }
-.leaflet-control .settings-button { margin: 0; }
+/* --- Map Buttons (Settings, Alerts) --- */
+.map-buttons-container {
+    display: flex;
+    gap: 8px;
+}
+.map-button {
+    position: relative;
+    background-color: white;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.map-button:active { background-color: #f4f4f4; }
+.leaflet-control .map-button { margin: 0; }
 .leaflet-right .leaflet-control { margin-right: 10px; }
 .leaflet-top .leaflet-control { margin-top: 10px; }
+
+.notification-dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 9px;
+    height: 9px;
+    background-color: var(--warning-color);
+    border-radius: 50%;
+    border: 2px solid var(--background-color);
+}
+
+/* --- Settings --- */
 .settings-panel h3 { margin-top: 0; margin-bottom: 24px; text-align: center; color: var(--text-color); }
 .settings-group { margin-bottom: 20px; }
 .settings-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; color: #5f6368; }
 .settings-group select { width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 16px; background-color: #f1f3f4; }
 .settings-info { margin-top: 30px; padding-top: 15px; border-top: 1px solid #e8eaed; text-align: center; font-size: 13px; color: #5f6368; }
 .settings-close-button { width: 100%; padding: 15px; margin-top: 24px; background-color: #e8eaed; color: #d93025; border: none; border-radius: 12px; font-size: 18px; font-weight: 500; }
+
+/* --- Alerts Panel --- */
+.alerts-content {
+    max-height: 40vh; /* Limit height and make it scrollable */
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+.alert-item { padding: 12px; margin-bottom: 12px; border-radius: 6px; border: 1px solid var(--warning-color); background-color: var(--warning-background); }
+.alert-item h4 { margin: 0 0 8px 0; font-size: 16px; color: var(--warning-color); }
+.alert-item p { margin: 0; font-size: 14px; line-height: 1.5; color: #444; }
+.alert-item small { display: block; margin-top: 8px; font-size: 12px; color: #5f6368; text-align: right; }
+#alerts-content > p { text-align: center; color: #5f6368; margin-top: 20px; }
