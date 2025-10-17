@@ -1,5 +1,5 @@
 // --- CONFIGURATION ---
-const BACKEND_URL = 'http://mainserver.inirl.net:5001';
+const BACKEND_URL = '/ar';
 const OSM_NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
 
 const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1'; // Or your self-hosted endpoint
