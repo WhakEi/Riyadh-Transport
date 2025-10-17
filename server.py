@@ -14,6 +14,7 @@ CORS(app, resources={r"/*": {
         "http://localhost:5000"
     ]
 }})
+BACKEND_API_URL = "http://127.0.0.1:5001"
 
 # Configuration
 METRO_LINES_FILE = 'metro_lines.json'
@@ -329,6 +330,53 @@ def view_line_endpoint():
     except Exception as e:
         print(f"View line error: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/ar/<path:subpath>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
+def proxy_api_request(subpath):
+    """
+    This function acts as a proxy. It forwards requests from the frontend
+    to the internal backend API service.
+    """
+    # Construct the full URL for the backend service by appending the subpath
+    backend_url = f"{BACKEND_API_URL}/{subpath}"
+
+    # Copy headers from the incoming request, but remove the 'Host' header
+    # as the requests library will set its own.
+    headers = {key: value for (key, value) in request.headers if key.lower() != 'host'}
+
+    try:
+        # Forward the request to the backend API using the 'requests' library
+        # This mirrors the original request's method, URL, headers, and data.
+        backend_resp = requests.request(
+            method=request.method,
+            url=backend_url,
+            headers=headers,
+            data=request.get_data(),
+            cookies=request.cookies,
+            params=request.args,
+            allow_redirects=False,
+            timeout=10 # 10-second timeout
+        )
+
+        # These are headers that should not be directly copied from the backend
+        # response to the new response, as they are controlled by the WSGI server.
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+        
+        # Copy headers from the backend response to our new response
+        response_headers = {
+            key: value for (key, value) in backend_resp.raw.headers.items()
+            if key.lower() not in excluded_headers
+        }
+
+        # Create a new Flask response object to send back to the original client
+        # This response contains the content, status code, and headers from the backend API.
+        return Response(backend_resp.content, backend_resp.status_code, response_headers)
+
+    except requests.exceptions.RequestException as e:
+        # Handle connection errors to the backend service
+        print(f"Error connecting to backend API: {e}")
+        return Response("API Gateway Error: Could not connect to the backend service.", status=502)
+
 
 @app.route('/viewmtr', methods=['POST'])
 def view_mtr_endpoint():
