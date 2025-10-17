@@ -6,9 +6,14 @@ from pathlib import Path
 from math import radians, sin, cos, sqrt, atan2
 import heapq
 import os
+import requests
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {
+    "origins": [
+        "http://localhost:5000"
+    ]
+}})
 
 # Configuration
 METRO_LINES_FILE = 'metro_lines.json'
@@ -772,7 +777,7 @@ def get_mtr_lines():
 def serve_frontend():
     return send_from_directory('templates', 'index.html')
 
-@app.route('/ar')
+@app.route('/ar/')
 def serve_arabic():
     return send_from_directory('templates/ar', 'index.html')
 
