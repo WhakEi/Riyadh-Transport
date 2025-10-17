@@ -1,7 +1,19 @@
 // --- CONFIGURATION ---
 const OSM_NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
+const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1'; // Or your self-hosted endpoint
+const APPWRITE_PROJECT_ID = '68f141dd000f83849c21'; // Replace with your Project ID
+const APPWRITE_DATABASE_ID = '68f146de0013ba3e183a'; // Replace with your Database ID
+const APPWRITE_ALERTS_COLLECTION_ID = 'emptt'; // Replace with your Collection ID
 
 window.onload = async () => {
+    // --- APPWRITE INITIALIZATION ---
+    const { Client, Databases, ID, Query } = Appwrite;
+    const client = new Client();
+    client
+        .setEndpoint(APPWRITE_ENDPOINT)
+        .setProject(APPWRITE_PROJECT_ID);
+    const databases = new Databases(client);
+
     // --- MAP INITIALIZATION ---
     const map = L.map('map', { zoomControl: false }).setView([24.7136, 46.6753], 11);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -296,7 +308,7 @@ window.onload = async () => {
             const item = document.createElement('div');
             item.className = 'line-item';
             const color = line.type === 'metro' ? (lineColors.metro[line.line] || lineColors.default) : lineColors.bus;
-            item.innerHTML = `<div class="line-item-badge" style="background-color: ${color};">${line.line}</div><div class="line-item-details"><p class="terminus">${line.terminus}</p><p class="line-type">${line.type.charAt(0).toUpperCase() + line.type.slice(1)}</p></div>`;
+            item.innerHTML = `<div class="line-item-badge" style="background-color: ${color};">${line.line}</div><div class="line-item-details"><p class="terminus">${line.terminus}</p><p class="line-type">${line.line.startsWith('BRT') ? 'BRT Bus' : (line.type.charAt(0).toUpperCase() + line.type.slice(1))}</p></div>`;
             item.addEventListener('click', () => handleLineClick(line));
             linesList.appendChild(item);
         });
@@ -614,7 +626,7 @@ window.onload = async () => {
             if (segment.type === 'metro') {
                 icon = `<span class="line-icon" style="background-color: ${color}; color: white; border-radius: 4px; padding: 2px 6px; font-size: 14px;">🚇</span>`;
             } else if (segment.type === 'walk') {
-                icon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>`;
+                icon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle></svg>`;
             } else { // Bus
                 icon = `<span class="line-icon" style="background-color: ${color}; color: white; border-radius: 4px; padding: 2px 6px;">${segment.line}</span>`;
             }
@@ -678,7 +690,65 @@ window.onload = async () => {
         );
     });
 
-    // --- CORRECTED: Settings functionality restored ---
+    // --- ALERTS LOGIC ---
+    const alertsBtn = document.getElementById('alerts-btn');
+    const alertsOverlay = document.getElementById('alerts-overlay');
+    const alertsCloseBtn = document.getElementById('alerts-close-btn');
+    const alertsContent = document.getElementById('alerts-content');
+    const notificationDot = document.getElementById('alerts-notification-dot');
+
+    alertsBtn.addEventListener('click', () => {
+        alertsOverlay.classList.add('visible');
+        notificationDot.classList.add('hidden'); // Hide dot when panel is opened
+    });
+    alertsCloseBtn.addEventListener('click', () => alertsOverlay.classList.remove('visible'));
+    alertsOverlay.addEventListener('click', (e) => { if (e.target === alertsOverlay) alertsOverlay.classList.remove('visible'); });
+
+    async function fetchAndRenderAlerts() {
+        try {
+            const response = await databases.listDocuments(
+                APPWRITE_DATABASE_ID,
+                APPWRITE_ALERTS_COLLECTION_ID,
+                [Query.orderDesc('$createdAt'), Query.limit(10)]
+            );
+            const alerts = response.documents;
+
+            alertsContent.innerHTML = ''; // Clear previous content
+
+            if (alerts.length === 0) {
+                alertsContent.innerHTML = '<p>No active alerts.</p>';
+                notificationDot.classList.add('hidden');
+                return;
+            }
+
+            const latestAlertId = alerts[0].$id;
+            const lastSeenAlertId = localStorage.getItem('lastSeenAlertId');
+
+            if (latestAlertId !== lastSeenAlertId) {
+                notificationDot.classList.remove('hidden');
+            }
+
+            alertsBtn.addEventListener('click', () => {
+                alertsOverlay.classList.add('visible');
+                notificationDot.classList.add('hidden');
+                localStorage.setItem('lastSeenAlertId', latestAlertId);
+            });
+
+            alerts.forEach(alert => {
+                const alertItem = document.createElement('div');
+                alertItem.className = 'alert-item';
+                const alertDate = new Date(alert.$createdAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+                alertItem.innerHTML = `<h4>${alert.title}</h4><p>${alert.message.replace(/\n/g, '<br>')}</p><small>${alertDate}</small>`;
+                alertsContent.appendChild(alertItem);
+            });
+
+        } catch (error) {
+            console.error("Failed to fetch alerts:", error);
+            alertsContent.innerHTML = '<p style="color: red;">Could not load alerts.</p>';
+        }
+    }
+
+    // --- SETTINGS LOGIC ---
     const settingsBtn = document.getElementById('settings-btn');
     const settingsOverlay = document.getElementById('settings-overlay');
     const settingsCloseBtn = document.getElementById('settings-close-btn');
@@ -706,4 +776,11 @@ window.onload = async () => {
     initializePanel();
     useMyLocationBtn.click();
     map.removeLayer(stationMarkersLayer);
+    fetchAndRenderAlerts(); // Fetch alerts on load
+
+    // --- REALTIME ALERTS ---
+    client.subscribe(`databases.${APPWRITE_DATABASE_ID}.collections.${APPWRITE_ALERTS_COLLECTION_ID}.documents`, response => {
+        console.log("Realtime event received on mobile:", response);
+        fetchAndRenderAlerts();
+    });
 };

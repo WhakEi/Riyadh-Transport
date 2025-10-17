@@ -1,7 +1,21 @@
 // --- CONFIGURATION ---
 const OSM_NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
 
+// --- NEW: APPWRITE CONFIGURATION ---
+const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1'; // Or your self-hosted endpoint
+const APPWRITE_PROJECT_ID = '68f141dd000f83849c21'; // Replace with your Project ID
+const APPWRITE_DATABASE_ID = '68f146de0013ba3e183a'; // Replace with your Database ID
+const APPWRITE_ALERTS_COLLECTION_ID = 'emptt'; // Replace with your Collection ID
+
 window.onload = async () => {
+    // --- APPWRITE INITIALIZATION ---
+    const { Client, Databases, ID, Query } = Appwrite; // Add Query
+    const client = new Client();
+    client
+        .setEndpoint(APPWRITE_ENDPOINT)
+        .setProject(APPWRITE_PROJECT_ID);
+    const databases = new Databases(client);
+
     // --- MAP INITIALIZATION ---
     const map = L.map('map', { zoomControl: false }).setView([24.7136, 46.6753], 11);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -296,7 +310,7 @@ window.onload = async () => {
         renderLinesList(filteredLines);
     });
     const lineColors = {
-        metro: { 'Blue Line': '#00aee6', 'Red Line': '#ef4938', 'Orange Line': '#f68d39', 'Yellow Line': '#ffd10a', 'Green Line': '#37b23f', 'Purple Line': '#984b9d', '1': '#00aee6', '2': '#ef4938', '3': '#f68d39', '4': '#ffd10a', '5': '#37b23f', '6': '#984b9d'  },
+        metro: { 'Blue Line': '#00aee6', 'Red Line': '#ef4938', 'Orange Line': '#f68d39', 'Yellow Line': '#ffd10a', 'Green Line': '#37b23f', 'Purple Line': '#984b9d', '1': '#00aee6', '2': '#ef4938', '3': '#f68d39', '4': '#ffd10a', '5': '#37b23f', '6': '#984b9d' },
         bus: '#18a034',
         walk: '#6c757d',
         default: '#555'
@@ -836,13 +850,13 @@ window.onload = async () => {
             let style = {};
             if (segment.type === 'metro') {
                 const color = lineColors.metro[segment.line] || lineColors.default;
-                style = { color, icon: `<span class="line-icon" style="background-color: ${color}; color: white; border-radius: 4px; padding: 2px 6px; font-size: 14px; font-weight: bold;">${segment.line}</span>`, lineStyle: {} };
+                style = { color, icon: `<span class="line-icon" style="background-color: ${color}; color: white; border-radius: 4px; padding: 2px 6px; font-size: 14px; font-weight: bold;">${segment.line}</span>` };
             } else if (segment.type === 'bus') {
                 const color = lineColors.bus;
-                style = { color, icon: `<span class="line-icon" style="background-color: ${color}; color: white; border-radius: 4px; padding: 2px 6px; font-size: 14px; font-weight: bold;">${segment.line}</span>`, lineStyle: {} };
+                style = { color, icon: `<span class="line-icon" style="background-color: ${color}; color: white; border-radius: 4px; padding: 2px 6px; font-size: 14px; font-weight: bold;">${segment.line}</span>` };
             } else if (segment.type === 'walk') {
                 const color = lineColors.walk;
-                style = { color, icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>`, lineStyle: { dashArray: '5, 10' } };
+                style = { color, icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle></svg>` };
             }
             const latLngs = segment.coordinates.map(c => [c.lat, c.lng]);
             allCoords.push(...latLngs);
@@ -868,12 +882,84 @@ window.onload = async () => {
                 const stopsText = segment.stations && segment.stations.length > 1 ? `&bull; ${segment.stations.length - 1} stops` : '';
                 instructionDetails = `${durationMins} min ${stopsText}`;
             }
-            instructionDiv.innerHTML = `<div class="instruction-icon">${style.icon}</div><div class="instruction-details"><h3>${instructionTitle}</h3><p>${instructionDetails}</p>${segment.type !== 'walk' ? `<p>Disembark at ${endPointName}</p>` : ''}</div>`;
+            instructionDiv.innerHTML = `<div class="instruction-icon">${style.icon}</div><div class="instruction-details"><h3>${instructionTitle}</h3><p>${instructionDetails}</p>${segment.type !== 'walk' ? `<small>${endPointName}</small>` : ''}</div>`;
             detailsContainer.appendChild(instructionDiv);
         });
 
         if (allCoords.length > 0) map.fitBounds(L.latLngBounds(allCoords), { padding: [50, 50] });
     }
+
+    // --- ALERTS MENU LOGIC ---
+    const alertsBtn = document.getElementById('alerts-btn');
+    const alertsOverlay = document.getElementById('alerts-overlay');
+    const alertsCloseBtn = document.getElementById('alerts-close-btn');
+    const alertsContent = document.getElementById('alerts-content');
+    const notificationDot = document.getElementById('alerts-notification-dot');
+
+    alertsBtn.addEventListener('click', () => {
+        alertsOverlay.classList.add('visible');
+        notificationDot.classList.add('hidden'); // Hide dot when panel is opened
+    });
+    alertsCloseBtn.addEventListener('click', () => alertsOverlay.classList.remove('visible'));
+    alertsOverlay.addEventListener('click', (e) => { if (e.target === alertsOverlay) alertsOverlay.classList.remove('visible'); });
+
+    async function fetchAndRenderAlerts() {
+        try {
+            // Fetch documents sorted by creation date, newest first, limit 10
+            const response = await databases.listDocuments(
+                APPWRITE_DATABASE_ID,
+                APPWRITE_ALERTS_COLLECTION_ID,
+                [Query.orderDesc('$createdAt'), Query.limit(10)]
+            );
+            const alerts = response.documents;
+
+            alertsContent.innerHTML = ''; // Clear previous content
+
+            if (alerts.length === 0) {
+                alertsContent.innerHTML = '<p>No active alerts.</p>';
+                notificationDot.classList.add('hidden'); // Ensure dot is hidden if no alerts
+                return;
+            }
+
+            // --- Notification Dot Logic ---
+            const latestAlertId = alerts[0].$id;
+            const lastSeenAlertId = localStorage.getItem('lastSeenAlertId');
+
+            if (latestAlertId !== lastSeenAlertId) {
+                notificationDot.classList.remove('hidden');
+            }
+
+            alertsBtn.addEventListener('click', () => {
+                alertsOverlay.classList.add('visible');
+                notificationDot.classList.add('hidden'); // Hide dot when panel is opened
+                localStorage.setItem('lastSeenAlertId', latestAlertId); // Mark latest alert as "seen"
+            });
+            // --- End Notification Dot Logic ---
+
+
+            alerts.forEach(alert => {
+                const alertItem = document.createElement('div');
+                alertItem.className = 'alert-item';
+
+                const alertDate = new Date(alert.$createdAt).toLocaleString(undefined, {
+                    dateStyle: 'medium',
+                    timeStyle: 'short'
+                });
+
+                alertItem.innerHTML = `
+                    <h4>${alert.title}</h4>
+                    <p>${alert.message.replace(/\n/g, '<br>')}</p>
+                    <small>${alertDate}</small>
+                `;
+                alertsContent.appendChild(alertItem);
+            });
+
+        } catch (error) {
+            console.error("Failed to fetch alerts:", error);
+            alertsContent.innerHTML = '<p style="color: red;">Could not load alerts.</p>';
+        }
+    }
+
 
     // --- SETTINGS MENU LOGIC ---
     const settingsBtn = document.getElementById('settings-btn');
@@ -899,7 +985,7 @@ window.onload = async () => {
     map.on('click', function(e) {
         const coordString = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
         const popupContent = document.createElement('div');
-        popupContent.innerHTML = `<div style="text-align: center;"><strong>Set Location</strong><br><small>${coordString}</small><div style="margin-top: 8px;"><button id="popup-set-origin" class="popup-button">Set as Origin</button><button id="popup-set-destination" class="popup-button">Set as Destination</button><button id="popup-set-stations" class="popup-button">Stations nearby</button></div></div>`;
+        popupContent.innerHTML = `<div style="text-align: center;"><strong>Set Location</strong><br><small>${coordString}</small><div style="margin-top: 8px;"><button id="popup-set-origin" class="popup-button">Set as Origin</button><button id="popup-set-destination" class="popup-button" style="margin-left: 5px;">Set as Destination</button><button id="popup-set-stations" class="popup-button" style="margin-top: 5px; width: 100%;">Find Nearby Stations</button></div></div>`;
         L.DomEvent.on(popupContent.querySelector('#popup-set-origin'), 'click', () => { startInput.value = coordString; map.closePopup(); });
         L.DomEvent.on(popupContent.querySelector('#popup-set-destination'), 'click', () => { endInput.value = coordString; map.closePopup(); });
         L.DomEvent.on(popupContent.querySelector('#popup-set-stations'), 'click', () => {
@@ -916,4 +1002,12 @@ window.onload = async () => {
     await initializeAutocomplete();
     setLocationFromGPS();
     map.removeLayer(stationMarkersLayer);
+    fetchAndRenderAlerts(); // Fetch alerts on initial load
+
+    // --- REALTIME ALERTS ---
+    client.subscribe(`databases.${APPWRITE_DATABASE_ID}.collections.${APPWRITE_ALERTS_COLLECTION_ID}.documents`, response => {
+        console.log("Realtime event received:", response);
+        // A document was created, updated, or deleted. Just refetch all.
+        fetchAndRenderAlerts();
+    });
 };

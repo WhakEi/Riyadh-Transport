@@ -4,6 +4,8 @@
     --text-color: #3c4043;
     --panel-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
     --border-radius: 8px;
+    --warning-color: #d93025;
+    --warning-background: #fce8e6;
 }
 
 body, html {
@@ -49,11 +51,48 @@ body, html {
     flex-shrink: 0; /* Header should not grow or shrink */
 }
 
-.panel-header h2 {
-    margin: 0 0 16px;
+.panel-header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.panel-header-main h2 {
+    margin: 0;
     font-size: 20px;
     color: var(--text-color);
+    line-height: 1.2;
 }
+
+.header-icon-button {
+    position: relative; /* Make this a positioning context for the dot */
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: #5f6368;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-icon-button:hover {
+    background-color: #f1f3f4;
+}
+
+.notification-dot {
+    position: absolute;
+    top: 4px;
+    right: 5px;
+    width: 9px;
+    height: 9px;
+    background-color: var(--warning-color);
+    border-radius: 50%;
+    border: 2px solid var(--background-color);
+}
+
 
 /* --- Tab Navigation --- */
 .tab-nav {
@@ -354,6 +393,7 @@ body, html {
 .leaflet-right .leaflet-control { margin-right: 10px; }
 .leaflet-top .leaflet-control { margin-top: 10px; }
 
+/* --- REUSED STYLES FOR OVERLAYS --- */
 .settings-overlay {
     position: fixed;
     top: 0;
@@ -382,9 +422,12 @@ body, html {
     border-radius: var(--border-radius);
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     width: 90%;
-    max-width: 400px;
+    max-width: 450px; /* Increased max-width */
     transform: scale(0.95);
     transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
 }
 
 .settings-overlay.visible .settings-panel {
@@ -439,6 +482,49 @@ body, html {
     cursor: pointer;
     font-size: 15px;
     font-weight: 500;
+    flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+/* --- ALERTS PANEL STYLES --- */
+.alerts-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+
+.alert-item {
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--warning-color);
+    background-color: var(--warning-background);
+}
+
+.alert-item h4 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    color: var(--warning-color);
+}
+
+.alert-item p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #444;
+}
+
+.alert-item small {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #5f6368;
+    text-align: right;
+}
+
+#alerts-content > p {
+    text-align: center;
+    color: #5f6368;
+    margin-top: 20px;
 }
 
 .station-item.highlight {
