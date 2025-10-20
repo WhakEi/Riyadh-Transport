@@ -6,6 +6,10 @@ from pathlib import Path
 from math import radians, sin, cos, sqrt, atan2
 import heapq
 import os
+import requests
+from datetime import datetime, timezone
+import re
+import pytz
 
 app = Flask(__name__)
 CORS(app)
@@ -111,6 +115,53 @@ def load_translations():
     print(f"Loaded {len(TRANSLATIONS)} bus translations.")
 
 
+def strip_numbers_and_trim(name):
+    """Removes all digits from a string and trims whitespace."""
+    if not isinstance(name, str):
+        return ""
+    # Use regex to substitute any digit with an empty string, then strip whitespace
+    return re.sub(r'\d+', '', name).strip()
+
+def resolve_bus_destination(line_number, api_destination):
+    """
+    Translates an API destination (e.g., "Station 01") to the actual
+    final destination of the bus line (e.g., "Downtown").
+    Appends "Ring" if it's a ring route.
+    """
+    try:
+        bus_file_path = Path(EXC_DIR) / f"bus_{line_number}.json"
+        if not bus_file_path.exists():
+            return api_destination
+
+        with open(bus_file_path, 'r', encoding='utf-8') as f:
+            line_data = json.load(f)
+
+        direction_keys = list(line_data.keys())
+
+        # Case 1: Ring route (only one direction/key in the file)
+        if len(direction_keys) == 1:
+            # Use an f-string to combine the direction name and the word "Ring"
+            return f"المسار الدائري {direction_keys[0]}"
+
+        # Case 2: Directional route
+        base_api_dest = strip_numbers_and_trim(api_destination)
+
+        for direction_key in direction_keys:
+            stations_in_direction = line_data.get(direction_key, [])
+            if not stations_in_direction:
+                continue
+
+            last_station_in_list = stations_in_direction[-1]
+            base_last_station = strip_numbers_and_trim(last_station_in_list)
+
+            if base_api_dest == base_last_station:
+                return direction_key
+
+        return api_destination
+    except Exception as e:
+        print(f"Error resolving destination for line {line_number}: {e}")
+        return api_destination
+
 def load_metro_data():
     try:
         with open(METRO_LINES_FILE) as f:
@@ -148,12 +199,23 @@ def load_metro_data():
                 lat = float(s['latitude'])
                 lng = float(s['longitude'])
 
+                # Extract the station ID from the URL
+                station_id = None
+                station_url = s.get('station_details_url')
+                if station_url:
+                    try:
+                        # The ID is the last part of the URL path
+                        station_id = station_url.strip().split('/')[-1]
+                    except IndexError:
+                        print(f"Could not parse station ID from URL: {station_url}")
+
                 if not (24.0 < lat < 25.5 and 46.0 < lng < 47.5):
                     print(f"Invalid coordinates for {name}: {lat},{lng}")
                     continue
 
                 normalized_stations_in_line.append(name)
-                STATIONS[name] = {'lat': lat, 'lng': lng, 'type': 'metro'}
+                # Store the station_id along with other data
+                STATIONS[name] = {'lat': lat, 'lng': lng, 'type': 'metro', 'station_id': station_id}
                 station_to_lines.setdefault(name, []).append(line_key)
 
             line_stations[line_key] = normalized_stations_in_line
@@ -171,50 +233,69 @@ def load_bus_data():
             with open(bus_file) as f:
                 bus_stops = json.load(f)
 
+            # Load geocoded data and create a version with normalized keys for reliable lookups
             geo_file = Path(GEOCODED_DIR) / f"{line_num}.json"
-            geo_data = {}
+            normalized_geo_data = {}
             if geo_file.exists():
-                with open(geo_file) as f:
-                    geo_data = json.load(f)
+                with open(geo_file, 'r', encoding='utf-8') as f:
+                    original_geo_data = json.load(f)
+                    for key, value in original_geo_data.items():
+                        # Normalize the key from the geocoded file
+                        normalized_key = normalize_name(key)
+                        normalized_geo_data[normalized_key] = value
 
+            # We'll do the same for the 'missing' file just in case
             missing_file = Path(GEOCODED_DIR) / 'missing.json'
-            missing_data = {}
+            normalized_missing_data = {}
             if missing_file.exists():
-                with open(missing_file) as f:
-                    missing_data = json.load(f)
+                with open(missing_file, 'r', encoding='utf-8') as f:
+                    original_missing_data = json.load(f)
+                    for key, value in original_missing_data.items():
+                        normalized_key = normalize_name(key)
+                        normalized_missing_data[normalized_key] = value
 
             for direction_idx, (direction_name, stations_in_dir) in enumerate(bus_stops.items()):
                 line_key = f"{line_key_base}_dir{direction_idx}"
-                normalized = []
+                normalized_station_list = []
                 for raw_name in stations_in_dir:
-                    name = normalize_name(raw_name)
-                    if "Transportation Center" in name:
-                        name += " (Bus)"
-                    elif not name.endswith("(Bus)"):
-                        name += " (Bus)"
+                    # This is the final name, e.g., "Station Name (Bus)"
+                    full_normalized_name = normalize_name(raw_name)
+                    if "Transportation Center" in full_normalized_name:
+                        full_normalized_name += " (Bus)"
+                    elif not full_normalized_name.endswith("(Bus)"):
+                        full_normalized_name += " (Bus)"
 
-                    raw_name_stripped = raw_name.strip()
-                    coords = geo_data.get(raw_name_stripped, missing_data.get(raw_name_stripped, {}))
+                    # Use a normalized version of the raw name for the lookup key
+                    lookup_key = normalize_name(raw_name)
+                    coords = normalized_geo_data.get(lookup_key, normalized_missing_data.get(lookup_key, {}))
+
                     lat = float(coords.get('lat', 0))
                     lng = float(coords.get('lng', 0))
+                    station_id = coords.get('id')
 
                     if not (24.0 < lat < 25.5 and 46.0 < lng < 47.5):
-                        print(f"Invalid coordinates for {name} in bus {line_num}, direction {direction_name}")
+                        print(f"Invalid coordinates for {full_normalized_name} in bus {line_num}, direction {direction_name}")
                         continue
 
-                    if name not in STATIONS:
-                        STATIONS[name] = {
+                    # Use the full name with suffix for the main STATIONS dictionary key
+                    if full_normalized_name not in STATIONS:
+                        STATIONS[full_normalized_name] = {
                             'lat': lat,
                             'lng': lng,
                             'type': 'bus',
-                            'source': 'geo' if lat + lng != 0 else 'missing'
+                            'source': 'geo' if lat + lng != 0 else 'missing',
+                            'station_id': station_id
                         }
+                    else:
+                        # Update existing entry if it's missing an ID and we just found one
+                        if not STATIONS[full_normalized_name].get('station_id') and station_id:
+                            STATIONS[full_normalized_name]['station_id'] = station_id
 
-                    normalized.append(name)
-                    station_to_lines.setdefault(name, []).append(line_key)
+                    normalized_station_list.append(full_normalized_name)
+                    station_to_lines.setdefault(full_normalized_name, []).append(line_key)
 
-                line_stations[line_key] = normalized
-                print(f"Loaded Bus Line {line_num} direction {direction_name} with {len(normalized)} stops")
+                line_stations[line_key] = normalized_station_list
+                print(f"Loaded Bus Line {line_num} direction {direction_name} with {len(normalized_station_list)} stops")
 
         except Exception as e:
             print(f"Error loading {bus_file}: {str(e)}")
@@ -294,6 +375,233 @@ def build_connections():
                 connection_count += 1
 
     print(f"Total walking connections: {connection_count}")
+
+def fetch_metro_api_data(station_id):
+    """
+    Fetches arrival data from the external API for a given metro station ID.
+    This function mimics the request sent by the official website.
+    """
+    try:
+        api_url = 'https://sitprd.rpt.sa/ar/stationdetails'
+        # These parameters are part of the API's URL query string
+        params = {
+            'p_p_id': 'com_rcrc_stations_RcrcStationDetailsPortlet_INSTANCE_53WVbOYPfpUF',
+            'p_p_lifecycle': '2',
+            'p_p_resource_id': '/departure-monitor'
+        }
+        # This is the data sent in the POST request body
+        payload = {
+            '_com_rcrc_stations_RcrcStationDetailsPortlet_INSTANCE_53WVbOYPfpUF_busStopId': station_id
+        }
+        # These headers make our request look like it's coming from a browser
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Origin': 'https://sitprd.rpt.sa',
+            'Referer': f'https://sitprd.rpt.sa/ar/stationdetails/tags/{station_id}'
+        }
+
+        response = requests.post(api_url, params=params, headers=headers, data=payload, timeout=10)
+        response.raise_for_status()  # This will raise an error for bad status codes (like 404 or 500)
+        return response.json()
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching arrival times for station ID {station_id}: {e}")
+        return None
+
+def fetch_bus_api_data(station_id):
+    """
+    Fetches arrival data from the external API for a given bus stop ID.
+    This function mimics the request for bus route details.
+    """
+    try:
+        api_url = 'https://sitprd.rpt.sa/ar/routedetails'
+        # These parameters are part of the API's URL query string
+        params = {
+            'p_p_id': 'com_rcrc_routes_RcrcRoutesPortlet_INSTANCE_eT4Qu3MnTe35',
+            'p_p_lifecycle': '2',
+            'p_p_resource_id': '/departure-monitor'
+        }
+        # This is the data sent in the POST request body
+        payload = {
+            '_com_rcrc_routes_RcrcRoutesPortlet_INSTANCE_eT4Qu3MnTe35_busStopId': station_id
+        }
+        # These headers make our request look like it's coming from a browser
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Origin': 'https://sitprd.rpt.sa',
+            'Referer': 'https://sitprd.rpt.sa/en/routedetails' # A generic Referer is usually sufficient
+        }
+
+        response = requests.post(api_url, params=params, headers=headers, data=payload, timeout=10)
+        response.raise_for_status()
+        return response.json()
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching arrival times for bus stop ID {station_id}: {e}")
+        return None
+
+@app.route('/metro_arrivals', methods=['POST'])
+def get_metro_arrivals():
+    """Endpoint to get real-time metro arrival information for a station."""
+    try:
+        data = request.get_json()
+        # This is the station name from the user, which could be Arabic or English
+        station_name_from_request = data.get('station_name')
+
+        if not station_name_from_request:
+            return jsonify({'error': 'Missing station_name'}), 400
+
+        # Find the internal English name for the station.
+        # First, check if the input was an Arabic name we can reverse-translate.
+        internal_name = REVERSE_TRANSLATIONS.get(station_name_from_request)
+
+        # If it wasn't found in reverse translations, assume the user typed the English name.
+        if not internal_name:
+            internal_name = f"{normalize_name(station_name_from_request)} (Metro)"
+
+
+        try:
+            ast_tz = pytz.timezone('Asia/Riyadh')
+            now_ast = datetime.now(ast_tz).time()
+            closed_start = datetime.strptime("02:30", "%H:%M").time()
+            closed_end = datetime.strptime("04:50", "%H:%M").time()
+
+            if closed_start <= now_ast < closed_end:
+                # Return the original name from the request in the response
+                return jsonify({'arrivals': 'closed', 'station_name': station_name_from_request})
+        except Exception as e:
+            print(f"Timezone check failed: {e}")
+
+        # Use the 'internal_name' for all lookups from now on.
+        station_info = STATIONS.get(internal_name)
+
+        if not station_info or station_info.get('type') != 'metro':
+            return jsonify({'error': f'Metro station "{station_name_from_request}" not found'}), 404
+
+        station_id = station_info.get('station_id')
+        if not station_id:
+            return jsonify({'arrivals': None, 'station_name': station_name_from_request})
+
+        api_data = fetch_metro_api_data(station_id)
+
+        if api_data is None:
+            return jsonify({'error': 'Failed to fetch arrival times from external service'}), 502
+
+        arrivals = []
+        now_utc = datetime.now(timezone.utc)
+
+        for item in api_data:
+            time_str = item.get('actualDepartureTimePlanned')
+            if not time_str:
+                continue
+
+            try:
+                arrival_time = datetime.fromisoformat(time_str.replace('Z', '+00:00'))
+                time_diff_seconds = (arrival_time - now_utc).total_seconds()
+
+                if time_diff_seconds >= 0:
+                    arrivals.append({
+                        'line': item.get('number'),
+                        'destination': item.get('destination'),
+                        'minutes_until': round(time_diff_seconds / 60)
+                    })
+            except (ValueError, TypeError):
+                print(f"Could not parse time: {time_str}")
+                continue
+
+        arrivals.sort(key=lambda x: x['minutes_until'])
+        # Return the original name from the request in the final response
+        return jsonify({'station_name': station_name_from_request, 'arrivals': arrivals})
+
+    except Exception as e:
+        print(f"Error in /metro_arrivals endpoint: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/bus_arrivals', methods=['POST'])
+def get_bus_arrivals():
+    """Endpoint to get real-time bus arrival information for a station."""
+    try:
+        data = request.get_json()
+        # This is the station name from the user, which could be Arabic or English
+        station_name_from_request = data.get('station_name')
+
+        if not station_name_from_request:
+            return jsonify({'error': 'Missing station_name'}), 400
+
+        # Find the internal English name for the station.
+        # First, check if the input was an Arabic name we can reverse-translate.
+        internal_name = REVERSE_TRANSLATIONS.get(station_name_from_request)
+
+        # If it wasn't found, assume the user typed the English name.
+        if not internal_name:
+            internal_name = f"{normalize_name(station_name_from_request)} (Bus)"
+
+        try:
+            ast_tz = pytz.timezone('Asia/Riyadh')
+            now_ast = datetime.now(ast_tz).time()
+            closed_start = datetime.strptime("02:30", "%H:%M").time()
+            closed_end = datetime.strptime("04:50", "%H:%M").time()
+
+            if closed_start <= now_ast < closed_end:
+                # Return the original name from the request in the response
+                return jsonify({'arrivals': 'closed', 'station_name': station_name_from_request})
+        except Exception as e:
+            print(f"Timezone check failed: {e}")
+
+        # Use the 'internal_name' for all lookups from now on.
+        station_info = STATIONS.get(internal_name)
+
+        if not station_info or station_info.get('type') != 'bus':
+            return jsonify({'error': f'Bus stop "{station_name_from_request}" not found'}), 404
+
+        station_id = station_info.get('station_id')
+        if not station_id:
+            return jsonify({'arrivals': None, 'station_name': station_name_from_request})
+
+        api_data = fetch_bus_api_data(station_id)
+
+        if api_data is None:
+            return jsonify({'error': 'Failed to fetch arrival times from external service'}), 502
+
+        arrivals = []
+        now_utc = datetime.now(timezone.utc)
+
+        for item in api_data:
+            time_str = item.get('actualDepartureTimePlanned')
+            if not time_str:
+                continue
+
+            try:
+                arrival_time = datetime.fromisoformat(time_str.replace('Z', '+00:00'))
+                time_diff_seconds = (arrival_time - now_utc).total_seconds()
+
+                if time_diff_seconds >= 0:
+                    line_number = item.get('number')
+                    api_destination = item.get('destination')
+                    correct_destination = resolve_bus_destination(line_number, api_destination)
+
+                    arrivals.append({
+                        'line': line_number,
+                        'destination': correct_destination,
+                        'minutes_until': round(time_diff_seconds / 60)
+                    })
+            except (ValueError, TypeError):
+                print(f"Could not parse time: {time_str}")
+                continue
+
+        arrivals.sort(key=lambda x: x['minutes_until'])
+        # Return the original name from the request in the final response
+        return jsonify({'station_name': station_name_from_request, 'arrivals': arrivals})
+
+    except Exception as e:
+        print(f"Error in /bus_arrivals endpoint: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
 
 @app.route('/nearbystations', methods=['POST'])
 def nearby_stations_endpoint():
