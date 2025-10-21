@@ -2,57 +2,68 @@
   "Madina Munwarah 315": {
     "lat": "24.6144313752059",
     "lng": "46.6854902379544",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "16120301"
   },
   "Al-Badeah 604": {
     "lat": "24.61247947929",
     "lng": "46.6858226146096",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "16120601"
   },
   "Sultanah 203": {
     "lat": "24.6121854672235",
     "lng": "46.6838373378314",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "16120102"
   },
   "Sultanah 103": {
     "lat": "24.6123161393384",
     "lng": "46.6833971633421",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "16120101"
   },
   "Sultanah 104": {
     "lat": "24.6089839577649",
     "lng": "46.6883199310998",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "24620302"
   },
   "Sultanah 105": {
     "lat": "24.6069258012725",
     "lng": "46.6906286013803",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "24620201"
   },
   "Sultanah 106": {
     "lat": "24.6025725254014",
     "lng": "46.6937727048751",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "24620101"
   },
   "Sultanah 107": {
     "lat": "24.597023143942877",
     "lng": "46.69680528319193",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "24522101"
   },
   "Al-Aflaj 402": {
     "lat": "24.593252878110878",
     "lng": "46.69406909668391",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "24820001"
   },
   "Al-Aflaj 401": {
     "lat": "24.591282237291953",
     "lng": "46.692245194576664",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "24820101"
   },
   "Sari 101": {
     "lat": "24.588926569488073",
     "lng": "46.69135949853534",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "24820201"
   },
   "Ibn-'Asaker 301": {
     "lat": "24.587662466103342",
@@ -82,26 +93,31 @@
   "Al Maamoura 201": {
     "lat": "24.59330131089685",
     "lng": "46.69529542399273",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "24820801"
   },
   "Sultanah 207": {
     "lat": "24.597144653423637",
     "lng": "46.69689996791096",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "24522102"
   },
   "Sultanah 206": {
     "lat": "24.6034709624691",
     "lng": "46.6934852439842",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "24620102"
   },
   "Sultanah 205": {
     "lat": "24.6078160397839",
     "lng": "46.6901974100439",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "24620202"
   },
   "Sultanah 204": {
     "lat": "24.6093841509284",
     "lng": "46.6873587337456",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "24620301"
   }
 }

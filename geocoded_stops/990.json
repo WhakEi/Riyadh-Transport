@@ -2,96 +2,115 @@
   "KSU 604": {
     "lat": "24.7110814757381",
     "lng": "46.6288784087413",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "16621402"
   },
   "KSU 603": {
     "lat": "24.7111630811279",
     "lng": "46.6198503401347",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "16621002"
   },
   "Al-Nakheel 501": {
     "lat": "24.72677746489185",
     "lng": "46.6049325985386",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "16621301"
   },
   "Al Jabal Al Saghir 202": {
     "lat": "24.72977893143099",
     "lng": "46.60483603901528",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "16521102"
   },
   "Saeed Bin Amer 301": {
     "lat": "24.736874047478473",
     "lng": "46.604162896083864",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "16520902"
   },
   "Saeed Bin Amer 302": {
     "lat": "24.73857221165804",
     "lng": "46.607827914723025",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "16520801"
   },
   "Al-Nakheel 502": {
     "lat": "24.734479884201697",
     "lng": "46.61311614878014",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "16520701"
   },
   "Abi Al As Ibn Al Rabi 201": {
     "lat": "24.74138817873555",
     "lng": "46.6167866386266",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "16520601"
   },
   "Al-Nakheel 504": {
     "lat": "24.744333695389273",
     "lng": "46.62160002178446",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "16520401"
   },
   "Al-Nakheel 603": {
     "lat": "24.739678180404052",
     "lng": "46.6177964848031",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "16520501"
   },
   "Al-Nakheel 602": {
     "lat": "24.733900011934498",
     "lng": "46.61220403011117",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "16520702"
   },
   "Saeed Bin Amer 402": {
     "lat": "24.738872219004175",
     "lng": "46.60792292543577",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "16520802"
   },
   "Saeed Bin Amer 401": {
     "lat": "24.736638430999054",
     "lng": "46.603196848807706",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "16520901"
   },
   "Al Jabal Al Saghir 101": {
     "lat": "24.734046894598187",
     "lng": "46.603920227875484",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "16521001"
   },
   "Al Jabal Al Saghir 102": {
     "lat": "24.729078705544307",
     "lng": "46.60448454772021",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "16521101"
   },
   "KSU 501": {
     "lat": "24.726827520265225",
     "lng": "46.61109423349614",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "16621101"
   },
   "KSU 502": {
     "lat": "24.7167937238473",
     "lng": "46.6125380537209",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "16621201"
   },
   "KSU 503": {
     "lat": "24.7096941759279",
     "lng": "46.6206678070433",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "16621001"
   },
   "KSU 504": {
     "lat": "24.7119464901487",
     "lng": "46.6299743533881",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "16621401"
   }
 }

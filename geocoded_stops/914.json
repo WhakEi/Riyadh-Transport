@@ -2,61 +2,73 @@
   "Islamabad 201": {
     "lat": "24.5991665735755",
     "lng": "46.7366492933921",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14720501"
   },
   "Al Hukair 301": {
     "lat": "24.6030544151762",
     "lng": "46.7374308276894",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14720701"
   },
   "Mali 301": {
     "lat": "24.602866560061",
     "lng": "46.7410240888264",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14720902"
   },
   "Al-Mansurah 604": {
     "lat": "24.6047042610289",
     "lng": "46.7421739323902",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14721001"
   },
   "Al-Mansurah 501": {
     "lat": "24.610813401775",
     "lng": "46.749944359599",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14721601"
   },
   "Al-Mansurah 502": {
     "lat": "24.6120874630478",
     "lng": "46.752962698954",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14721701"
   },
   "Al-Mansurah 503": {
     "lat": "24.6133615113426",
     "lng": "46.7559810383091",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14721901"
   },
   "Al Kharj 108": {
     "lat": "24.6141210339589",
     "lng": "46.7595293836818",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14722001"
   },
   "Al-Mansurah 504": {
     "lat": "24.6044347332426",
     "lng": "46.741958336722",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14721002"
   },
   "Mali 401": {
     "lat": "24.6031197560197",
     "lng": "46.7409612067565",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14720901"
   },
   "Al-Mansurah 505": {
     "lat": "24.6004407534567",
     "lng": "46.7392274582579",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14720801"
   },
   "Al Majrada Valley 401": {
     "lat": "24.5984232959871",
     "lng": "46.7394789865375",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14720601"
   }
 }

@@ -2,51 +2,61 @@
   "Madina Munwarah 315": {
     "lat": "24.6144313752059",
     "lng": "46.6854902379544",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "16120301"
   },
   "Al-Badeah 604": {
     "lat": "24.61247947929",
     "lng": "46.6858226146096",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "16120601"
   },
   "Sultanah 103": {
     "lat": "24.6123161393384",
     "lng": "46.6833971633421",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "16120101"
   },
   "Sultanah 104": {
     "lat": "24.6089839577649",
     "lng": "46.6883199310998",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "24620302"
   },
   "Sultanah 105": {
     "lat": "24.6069258012725",
     "lng": "46.6906286013803",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "24620201"
   },
   "Al Abdulqader 401": {
     "lat": "24.60052736809999",
     "lng": "46.68574525435614",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "24621101"
   },
   "Darussafa 301": {
     "lat": "24.6029181529567",
     "lng": "46.68434860674979",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "24621401"
   },
   "Darussafa 302": {
     "lat": "24.60449842340953",
     "lng": "46.686912798535865",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "24621501"
   },
   "Sultanah 602": {
     "lat": "24.60591284608537",
     "lng": "46.68663384880181",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "24620801"
   },
   "Sultanah 501": {
     "lat": "24.608255636531243",
     "lng": "46.68548873670194",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "24620701"
   }
 }

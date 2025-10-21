@@ -2,171 +2,205 @@
   "Al Kharj B": {
     "lat": "24.561433537636",
     "lng": "46.8499987159581",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22220002"
   },
   "Al Kharj 123": {
     "lat": "24.5455494253121",
     "lng": "46.8697077532944",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22920001"
   },
   "Al Kharj 124": {
     "lat": "24.5424034133998",
     "lng": "46.8744239085367",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22920102"
   },
   "New Industrial City 501": {
     "lat": "24.5428773630982",
     "lng": "46.8798587160064",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22320202"
   },
   "New Industrial City 502": {
     "lat": "24.5458681078329",
     "lng": "46.8821224705227",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22320301"
   },
   "New Industrial City 520": {
     "lat": "24.5503867754296",
     "lng": "46.8857426811182",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22320402"
   },
   "New Industrial City 521": {
     "lat": "24.5516859643748",
     "lng": "46.8890844139756",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22320501"
   },
   "New Industrial City 522": {
     "lat": "24.5500435911972",
     "lng": "46.8915547810073",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22320601"
   },
   "New Industrial City 523": {
     "lat": "24.5477393298923",
     "lng": "46.8952019410613",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22320701"
   },
   "New Industrial City 524": {
     "lat": "24.5445770300531",
     "lng": "46.895731947079",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22320801"
   },
   "New Industrial City 525": {
     "lat": "24.5415535680784",
     "lng": "46.9005289506969",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22320901"
   },
   "New Industrial City 526": {
     "lat": "24.5421909526091",
     "lng": "46.9031520313269",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22321001"
   },
   "New Industrial City 527": {
     "lat": "24.5444544586872",
     "lng": "46.9049217124368",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22321101"
   },
   "New Industrial City 528": {
     "lat": "24.5472327135748",
     "lng": "46.9070597028133",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22321201"
   },
   "New Industrial City 629": {
     "lat": "24.5502233544837",
     "lng": "46.9056583309699",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22321301"
   },
   "New Industrial City 630": {
     "lat": "24.5523478101728",
     "lng": "46.9023884633353",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22321401"
   },
   "New Industrial City 631": {
     "lat": "24.554464059101",
     "lng": "46.8990107978665",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22321501"
   },
   "New Industrial City 632": {
     "lat": "24.5563269822703",
     "lng": "46.8961541552626",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22321601"
   },
   "New Industrial City 633": {
     "lat": "24.5584513345659",
     "lng": "46.8927944560995",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22321701"
   },
   "New Industrial City 534": {
     "lat": "24.5610250208605",
     "lng": "46.8938993838991",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22321801"
   },
   "New Industrial City 635": {
     "lat": "24.5639336312988",
     "lng": "46.8921836017062",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22321901"
   },
   "New Industrial City 636": {
     "lat": "24.5656003327066",
     "lng": "46.8894886558535",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22322001"
   },
   "New Industrial City 637": {
     "lat": "24.5642604372431",
     "lng": "46.8871081203503",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22322101"
   },
   "New Industrial City 638": {
     "lat": "24.5633943996281",
     "lng": "46.8849431805152",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22322201"
   },
   "New Industrial City 639": {
     "lat": "24.5615397517795",
     "lng": "46.8821943357454",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22322301"
   },
   "New Industrial City 640": {
     "lat": "24.5589415645999",
     "lng": "46.8801910926616",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22322401"
   },
   "New Industrial City 541": {
     "lat": "24.5564005181434",
     "lng": "46.8816283971164",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22322501"
   },
   "New Industrial City 542": {
     "lat": "24.5540963736266",
     "lng": "46.8852755571704",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22322601"
   },
   "New Industrial City 620": {
     "lat": "24.550664590549",
     "lng": "46.8854462370744",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22320401"
   },
   "New Industrial City 602": {
     "lat": "24.5457455377284",
     "lng": "46.8817002623391",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22320302"
   },
   "New Industrial City 601": {
     "lat": "24.5419539766873",
     "lng": "46.8788076871238",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22320201"
   },
   "Al Kharj 224": {
     "lat": "24.5428691915668",
     "lng": "46.874980864013",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22920101"
   },
   "Al Kharj 223": {
     "lat": "24.5462521600516",
     "lng": "46.8695730060018",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22920002"
   },
   "Al Kharj 222": {
     "lat": "24.5502070123774",
     "lng": "46.8633566642348",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "22320001"
   }
 }

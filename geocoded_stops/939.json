@@ -2,21 +2,25 @@
   "King Abdullah 401": {
     "lat": "24.7099145128126",
     "lng": "46.6285370489333",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "16620404"
   },
   "Al Fazari Station": {
     "lat": "24.6868423085856",
     "lng": "46.6265427890023",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14820004"
   },
   "Al Kindi Station": {
     "lat": "24.6830305357661",
     "lng": "46.6237220790097",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14820101"
   },
   "Oud Station": {
     "lat": "24.6754719434975",
     "lng": "46.6252222655344",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "14820201"
   }
 }

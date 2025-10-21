@@ -2,141 +2,169 @@
   "Al Nahda 204": {
     "lat": "24.674064679532254",
     "lng": "46.75993506970145",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12221301"
   },
   "Al Nahda 203": {
     "lat": "24.679789978053947",
     "lng": "46.758230354357934",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "11920601"
   },
   "Marat 402": {
     "lat": "24.679497513234697",
     "lng": "46.75634207923514",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12220302"
   },
   "Marat 401": {
     "lat": "24.67864936137958",
     "lng": "46.75390663348017",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12220401"
   },
   "Al Zewawi 402": {
     "lat": "24.679078312458437",
     "lng": "46.75138535701573",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12220501"
   },
   "Al Zewawi 401": {
     "lat": "24.67831789815829",
     "lng": "46.74917521679459",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12220202"
   },
   "Al Mahad 102": {
     "lat": "24.676553329148124",
     "lng": "46.7497438450873",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12220702"
   },
   "Fatimah Valley 102": {
     "lat": "24.67383833550537",
     "lng": "46.749608157872736",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12220801"
   },
   "Jarir 406": {
     "lat": "24.67361532227096",
     "lng": "46.74665435104282",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12221201"
   },
   "Jarir 405": {
     "lat": "24.673088310268007",
     "lng": "46.74342552327862",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12122601"
   },
   "Jarir 404": {
     "lat": "24.67266280370193",
     "lng": "46.74116205672314",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12122702"
   },
   "Jarir 403": {
     "lat": "24.67222690049644",
     "lng": "46.738611800422895",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12122802"
   },
   "Al-Malaz 502": {
     "lat": "24.6698067802538",
     "lng": "46.7357509781079",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "12122101"
   },
   "Al-Malaz 501": {
     "lat": "24.6670230827157",
     "lng": "46.7339094317752",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "12122001"
   },
   "Al Jamea 405": {
     "lat": "24.6651618074838",
     "lng": "46.733235695312",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "12121901"
   },
   "Al Jamea 404": {
     "lat": "24.6636107235802",
     "lng": "46.7305048168479",
-    "source": "RPT"
+    "source": "RPT",
+    "id": "12121702"
   },
   "Jarir 301": {
     "lat": "24.670671257357505",
     "lng": "46.730802794467266",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12123001"
   },
   "Jarir 302": {
     "lat": "24.671308451959717",
     "lng": "46.73471198690551",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12122901"
   },
   "Jarir 303": {
     "lat": "24.672030308273257",
     "lng": "46.73868514675314",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12122801"
   },
   "Jarir 304": {
     "lat": "24.672465403036906",
     "lng": "46.741563196245586",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12122701"
   },
   "Jarir 305": {
     "lat": "24.672826129889703",
     "lng": "46.74358021741712",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12122602"
   },
   "Jarir 306": {
     "lat": "24.673333095605454",
     "lng": "46.74643408781623",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12221202"
   },
   "Fatima Al Zahraa 201": {
     "lat": "24.674707742268897",
     "lng": "46.74738895425514",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12221101"
   },
   "Al Mahad 202": {
     "lat": "24.67687204883644",
     "lng": "46.74984585770121",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12220701"
   },
   "Al Mahad 201": {
     "lat": "24.678012681792957",
     "lng": "46.749405975442826",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12220601"
   },
   "Al Zewawi 302": {
     "lat": "24.678958326825878",
     "lng": "46.75173413283854",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12220502"
   },
   "Marat 301": {
     "lat": "24.678568370994586",
     "lng": "46.754512901374206",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12220402"
   },
   "Marat 302": {
     "lat": "24.679328783758244",
     "lng": "46.7567981434825",
-    "source": "Manual"
+    "source": "Manual",
+    "id": "12220301"
   }
 }
