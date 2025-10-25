@@ -21,6 +21,7 @@ GEOCODED_DIR = 'geocoded_stops'
 WALKING_DISTANCE = 500  # meters
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), 'templates/ar')
 STATIC_FILE_EXTENSIONS = {'html', 'js', 'css', 'png', 'jpg', 'jpeg', 'gif', 'ico', 'svg', 'woff', 'woff2', 'ttf', 'eot'}
+BACKEND_API_URL = "http://127.0.0.1:5001"
 
 # Defined metro transfer stations (normalized names)
 METRO_TRANSFER_STATIONS = {
