@@ -85,8 +85,7 @@ def load_key_translations():
             data = json.load(f)
         for key, translation_data in data.items():
             if 'name' in translation_data:
-                normalized_key = normalize_name(key)
-                KEY_TRANSLATIONS[normalized_key] = translation_data['name']
+                KEY_TRANSLATIONS[key] = translation_data['name']
         print(f"Loaded {len(KEY_TRANSLATIONS)} key translations.")
     except Exception as e:
         print(f"Error loading key translations: {str(e)}")
@@ -138,13 +137,18 @@ def resolve_bus_destination(line_number, api_destination):
 
         direction_keys = list(line_data.keys())
 
-        # Case 1: Ring route (only one direction/key in the file)
+        # Case 1: Ring route
         if len(direction_keys) == 1:
-            # Use an f-string to combine the direction name and the word "Ring"
-            return f"المسار الدائري {direction_keys[0]}"
+            normalized_key = normalize_name(direction_keys[0])
+            translated_key = KEY_TRANSLATIONS.get(normalized_key, direction_keys[0])
+            return f"المسار الدائري {translated_key}"
 
         # Case 2: Directional route
         base_api_dest = strip_numbers_and_trim(api_destination)
+
+        # --- NEW DEBUG PRINT 1 ---
+        # Show what the API destination looks like after stripping
+        print(f"[Debug {line_number}] API destination (stripped): '{base_api_dest}'")
 
         for direction_key in direction_keys:
             stations_in_direction = line_data.get(direction_key, [])
@@ -152,12 +156,31 @@ def resolve_bus_destination(line_number, api_destination):
                 continue
 
             last_station_in_list = stations_in_direction[-1]
-            base_last_station = strip_numbers_and_trim(last_station_in_list)
+            internal_key = normalize_name(last_station_in_list) + " (Bus)"
+            translated_last_station = translate_name(internal_key)
+            base_last_station_arabic = strip_numbers_and_trim(translated_last_station)
 
-            if base_api_dest == base_last_station:
-                return direction_key
+            # --- NEW DEBUG PRINT 2 ---
+            # Show what the file's station looks like after translating and stripping
+            print(f"[Debug {line_number}] Checking against file's station: '{translated_last_station}' (stripped to) '{base_last_station_arabic}'")
 
+            if base_api_dest == base_last_station_arabic:
+                # --- NEW DEBUG PRINT 3 ---
+                print(f"[Debug {line_number}] Match found!")
+                normalized_direction_key = normalize_name(direction_key)
+                return KEY_TRANSLATIONS.get(normalized_direction_key, direction_key)
+            elif base_last_station_arabic in base_api_dest:
+                # --- NEW DEBUG PRINT 3 ---
+                print(f"[Debug {line_number}] Match found!")
+                normalized_direction_key = normalize_name(direction_key)
+                return KEY_TRANSLATIONS.get(normalized_direction_key, direction_key)
+
+        # Fallback: if no match, return what the API gave us
+
+        # --- NEW DEBUG PRINT 4 ---
+        print(f"[Debug {line_number}] No match found. Returning API default: '{api_destination}'")
         return api_destination
+
     except Exception as e:
         print(f"Error resolving destination for line {line_number}: {e}")
         return api_destination
@@ -829,7 +852,7 @@ def find_route():
         print(f"Route error: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
 
-# Add new helper functions
+# Added new helper functions
 def find_route_path(start, end):
     """Core route finding between two stations, returns path if exists."""
     heap = []

@@ -1,7 +1,7 @@
 [
   {
     "name": "Jeddah Road",
-    "name_ar": "طريق جده",
+    "name_ar": "طريق جدة",
     "button_url": "https://rpt.sa/plan?destinationLat=24.5915048851537&destinationLng=46.5434755746682&destinationName=Jeddah%20Road",
     "station_details_url": "https://rpt.sa/stationdetails/tags/80001077",
     "latitude": "24.5915048851537",
@@ -169,9 +169,9 @@
   },
   {
     "name": "Khashm Al An",
-    "name_ar": "خشم العانس",
+    "name_ar": "خشم العان",
     "button_url": null,
-    "station_details_url": "https://sitprd.rpt.sa/stationdetails/tags/80001096",
+    "station_details_url": "https://sitprd.rpt.sa/stationdetails/tags/80001097",
     "latitude": "24.721255460317725",
     "longitude": "46.86032212552282"
   }

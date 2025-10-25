@@ -14,6 +14,9 @@
     "North Vegetable Market": {
         "name": "سوق الشمال للخضار"
     },
+    "Al Andalus": {
+        "name": "الأندلس"
+    },
     "Al-Andalus": {
         "name": "الأندلس"
     },
@@ -32,6 +35,9 @@
     "Khalid Bin Alwaleed Station": {
         "name": "محطة خالد بن وليد"
     },
+    "Khalid Bin AlWaleed Station": {
+        "name": "محطة خالد بن وليد"
+    },
     "Ar-Rawabi": {
         "name": "الروابي"
     },
@@ -40,6 +46,9 @@
     },
     "Olaishah": {
         "name": "عليشة"
+    },
+    "Al Masani": {
+        "name": "المصانع"
     },
     "New Industrial City": {
         "name": "الصناعية الجديدة"
@@ -68,7 +77,7 @@
     "Laban": {
         "name": "لبن"
     },
-    "Stc": {
+    "STC": {
         "name": "محطة الإتصالات السعودية (stc)"
     },
     "Al-Malqa": {
@@ -83,7 +92,7 @@
     "Abu Dhabi Square": {
         "name": "ميدان أبو ظبي"
     },
-    "Kafd": {
+    "KAFD": {
         "name": "المركز المالي"
     },
     "Al-Yarmuk": {
@@ -164,10 +173,10 @@
     "Al-Muanisiyah": {
         "name": "المونسية"
     },
-    "Ksu Womens' Faculties": {
+    "KSU Womens' Faculties": {
         "name": "جامعة الملك سعود: كلية الطالبات"
     },
-    "Ksu Mens' Faculties": {
+    "KSU Mens' Faculties": {
         "name": "جامعة الملك سعود: كلية الطلاب"
     },
     "Embassies": {
@@ -179,7 +188,7 @@
     "Al-Quds": {
         "name": "القدس"
     },
-    "Ministry Of Environment Water And Agriculture": {
+    "Ministry of Environment Water and Agriculture": {
         "name": "وزارة البيئة والمياه والزراعة"
     },
     "Ishbiliyah": {
