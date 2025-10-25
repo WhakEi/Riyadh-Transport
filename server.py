@@ -622,6 +622,8 @@ def view_line_endpoint():
         print(f"View line error: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
 
+
+
 @app.route('/viewmtr', methods=['POST'])
 def view_mtr_endpoint():
     try:
@@ -1069,9 +1071,109 @@ def get_mtr_lines():
 def serve_frontend():
     return send_from_directory('templates', 'index.html')
 
-@app.route('/ar')
-def serve_arabic():
-    return send_from_directory('templates/ar/', 'index.html')
+# --- Main Frontend Route ---
+# This serves the main index.html file when someone visits /ar/
+@app.route('/ar/')
+def serve_index():
+    """Serves the main index.html file for the frontend application."""
+    return send_from_directory(FRONTEND_DIR, 'index.html')
+
+
+# --- Combined Proxy and Static File Server ---
+@app.route('/ar/<path:subpath>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
+def universal_handler(subpath):
+    """
+    This function intelligently handles all requests under /ar/.
+
+    1. It checks if the requested path ends with a file extension.
+    2. If it's a file, it serves it from the FRONTEND_DIR.
+    3. If it's NOT a file, it assumes it's an API call and proxies it
+       to the backend service on port 5001.
+    """
+    # Check if the requested path looks like a static file.
+    # We check if there's a dot and if the part after the dot is in our set.
+    if '.' in subpath and subpath.rsplit('.', 1)[1].lower() in STATIC_FILE_EXTENSIONS:
+        # This is a request for a static file (e.g., app.js, style.css)
+        # Serve it directly from the frontend directory.
+        return send_from_directory(FRONTEND_DIR, subpath)
+    else:
+        # This is an API call. Proxy it to the backend.
+        return proxy_api_request(subpath)
+
+def proxy_api_request(path):
+    """
+    This function acts as a proxy. It forwards requests from the frontend
+    to the internal backend API service.
+    """
+    backend_url = f"{BACKEND_API_URL}/{path}"
+    headers = {key: value for (key, value) in request.headers if key.lower() != 'host'}
+
+    try:
+        backend_resp = requests.request(
+            method=request.method,
+            url=backend_url,
+            headers=headers,
+            data=request.get_data(),
+            cookies=request.cookies,
+            params=request.args,
+            allow_redirects=False,
+            timeout=10
+        )
+
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+        response_headers = {
+            key: value for (key, value) in backend_resp.raw.headers.items()
+            if key.lower() not in excluded_headers
+        }
+
+        return Response(backend_resp.content, backend_resp.status_code, response_headers)
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error connecting to backend API: {e}")
+        return Response("API Gateway Error: Could not connect to the backend service.", status=502)
+    """
+    This function acts as a proxy. It forwards requests from the frontend
+    to the internal backend API service.
+    """
+    # Construct the full URL for the backend service by appending the subpath
+    backend_url = f"{BACKEND_API_URL}/{subpath}"
+
+    # Copy headers from the incoming request, but remove the 'Host' header
+    # as the requests library will set its own.
+    headers = {key: value for (key, value) in request.headers if key.lower() != 'host'}
+
+    try:
+        # Forward the request to the backend API using the 'requests' library
+        # This mirrors the original request's method, URL, headers, and data.
+        backend_resp = requests.request(
+            method=request.method,
+            url=backend_url,
+            headers=headers,
+            data=request.get_data(),
+            cookies=request.cookies,
+            params=request.args,
+            allow_redirects=False,
+            timeout=10 # 10-second timeout
+        )
+
+        # These are headers that should not be directly copied from the backend
+        # response to the new response, as they are controlled by the WSGI server.
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+
+        # Copy headers from the backend response to our new response
+        response_headers = {
+            key: value for (key, value) in backend_resp.raw.headers.items()
+            if key.lower() not in excluded_headers
+        }
+
+        # Create a new Flask response object to send back to the original client
+        # This response contains the content, status code, and headers from the backend API.
+        return Response(backend_resp.content, backend_resp.status_code, response_headers)
+
+    except requests.exceptions.RequestException as e:
+        # Handle connection errors to the backend service
+        print(f"Error connecting to backend API: {e}")
+        return Response("API Gateway Error: Could not connect to the backend service.", status=502)
 
 @app.route('/<path:path>')
 def serve_static(path):
