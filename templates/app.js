@@ -1,5 +1,6 @@
 // --- CONFIGURATION ---
 const OSM_NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
+const lhosst = ''
 
 // --- NEW: APPWRITE CONFIGURATION ---
 const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1'; // Or your self-hosted endpoint
@@ -7,30 +8,85 @@ const APPWRITE_PROJECT_ID = '68f141dd000f83849c21'; // Replace with your Project
 const APPWRITE_DATABASE_ID = '68f146de0013ba3e183a'; // Replace with your Database ID
 const APPWRITE_ALERTS_COLLECTION_ID = 'emptt'; // Replace with your Collection ID
 
+// --- Caches and Mappings ---
+const lineDataCache = new Map();
+const busLineDataCache = new Map(); // --- Added this
+const lineNameToNumber = {
+    'Blue Line': '1',
+    'Red Line': '2',
+    'Orange Line': '3',
+    'Yellow Line': '4',
+    'Green Line': '5',
+    'Purple Line': '6'
+};
+
 window.onload = async () => {
+    // --- NEW: Live route update state variables ---
+    const arrivalAnimationTimers = new Map();
+    const animationFrames = [`${lhosst}/lt3.png`, `${lhosst}/lt2.png`, `${lhosst}/lt1.png`];
+    let currentRouteData = null;
+    let liveRouteUpdater = null;
+    let stationLiveUpdater = null;
+
+    // --- NEW: Animation helper ---
+    function startArrivalAnimation(elementId, imgElement) {
+        if (arrivalAnimationTimers.has(elementId)) {
+            clearInterval(arrivalAnimationTimers.get(elementId));
+        }
+        let frame = 0;
+        imgElement.src = animationFrames[frame];
+        const intervalId = setInterval(() => {
+            frame = (frame + 1) % animationFrames.length;
+            imgElement.src = animationFrames[frame];
+        }, 500);
+        arrivalAnimationTimers.set(elementId, intervalId);
+    }
+
+    // --- NEW: Animation helper ---
+    function stopArrivalAnimation(elementId) {
+        if (arrivalAnimationTimers.has(elementId)) {
+            clearInterval(arrivalAnimationTimers.get(elementId));
+            arrivalAnimationTimers.delete(elementId);
+        }
+    }
+
+    // --- NEW: Time formatting helper ---
+    function getArrivalTime(minutesUntil) {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() + minutesUntil);
+        return now.toLocaleTimeString(undefined, {
+            hour: 'numeric',
+            minute: '2-digit'
+        });
+    }
+
     // --- APPWRITE INITIALIZATION ---
-    const { Client, Databases, ID, Query } = Appwrite; // Add Query
+    const { Client, Databases, ID, Query } = Appwrite;
     const client = new Client();
     client
         .setEndpoint(APPWRITE_ENDPOINT)
         .setProject(APPWRITE_PROJECT_ID);
     const databases = new Databases(client);
 
-    // --- MAP INITIALIZATION ---
-    const map = L.map('map', { zoomControl: false }).setView([24.7136, 46.6753], 11);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        maxZoom: 19
-    }).addTo(map);
+// --- MAP INITIALIZATION ---
+const map = L.map('map', { zoomControl: false }).setView([24.7136, 46.6753], 11);
+const apiKey = "exlDzvn29auMMJLNeP23";
+
+// Use the new v4 syntax: L.maptiler.maptilerLayer
+L.maptiler.maptilerLayer({
+    apiKey: apiKey,
+    style: L.maptiler.MapStyle.STREETS, // Use the official MapStyle object
+    language: "en",
+}).addTo(map);
 
     // --- PANEL AND VIEW ELEMENTS ---
     const panelMainView = document.getElementById('panel-main-view');
     const stationDetailView = document.getElementById('station-detail-view');
     const stationDetailBackButton = document.getElementById('station-detail-back-btn');
-    const lineDetailView = document.getElementById('line-detail-view'); // New
-    const lineDetailBackButton = document.getElementById('line-detail-back-btn'); // New
-    const directionSelectionView = document.getElementById('direction-selection-view'); // New
-    const directionSelectionBackButton = document.getElementById('direction-selection-back-btn'); // New
+    const lineDetailView = document.getElementById('line-detail-view');
+    const lineDetailBackButton = document.getElementById('line-detail-back-btn');
+    const directionSelectionView = document.getElementById('direction-selection-view');
+    const directionSelectionBackButton = document.getElementById('direction-selection-back-btn');
 
     const routeForm = document.getElementById('route-form');
     const startInput = document.getElementById('start-input');
@@ -40,8 +96,8 @@ window.onload = async () => {
     let currentStationsLatLng = null;
     let stationsData = null;
     let allStations = [];
-    let allLinesData = null; // Cache for the new lines data
-    let previousView = null; // NEW: State to manage back navigation
+    let allLinesData = null;
+    let previousView = null;
 
     // --- TAB FUNCTIONALITY ---
     const routeTab = document.getElementById('route-tab');
@@ -53,7 +109,7 @@ window.onload = async () => {
     const linesContent = document.getElementById('lines-content');
     const lineSearchInput = document.getElementById('line-search-input');
 
- function switchTab(activeTab) {
+    function switchTab(activeTab) {
         [routeTab, stationsTab, linesTab].forEach(tab => tab.classList.remove('active'));
         [routeContent, stationsContent, linesContent].forEach(pane => pane.classList.remove('active'));
         activeTab.classList.add('active');
@@ -117,7 +173,7 @@ window.onload = async () => {
         stationsList.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Finding nearby stations...</p></div>`;
 
         try {
-            const response = await fetch(`/nearbystations`, {
+            const response = await fetch(`${lhosst}/nearbystations`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(currentStationsLatLng)
@@ -131,7 +187,7 @@ window.onload = async () => {
         }
     }
 
-    // --- COMPLETELY REVISED AND CORRECTED: Display Stations in List and on Map ---
+    // --- DISPLAY STATIONS ---
     function displayStations(data) {
         const stationsList = document.getElementById('stations-list');
         stationsList.innerHTML = '';
@@ -145,8 +201,12 @@ window.onload = async () => {
         const stationCoords = [];
 
         data.forEach(station => {
-            const fullStation = allStations.find(s => s.label === station.name);
-            if (!fullStation) return;
+            // --- FIX: Trim whitespace for robust comparison ---
+            const fullStation = allStations.find(s => s.label.trim() === station.name.trim());
+            if (!fullStation) {
+                console.warn(`Could not find station "${station.name}" in allStations list.`);
+                return;
+            }
 
             const { lat, lng } = fullStation;
             stationCoords.push([lat, lng]);
@@ -171,7 +231,7 @@ window.onload = async () => {
                 stationDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 map.setView([lat, lng], 16);
                 marker.openPopup();
-                showStationDetails(station);
+                showStationDetails(station, panelMainView);
             };
 
             stationDiv.addEventListener('click', handleStationClick);
@@ -184,43 +244,219 @@ window.onload = async () => {
     }
 
     async function showStationDetails(station, fromView) {
-        previousView = fromView; // UPDATED: Set the previous view
-        hideAllViews();
+        previousView = fromView;
+        hideAllViews(); // This will clear any existing station timer
         stationDetailView.classList.remove('hidden');
 
         const stationDetailName = document.getElementById('station-detail-name');
         const stationDetailContent = document.getElementById('station-detail-content');
 
-        stationDetailName.textContent = station.name;
-        stationDetailContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading lines...</p></div>`;
+        const currentStationName = station.name; // Store for the updater
+        const stationType = station.type; // <-- Get the station type
+        stationDetailName.textContent = currentStationName;
+        stationDetailContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading lines and arrivals...</p></div>`;
 
-        const cleanedStationName = station.name.replace(/\s*\((Bus|Metro)\)$/, '').trim();
+        const apiStationName = cleanStationName(currentStationName);
 
         try {
-            const response = await fetch(`/searchstation`, {
+            // --- MODIFIED: Conditional fetching ---
+            const linesPromise = fetch(`${lhosst}/searchstation`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ station_name: cleanedStationName })
+                body: JSON.stringify({ station_name: apiStationName })
             });
-            if (!response.ok) throw new Error(`API error: ${response.status}`);
-            const data = await response.json();
-            renderStationLines(data);
+
+            let arrivalPromise;
+            if (stationType === 'metro') {
+                arrivalPromise = fetchMetroArrivals(apiStationName)
+                                    .catch(e => { console.error("Metro arrivals fetch failed:", e); return { arrivals: [] }; });
+            } else if (stationType === 'bus') {
+                arrivalPromise = fetchBusArrivals(apiStationName)
+                                    .catch(e => { console.error("Bus arrivals fetch failed:", e); return { arrivals: [] }; });
+            } else {
+                // Should not happen, but handle gracefully
+                console.warn("Unknown station type:", stationType);
+                arrivalPromise = Promise.resolve({ arrivals: [] }); // Resolve with empty data
+            }
+
+            // Wait for lines and the relevant arrivals
+            const [linesResponse, arrivalsData] = await Promise.all([
+                linesPromise,
+                arrivalPromise
+            ]);
+
+            if (!linesResponse.ok) throw new Error(`API error fetching station lines: ${linesResponse.status}`);
+            const lineData = await linesResponse.json();
+
+            const initialArrivalsData = arrivalsData?.arrivals || [];
+
+            // Render using the new function
+            renderStationLinesWithArrivals(currentStationName, lineData, initialArrivalsData);
+
+            // Start the live update interval (only if arrivals were fetched)
+            if (stationLiveUpdater) clearInterval(stationLiveUpdater);
+            if (stationType === 'metro' || stationType === 'bus') { // Only update if it's a type we fetch
+                 // --- MODIFIED: Pass station type to fetch function ---
+                 const fetchFunction = stationType === 'metro' ? fetchMetroArrivals : fetchBusArrivals;
+
+                 // Create a dedicated function to fetch and update for *this* station type
+                 const updateThisStation = async () => {
+                     try {
+                         const freshArrivalsData = await fetchFunction(apiStationName);
+                         (freshArrivalsData?.arrivals || []).forEach(arrival => {
+                             updateSingleStationArrival(arrival);
+                         });
+                         // Handle case where arrivals might become empty after update
+                         const contentArea = document.getElementById('station-detail-content');
+                          if (contentArea && (!freshArrivalsData?.arrivals || freshArrivalsData.arrivals.length === 0) && !contentArea.querySelector('.loader-container') && !contentArea.querySelector('.no-arrivals-message')) {
+                              renderStationLinesWithArrivals(currentStationName, lineData, []); // Re-render with no arrivals message
+                          } else if (contentArea && contentArea.querySelector('.no-arrivals-message') && freshArrivalsData?.arrivals && freshArrivalsData.arrivals.length > 0) {
+                              // If message is showing but we now have arrivals, re-render
+                               renderStationLinesWithArrivals(currentStationName, lineData, freshArrivalsData.arrivals);
+                          }
+
+                     } catch (error) {
+                         console.error(`Failed to fetch ${stationType} arrivals during update:`, error);
+                         // Optionally show error in UI, but might be noisy
+                     }
+                 };
+
+                 updateThisStation(); // Update immediately
+                 stationLiveUpdater = setInterval(updateThisStation, 60000); // Update every minute
+            }
+
         } catch (error) {
-            console.error("Failed to fetch station details:", error);
+            console.error("Failed to fetch station details or initial arrivals:", error);
             stationDetailContent.innerHTML = '<p style="color: red;">Could not load station details.</p>';
+            if (stationLiveUpdater) clearInterval(stationLiveUpdater); // Clear timer on error too
+            stationLiveUpdater = null;
         }
     }
 
+    function renderStationLinesFallback(data) {
+        const stationDetailContent = document.getElementById('station-detail-content');
+        stationDetailContent.innerHTML = '';
 
- // --- NEW/UPDATED: LINES TAB LOGIC ---
+        if (data.metro_lines && data.metro_lines.length > 0) {
+            const metroContainer = document.createElement('div');
+            metroContainer.className = 'line-list-container';
+            metroContainer.innerHTML = `<h4>🚇 Metro Lines</h4>`;
+            const metroGrid = document.createElement('div');
+            metroGrid.className = 'line-grid';
+            data.metro_lines.forEach(line => {
+                const badge = document.createElement('div');
+                badge.className = 'line-badge';
+                badge.textContent = line;
+                badge.style.backgroundColor = lineColors.metro[line] || lineColors.default;
+                metroGrid.appendChild(badge);
+            });
+            metroContainer.appendChild(metroGrid);
+            stationDetailContent.appendChild(metroContainer);
+        }
+
+        if (data.bus_lines && data.bus_lines.length > 0) {
+            const busContainer = document.createElement('div');
+            busContainer.className = 'line-list-container';
+            busContainer.innerHTML = `<h4>🚌 Bus Lines</h4>`;
+            const busGrid = document.createElement('div');
+            busGrid.className = 'line-grid';
+            data.bus_lines.forEach(line => {
+                const badge = document.createElement('div');
+                badge.className = 'line-badge';
+                badge.textContent = line;
+                badge.style.backgroundColor = lineColors.bus;
+                busGrid.appendChild(badge);
+            });
+            busContainer.appendChild(busGrid);
+            stationDetailContent.appendChild(busContainer);
+        }
+
+        if ((!data.metro_lines || data.metro_lines.length === 0) && (!data.bus_lines || data.bus_lines.length === 0)) {
+            stationDetailContent.innerHTML = '<p>No lines found for this station.</p>';
+        }
+    }
+
+    // --- NEW: Renders the station detail list with arrival placeholders ---
+    function renderStationLinesWithArrivals(stationName, lineData, initialArrivalsData) {
+        const stationDetailContent = document.getElementById('station-detail-content');
+        stationDetailContent.innerHTML = ''; // Clear loader
+
+        // Separate into Metro and Bus based on lineData
+        const metroArrivals = initialArrivalsData.filter(a => lineData.metro_lines.includes(a.line));
+        const busArrivals = initialArrivalsData.filter(a => lineData.bus_lines.includes(a.line));
+
+        // Sort arrivals within each type
+        metroArrivals.sort((a, b) => a.minutes_until - b.minutes_until);
+        busArrivals.sort((a, b) => a.minutes_until - b.minutes_until);
+
+        let contentAdded = false;
+
+        // Render Metro Arrivals
+        if (metroArrivals.length > 0) {
+            contentAdded = true;
+            const metroContainer = document.createElement('div');
+            metroContainer.className = 'station-line-list-container';
+            metroContainer.innerHTML = `<h4>🚇 Metro Lines</h4>`;
+            metroArrivals.forEach(arrival => {
+                const item = document.createElement('div');
+                item.className = 'station-line-item';
+                const color = lineColors.metro[arrival.line] || lineColors.default;
+                const arrivalId = getStationArrivalElementId(arrival);
+
+                item.innerHTML = `
+                    <div class="station-line-badge" style="background-color: ${color};">${arrival.line}</div>
+                    <div class="station-line-details">${arrival.destination}</div>
+                    <div class="station-line-arrival" id="${arrivalId}">
+                        <!-- Placeholder - updated by JS -->
+                    </div>
+                `;
+                metroContainer.appendChild(item);
+                // Immediately update with initial data
+                updateSingleStationArrival(arrival);
+            });
+            stationDetailContent.appendChild(metroContainer);
+        }
+
+        // Render Bus Arrivals
+        if (busArrivals.length > 0) {
+            contentAdded = true;
+            const busContainer = document.createElement('div');
+            busContainer.className = 'station-line-list-container';
+            busContainer.innerHTML = `<h4>🚌 Bus Lines</h4>`;
+            busArrivals.forEach(arrival => {
+                const item = document.createElement('div');
+                item.className = 'station-line-item';
+                const color = lineColors.bus;
+                const arrivalId = getStationArrivalElementId(arrival);
+
+                item.innerHTML = `
+                    <div class="station-line-badge" style="background-color: ${color};">${arrival.line}</div>
+                    <div class="station-line-details">${arrival.destination}</div>
+                    <div class="station-line-arrival" id="${arrivalId}">
+                        <!-- Placeholder - updated by JS -->
+                    </div>
+                `;
+                busContainer.appendChild(item);
+                // Immediately update with initial data
+                updateSingleStationArrival(arrival);
+            });
+            stationDetailContent.appendChild(busContainer);
+        }
+
+        if (!contentAdded) {
+            stationDetailContent.innerHTML = '<p class="no-arrivals-message" style="text-align: center; color: #5f6368; margin-top: 20px;">No upcoming arrivals found.</p>';
+        }
+    }
+
+    // --- LINES TAB LOGIC ---
     async function fetchAllLines() {
         const linesList = document.getElementById('lines-list');
         linesList.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading all lines...</p></div>`;
 
         try {
             const [metroLinesRes, busLinesRes] = await Promise.all([
-                fetch(`/mtrlines`),
-                fetch(`/buslines`)
+                fetch(`${lhosst}/mtrlines`),
+                fetch(`${lhosst}/buslines`)
             ]);
             const metroLinesData = await metroLinesRes.json();
             const busLinesData = await busLinesRes.json();
@@ -228,13 +464,13 @@ window.onload = async () => {
             const busLineNumbers = busLinesData.lines.split(',');
 
             const metroPromises = metroLineNumbers.map(line =>
-                fetch(`/viewmtr`, {
+                fetch(`${lhosst}/viewmtr`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ line })
                 }).then(res => res.json()).then(data => ({ type: 'metro', line, data }))
             );
 
             const busPromises = busLineNumbers.map(line =>
-                fetch(`/viewbus`, {
+                fetch(`${lhosst}/viewbus`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ line })
                 }).then(res => res.json()).then(data => ({ type: 'bus', line, data }))
             );
@@ -316,24 +552,29 @@ window.onload = async () => {
         default: '#555'
     };
 
-    // --- BACK BUTTONS AND VIEW MANAGEMENT ---
+    // --- VIEW MANAGEMENT ---
     function hideAllViews() {
         [panelMainView, stationDetailView, lineDetailView, directionSelectionView].forEach(v => v.classList.add('hidden'));
+        if (stationLiveUpdater) {
+            clearInterval(stationLiveUpdater);
+            stationLiveUpdater = null;
+            // Also clear any animations potentially running in station view
+            arrivalAnimationTimers.forEach(timer => clearInterval(timer));
+            arrivalAnimationTimers.clear();
+        }
     }
 
     function showMainPanel() {
-        hideAllViews();
+        hideAllViews(); // This already clears the timer now
         stationMarkersLayer.clearLayers();
         map.addLayer(activeRouteLayers);
         panelMainView.classList.remove('hidden');
-        // Fit map to a default view or last known bounds if necessary
     }
 
     stationDetailBackButton.addEventListener('click', showMainPanel);
     lineDetailBackButton.addEventListener('click', showMainPanel);
     directionSelectionBackButton.addEventListener('click', showMainPanel);
 
-    // --- NEW: LINE DETAIL LOGIC ---
     function handleLineClick(line) {
         const isRingRoute = line.terminus.endsWith('Ring');
 
@@ -344,6 +585,112 @@ window.onload = async () => {
             // For metro or ring routes, determine direction from the label
             const directionKey = line.type === 'metro' ? line.terminus.split(' - ')[0] : null;
             showLineDetails(line, directionKey);
+        }
+    }
+
+// --- MODIFIED: Generates unique ID for station arrival elements including time ---
+    function getStationArrivalElementId(arrival) {
+        const cleanDest = cleanStationName(arrival.destination).replace(/[^a-zA-Z0-9]/g, '');
+        // Add minutes_until to make the ID unique per arrival instance
+        return `station-${arrival.line}-${cleanDest}-${arrival.minutes_until}`;
+    }
+
+    function updateSingleStationArrival(arrivalData) {
+        const elementId = getStationArrivalElementId(arrivalData);
+        const arrivalElement = document.getElementById(elementId);
+        if (!arrivalElement) return; // Element might not exist if data changed rapidly
+
+        stopArrivalAnimation(elementId); // Stop previous animation
+
+        const minutes = arrivalData.minutes_until;
+        let htmlContent = '';
+        let color = '#5f6368'; // Default grey
+
+        if (minutes > 60) {
+            const arrivalTime = getArrivalTime(minutes);
+            htmlContent = `<span class="arrival-text">${arrivalTime}</span>`;
+            color = '#000'; // Black for future time
+        } else {
+            let arrivalText = '';
+            if (minutes <= 0) arrivalText = 'Arriving now';
+            else if (minutes === 1) arrivalText = '1 min';
+            else arrivalText = `${Math.round(minutes)} mins`;
+
+            htmlContent = `
+                <img src="/lt3.png" class="arrival-animation" alt="" />
+                <span class="arrival-text">${arrivalText}</span>
+            `;
+            color = '#18a034'; // Green for arriving soon
+
+            // Set color immediately for text
+            arrivalElement.innerHTML = htmlContent; // Add content first
+            arrivalElement.querySelector('.arrival-text').style.color = color; // Style text
+
+            // Start animation if needed
+            const imgElement = arrivalElement.querySelector('.arrival-animation');
+            if (imgElement) startArrivalAnimation(elementId, imgElement);
+            return; // Skip final color setting as it's done
+        }
+
+        // Set content and color for >60 mins or error states
+        arrivalElement.innerHTML = htmlContent;
+        const textSpan = arrivalElement.querySelector('.arrival-text');
+        if(textSpan) textSpan.style.color = color;
+    }
+
+// --- MODIFIED: Fetches and updates all individual arrival elements ---
+    async function fetchAndUpdateStationArrivals(stationName, stationType, lineDataForStation) {
+        const apiStationName = cleanStationNameForApi(stationName);
+        try {
+            let arrivalsData;
+            if (stationType === 'metro') {
+                 arrivalsData = await fetchMetroArrivals(apiStationName).catch(e => { console.error("Metro arrivals fetch failed:", e); return { arrivals: [] }; });
+            } else if (stationType === 'bus') {
+                 arrivalsData = await fetchBusArrivals(apiStationName).catch(e => { console.error("Bus arrivals fetch failed:", e); return { arrivals: [] }; });
+            } else {
+                 arrivalsData = { arrivals: [] };
+            }
+
+            const allArrivals = arrivalsData?.arrivals || [];
+
+            // --- REMOVED Grouping ---
+
+            // --- Update UI for each arrival using its unique ID ---
+            allArrivals.forEach(arrival => {
+                updateSingleStationArrival(arrival); // This function uses the unique ID now
+            });
+            // --- End update UI ---
+
+            // --- REMOVED Stale Entry Handling ---
+            // Elements for arrivals that no longer exist won't be updated and
+            // will be removed entirely the next time showStationDetails -> renderStationLinesWithArrivals runs.
+
+            // --- Update "No arrivals" message status ---
+            const stationDetailContent = document.getElementById('station-detail-content');
+            const noArrivalsMsg = stationDetailContent ? stationDetailContent.querySelector('.no-arrivals-message') : null;
+            const hasArrivals = allArrivals.length > 0;
+
+            if (stationDetailContent && !hasArrivals && !stationDetailContent.querySelector('.loader-container') && !noArrivalsMsg) {
+                 // Add "No arrivals" message if it's not there and shouldn't be
+                 stationDetailContent.innerHTML = '<p class="no-arrivals-message" style="text-align: center; color: #5f6368; margin-top: 20px;">No upcoming arrivals found.</p>';
+            } else if (noArrivalsMsg && hasArrivals) {
+                 // Remove "No arrivals" message if it's there and shouldn't be
+                 noArrivalsMsg.remove();
+                 // We might need to re-render the list if the message was the *only* content.
+                 // Fetching initial line data again might be needed, or rely on the next full refresh.
+                 // For now, just removing the message might leave a blank space until next refresh.
+            }
+            // --- End "No arrivals" message update ---
+
+
+        } catch (error) {
+            console.error("Failed to fetch station arrivals:", error);
+            const contentArea = document.getElementById('station-detail-content');
+             if (contentArea && !contentArea.querySelector('.loader-container')) {
+                 if (!contentArea.querySelector('.no-arrivals-message')) {
+                    contentArea.innerHTML = '<p style="color: red; text-align: center; margin-top: 20px;">Could not load live arrival data.</p>';
+                 }
+             }
         }
     }
 
@@ -371,15 +718,10 @@ window.onload = async () => {
 
     async function showLineDetails(line, directionKey = null) {
         showView(lineDetailView);
-
-        // Find the title element once.
         const lineDetailName = document.getElementById('line-detail-name');
-
-        // Clear its previous contents to prevent stacking elements.
         lineDetailName.innerHTML = '';
-        lineDetailName.removeAttribute('style'); // Remove inline styles if any
+        lineDetailName.removeAttribute('style');
 
-        // Recreate the badge and terminus inside the title element.
         const badge = document.createElement('div');
         badge.className = 'line-detail-badge';
         badge.textContent = line.line;
@@ -390,7 +732,6 @@ window.onload = async () => {
         terminus.className = 'line-detail-terminus';
         terminus.textContent = line.terminus;
 
-        // Append the new elements.
         lineDetailName.appendChild(badge);
         lineDetailName.appendChild(terminus);
 
@@ -399,7 +740,7 @@ window.onload = async () => {
 
         try {
             const endpoint = line.type === 'metro' ? '/viewmtr' : '/viewbus';
-            const response = await fetch(`${endpoint}`, {
+            const response = await fetch(`${lhosst}${endpoint}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ line: line.line })
@@ -431,7 +772,7 @@ window.onload = async () => {
         viewToShow.classList.remove('hidden');
     }
 
-    function renderLineStations(stationNames, line) {
+function renderLineStations(stationNames, line) {
         const lineDetailContent = document.getElementById('line-detail-content');
         lineDetailContent.innerHTML = '';
         stationMarkersLayer.clearLayers();
@@ -471,10 +812,10 @@ window.onload = async () => {
                 }).addTo(stationMarkersLayer);
 
                 circleMarker.bindPopup(`<b>${station.label}</b>`);
-
                 stationItem.addEventListener('click', () => {
+                    // Create a "mock" station object to pass to the details function
                     const mockStation = { name: station.label, type: station.type };
-                    showStationDetails(mockStation, lineDetailView);
+                    showStationDetails(mockStation, lineDetailView); // Pass current view
                 });
             }
         });
@@ -491,49 +832,6 @@ window.onload = async () => {
 
         if (allCoords.length > 0) {
             map.fitBounds(L.latLngBounds(allCoords), { padding: [50, 50] });
-        }
-    }
-
-    function renderStationLines(data) {
-        const stationDetailContent = document.getElementById('station-detail-content');
-        stationDetailContent.innerHTML = '';
-
-        if (data.metro_lines && data.metro_lines.length > 0) {
-            const metroContainer = document.createElement('div');
-            metroContainer.className = 'line-list-container';
-            metroContainer.innerHTML = `<h4>🚇 Metro Lines</h4>`;
-            const metroGrid = document.createElement('div');
-            metroGrid.className = 'line-grid';
-            data.metro_lines.forEach(line => {
-                const badge = document.createElement('div');
-                badge.className = 'line-badge';
-                badge.textContent = line;
-                badge.style.backgroundColor = lineColors.metro[line] || lineColors.default;
-                metroGrid.appendChild(badge);
-            });
-            metroContainer.appendChild(metroGrid);
-            stationDetailContent.appendChild(metroContainer);
-        }
-
-        if (data.bus_lines && data.bus_lines.length > 0) {
-            const busContainer = document.createElement('div');
-            busContainer.className = 'line-list-container';
-            busContainer.innerHTML = `<h4>🚌 Bus Lines</h4>`;
-            const busGrid = document.createElement('div');
-            busGrid.className = 'line-grid';
-            data.bus_lines.forEach(line => {
-                const badge = document.createElement('div');
-                badge.className = 'line-badge';
-                badge.textContent = line;
-                badge.style.backgroundColor = lineColors.bus;
-                busGrid.appendChild(badge);
-            });
-            busContainer.appendChild(busGrid);
-            stationDetailContent.appendChild(busContainer);
-        }
-
-        if ((!data.metro_lines || data.metro_lines.length === 0) && (!data.bus_lines || data.bus_lines.length === 0)) {
-            stationDetailContent.innerHTML = '<p>No lines found for this station.</p>';
         }
     }
 
@@ -555,7 +853,7 @@ window.onload = async () => {
         return { main: mainName, secondary: secondaryName };
     }
 
-    // --- CUSTOM AUTOCOMPLETE IMPLEMENTATION ---
+// --- MODIFIED: CUSTOM AUTOCOMPLETE IMPLEMENTATION ---
     class CustomAutocomplete {
         constructor(input, stationList) {
             this.input = input;
@@ -571,6 +869,16 @@ window.onload = async () => {
             this.input.addEventListener('keydown', this.onKeyDown.bind(this));
             document.addEventListener('click', this.onDocumentClick.bind(this));
 
+            // --- NEW: Clear stored coords on manual input ---
+            this.input.addEventListener('input', () => {
+                // If user types manually after selecting, clear the stored coords
+                if (this.input.dataset.coordinates) {
+                    delete this.input.dataset.coordinates;
+                     // Optional: maybe add a visual cue that it's no longer linked?
+                }
+            });
+            // --- END NEW ---
+
             this.currentSelection = -1;
             this.currentSuggestions = [];
         }
@@ -582,6 +890,12 @@ window.onload = async () => {
                 this.hide();
                 return;
             }
+            // --- MODIFIED: Don't fetch if input looks like coords already ---
+            if (parseCoordinates(query)) {
+                this.hide();
+                return;
+            }
+            // --- END MODIFIED ---
             this.debounceTimeout = setTimeout(() => this.fetchSuggestions(query), 250);
         }
 
@@ -600,7 +914,13 @@ window.onload = async () => {
             return this.stationList
                 .filter(station => station.label.toLowerCase().includes(lowerCaseQuery))
                 .slice(0, 3)
-                .map(station => ({ type: 'station', name: station.label, lat: station.lat, lng: station.lng }));
+                .map(station => ({
+                    type: 'station',
+                    name: station.label, // Store the clean name
+                    displayName: station.label, // Use full label for display
+                    lat: station.lat,
+                    lng: station.lng
+                 }));
         }
 
         async getOSMSuggestions(query) {
@@ -609,7 +929,21 @@ window.onload = async () => {
                 const response = await fetch(`${OSM_NOMINATIM_URL}?${params}`);
                 if (!response.ok) return [];
                 const data = await response.json();
-                return data.map(item => ({ type: 'map', name: formatOsmName(item), lat: parseFloat(item.lat), lng: parseFloat(item.lon) }));
+                return data.map(item => {
+                     const formattedName = formatOsmName(item);
+                     // Construct a display name (Main, Secondary if available)
+                     let displayName = formattedName.main;
+                     if (formattedName.secondary) {
+                         displayName += `, ${formattedName.secondary}`;
+                     }
+                     return {
+                         type: 'map',
+                         name: formattedName.main, // Store just the main name? Or full? Let's use main for simplicity
+                         displayName: displayName, // For display in input
+                         lat: parseFloat(item.lat),
+                         lng: parseFloat(item.lon)
+                     };
+                 });
             } catch (error) {
                 console.error("OSM search failed:", error);
                 return [];
@@ -628,7 +962,15 @@ window.onload = async () => {
                 div.dataset.index = index;
                 const prefix = item.type === 'station' ? 'Station' : 'Map';
                 const prefixColor = item.type === 'station' ? '#007bff' : '#28a745';
-                let contentHtml = item.type === 'map' ? `<div class="suggestion-text"><div class="suggestion-main">${item.name.main}</div>${item.name.secondary ? `<div class="suggestion-secondary">${item.name.secondary}</div>` : ''}</div>` : `<div class="suggestion-text">${item.name}</div>`;
+
+                // Use displayName for rendering
+                let contentHtml = `<div class="suggestion-text">${item.displayName}</div>`;
+                // Simplified rendering, adjust if you want main/secondary lines again
+                 if (item.type === 'map') {
+                     const formatted = formatOsmName({ name: item.name, address: { suburb: item.displayName.split(', ')[1] } }); // Reconstruct for formatting function if needed
+                     contentHtml = `<div class="suggestion-text"><div class="suggestion-main">${formatted.main}</div>${formatted.secondary ? `<div class="suggestion-secondary">${formatted.secondary}</div>` : ''}</div>`;
+                 }
+
                 div.innerHTML = `<span class="suggestion-prefix" style="color: ${prefixColor};">[${prefix}]</span>${contentHtml}`;
                 div.addEventListener('click', () => this.selectItem(index));
                 this.container.appendChild(div);
@@ -661,12 +1003,17 @@ window.onload = async () => {
             });
         }
 
+        // --- MODIFIED: selectItem ---
         selectItem(index) {
             const item = this.currentSuggestions[index];
             if (!item) return;
-            this.input.value = `${item.lat.toFixed(5)}, ${item.lng.toFixed(5)}`;
+            // Set input value to the display name
+            this.input.value = item.displayName;
+            // Store coordinates in data attribute
+            this.input.dataset.coordinates = `${item.lat.toFixed(5)}, ${item.lng.toFixed(5)}`;
             this.hide();
         }
+        // --- END MODIFIED ---
 
         onDocumentClick(e) {
             if (!this.input.contains(e.target) && !this.container.contains(e.target)) this.hide();
@@ -675,80 +1022,327 @@ window.onload = async () => {
         hide() { this.container.style.display = 'none'; }
     }
 
-    function renderLineStations(stationNames, line) {
-        const lineDetailContent = document.getElementById('line-detail-content');
-        lineDetailContent.innerHTML = '';
-        stationMarkersLayer.clearLayers();
-        map.removeLayer(activeRouteLayers);
-        map.addLayer(stationMarkersLayer);
+    // --- LIVE ARRIVAL HELPER FUNCTIONS ---
+    function cleanStationName(name) {
+        if (typeof name !== 'string') return '';
+        return name.replace(/\s*\((Bus|Metro)\)$/i, '').trim().toLowerCase();
+    }
 
-        if (!stationNames || stationNames.length === 0) {
-            lineDetailContent.innerHTML = '<p>No stations found for this line.</p>';
-            return;
+    function getLineNumberFromName(lineName) {
+        return lineNameToNumber[lineName] || null;
+    }
+
+    async function fetchMetroLineData(lineNumber) {
+        if (lineDataCache.has(lineNumber)) {
+            return lineDataCache.get(lineNumber);
         }
-
-        const stationList = document.createElement('div');
-        stationList.className = 'detail-station-list';
-        const allCoords = [];
-        const color = line.type === 'metro' ? (lineColors.metro[line.line] || lineColors.default) : lineColors.bus;
-
-        stationNames.forEach(name => {
-            const station = allStations.find(s => s.label.includes(name));
-
-            const stationItem = document.createElement('div');
-            stationItem.className = 'detail-station-item';
-            stationItem.textContent = name;
-            stationList.appendChild(stationItem);
-
-            if (station) {
-                const { lat, lng } = station;
-                const latLng = [lat, lng];
-                allCoords.push(latLng);
-
-                const circleMarker = L.circleMarker(latLng, {
-                    radius: 6,
-                    fillColor: color,
-                    color: '#fff',
-                    weight: 2,
-                    opacity: 1,
-                    fillOpacity: 1
-                }).addTo(stationMarkersLayer);
-
-                circleMarker.bindPopup(`<b>${station.label}</b>`);
-
-                // UPDATED: Add click listener to show station details
-                stationItem.addEventListener('click', () => {
-                    const mockStation = { name: station.label, type: station.type };
-                    showStationDetails(mockStation, lineDetailView); // Pass current view
-                });
-            }
-        });
-
-        lineDetailContent.appendChild(stationList);
-
-        if (allCoords.length > 1) {
-            L.polyline(allCoords, {
-                color: color,
-                weight: 5,
-                opacity: 0.8
-            }).addTo(stationMarkersLayer);
-        }
-
-        if (allCoords.length > 0) {
-            map.fitBounds(L.latLngBounds(allCoords), { padding: [50, 50] });
+        try {
+            const response = await fetch(`${lhosst}/viewmtr`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ line: lineNumber })
+            });
+            if (!response.ok) throw new Error(`Failed to fetch line data for ${lineNumber}`);
+            const data = await response.json();
+            lineDataCache.set(lineNumber, data);
+            return data;
+        } catch (error) {
+            console.error(error);
+            throw error;
         }
     }
 
-    async function initializeAutocomplete() {
+    async function fetchBusLineData(lineNumber) {
+        if (busLineDataCache.has(lineNumber)) {
+            return busLineDataCache.get(lineNumber);
+        }
         try {
-            const response = await fetch(`/api/stations`);
+            const response = await fetch(`${lhosst}/viewbus`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ line: lineNumber })
+            });
+            if (!response.ok) throw new Error(`Failed to fetch bus line data for ${lineNumber}`);
+            const data = await response.json();
+            busLineDataCache.set(lineNumber, data);
+            return data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function fetchMetroArrivals(stationName) {
+        try {
+            const response = await fetch(`${lhosst}/metro_arrivals`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ station_name: stationName })
+            });
+            if (!response.ok) throw new Error(`Failed to fetch arrivals for ${stationName}`);
+            return await response.json();
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function fetchBusArrivals(stationName) {
+        try {
+            const response = await fetch(`${lhosst}/bus_arrivals`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ station_name: stationName })
+            });
+            if (!response.ok) throw new Error(`Failed to fetch bus arrivals for ${stationName}`);
+            return await response.json();
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    // --- NEW: Helper function to generate unique IDs for segments ---
+    function getSegmentIds(segment) {
+        // --- FIX: Handle 'walk' segments which don't have a 'line' ---
+        const linePart = (segment.type === 'walk') ? 'walk' : segment.line.replace(/\s+/g, '-');
+
+        const stationPart = (segment.stations && segment.stations.length > 0)
+            ? segment.stations[0].replace(/[^a-zA-Z0-9]/g, '')
+            : 'no-station'; // Use a fallback for walk segments
+
+        const uniqueIdBase = `${segment.type}-${linePart}-${stationPart}`;
+        // --- END FIX ---
+
+        return {
+            titleId: `title-${uniqueIdBase}`,
+            arrivalId: `arrival-${uniqueIdBase}`
+        };
+    }
+
+    // --- NEW: Helper function to update a segment's UI ---
+function updateSegmentUI(segment, status, data = {}) {
+        const { arrivalId } = getSegmentIds(segment);
+        const arrivalElement = document.getElementById(arrivalId);
+
+        if (!arrivalElement) return; // Walk segments won't have an arrivalElement
+
+        // Always stop animation before changing content
+        stopArrivalAnimation(arrivalId);
+
+        // Update Arrival Div
+        switch (status) {
+            case 'live':
+                arrivalElement.style.display = 'flex'; // Make sure it's visible
+                const minutes = data.waitMinutes;
+                if (minutes > 60) {
+                    const arrivalTime = getArrivalTime(data.fullMinutesUntil);
+                    arrivalElement.innerHTML = `<span class="arrival-text" style="color: #000;">${arrivalTime}</span>`;
+                } else {
+                    let arrivalText = '';
+                    if (minutes <= 0) arrivalText = 'Arriving now';
+                    else if (minutes === 1) arrivalText = '1 min';
+                    else arrivalText = `${Math.round(minutes)} mins`;
+
+                    arrivalElement.innerHTML = `
+                        <img src="/lt3.png" class="arrival-animation" alt="" />
+                        <span class="arrival-text" style="color: #18a034;">${arrivalText}</span>
+                    `;
+                    const imgElement = arrivalElement.querySelector('.arrival-animation');
+                    if (imgElement) startArrivalAnimation(arrivalId, imgElement);
+                }
+                break;
+            case 'checking':
+                arrivalElement.style.display = 'flex'; // Keep visible
+                arrivalElement.innerHTML = `<span class="arrival-text" style="color: #5f6368;">(Checking...)</span>`;
+                break;
+            case 'missed': // Set for segments *after* a break
+            case 'error':  // Set for the segment that *caused* the break
+            default:
+                // --- NEW: Hide the element ---
+                arrivalElement.innerHTML = '';
+                arrivalElement.style.display = 'none';
+                break;
+        }
+    }
+
+// --- MODIFIED: Master function to update all live route data ---
+    async function updateLiveRouteData() {
+        if (!currentRouteData) return;
+
+        // --- NEW: Split time variables for correct calculation ---
+        let travelTimeElapsed = 0;   // Tracks ONLY ride + walk time
+        let newTotalJourneyMinutes = 0;  // Tracks total journey time including waits
+        let liveChainBroken = false;
+
+        const MAX_ACCEPTABLE_WAIT = 45; // 45 minutes
+
+        for (const segment of currentRouteData.segments) {
+            const segmentRideMinutes = Math.round(segment.duration / 60);
+
+            if (segment.type === 'walk') {
+                newTotalJourneyMinutes += segmentRideMinutes;
+                travelTimeElapsed += segmentRideMinutes; // Add walk time to both
+                continue;
+            }
+
+            const { titleId, arrivalId } = getSegmentIds(segment);
+            const arrivalElement = document.getElementById(arrivalId);
+            if (!arrivalElement) continue;
+
+            stopArrivalAnimation(arrivalId);
+            arrivalElement.style.display = 'flex';
+            arrivalElement.innerHTML = `<span class="arrival-text" style="color: #5f6368;">(Checking...)</span>`;
+
+            try {
+                let arrivalsData, lineData, lineNumber, apiStationName;
+
+                // 1. Fetch data
+                if (segment.type === 'metro') {
+                    lineNumber = getLineNumberFromName(segment.line);
+                    if (!lineNumber) throw new Error('Unknown metro line');
+                    apiStationName = cleanStationName(segment.stations[0]);
+
+                    [lineData, arrivalsData] = await Promise.all([
+                        fetchMetroLineData(lineNumber),
+                        fetchMetroArrivals(apiStationName)
+                    ]);
+                } else { // 'bus'
+                    lineNumber = segment.line;
+                    apiStationName = cleanStationName(segment.stations[0]);
+
+                    [lineData, arrivalsData] = await Promise.all([
+                        fetchBusLineData(lineNumber),
+                        fetchBusArrivals(apiStationName)
+                    ]);
+                }
+
+                if (!arrivalsData || !arrivalsData.arrivals || arrivalsData.arrivals.length === 0) {
+                    throw new Error('No arrivals data found');
+                }
+
+                // 2. Determine correct terminus
+                let correctTerminus = null;
+                let isRingRoute = false;
+
+                if (segment.type === 'metro') {
+                    const cleanStart = cleanStationName(segment.stations[0]);
+                    const cleanSecond = cleanStationName(segment.stations[1]);
+                    const fullLineStations = lineData.stations;
+                    const startIndex = fullLineStations.findIndex(s => cleanStationName(s) === cleanStart);
+                    const secondIndex = fullLineStations.findIndex(s => cleanStationName(s) === cleanSecond);
+                    if (startIndex === -1 || secondIndex === -1) throw new Error('Station mismatch');
+                    correctTerminus = (secondIndex > startIndex) ? fullLineStations[fullLineStations.length - 1] : fullLineStations[0];
+
+                } else { // 'bus'
+                    const ringArrival = arrivalsData.arrivals.find(arr => arr.line === lineNumber && arr.destination.endsWith(' Ring'));
+                    if (ringArrival) {
+                        correctTerminus = ringArrival.destination;
+                        isRingRoute = true;
+                    } else {
+                        const lineDirections = Object.keys(lineData);
+                        if (lineDirections.length === 0) throw new Error('No bus directions');
+                        const cleanSegmentStations = segment.stations.map(cleanStationName);
+                        for (const directionKey of lineDirections) {
+                            const fullLineStations = lineData[directionKey].map(cleanStationName);
+                            const firstStationIndex = fullLineStations.indexOf(cleanSegmentStations[0]);
+                            if (firstStationIndex !== -1 && firstStationIndex + 1 < fullLineStations.length && fullLineStations[firstStationIndex + 1] === cleanSegmentStations[1]) {
+                                correctTerminus = directionKey;
+                                break;
+                            }
+                        }
+                        if (!correctTerminus) throw new Error('Could not align bus segment');
+                    }
+                }
+
+                // 3. Update Title Element Immediately
+                const titleElement = document.getElementById(titleId);
+                if (titleElement && correctTerminus && !isRingRoute) {
+                    const cleanTerminus = cleanStationName(correctTerminus);
+                    titleElement.textContent = `Take ${segment.type === 'metro' ? `the ${segment.line}` : `Bus Line ${segment.line}`} towards ${correctTerminus}`;
+                }
+
+                // 4. Conditional Live Logic
+                if (liveChainBroken) {
+                    // A previous segment failed.
+                    updateSegmentUI(segment, 'missed');
+                    newTotalJourneyMinutes += segmentRideMinutes; // Add static ride time
+                    travelTimeElapsed += segmentRideMinutes;    // Add static ride time
+                } else {
+                    // Chain is still valid. Find the *next valid arrival*
+                    const validArrival = arrivalsData.arrivals.find(arr =>
+                        arr.line === lineNumber &&
+                        cleanStationName(arr.destination) === cleanStationName(correctTerminus) &&
+                        arr.minutes_until >= travelTimeElapsed // <-- CHECK AGAINST TRAVEL TIME
+                    );
+
+                    if (validArrival) {
+                        // We found a *potential* arrival
+                        const waitMinutes = validArrival.minutes_until - travelTimeElapsed; // <-- This is the *real* wait
+
+                        if (waitMinutes > MAX_ACCEPTABLE_WAIT) {
+                            // The wait is too long, treat it as a missed connection
+                            console.warn(`Next arrival for ${segment.type} ${segment.line} is in ${waitMinutes} mins (arrival in ${validArrival.minutes_until} vs travel time ${travelTimeElapsed}), which is > ${MAX_ACCEPTABLE_WAIT} min threshold. Breaking chain.`);
+                            liveChainBroken = true;
+                            updateSegmentUI(segment, 'missed');
+                            newTotalJourneyMinutes += segmentRideMinutes; // Add static ride time
+                            travelTimeElapsed += segmentRideMinutes;
+                        } else {
+                            // The wait is acceptable.
+                            newTotalJourneyMinutes += waitMinutes + segmentRideMinutes; // Add wait + ride
+                            travelTimeElapsed += segmentRideMinutes; // Add *only* ride
+
+                            updateSegmentUI(segment, 'live', {
+                                waitMinutes: waitMinutes,
+                                fullMinutesUntil: validArrival.minutes_until
+                            });
+                        }
+                    } else {
+                        // We missed the last one. Break the chain.
+                        console.warn(`Missed last connection for ${segment.type} ${segment.line} (travel time ${travelTimeElapsed} was greater than last arrival)`);
+                        liveChainBroken = true;
+                        updateSegmentUI(segment, 'missed');
+                        newTotalJourneyMinutes += segmentRideMinutes;
+                        travelTimeElapsed += segmentRideMinutes;
+                    }
+                }
+
+            } catch (error) {
+                // This catch block handles failures in fetching data or determining terminus
+                console.error('Failed to update live segment:', error);
+                liveChainBroken = true;
+                updateSegmentUI(segment, 'error');
+                newTotalJourneyMinutes += segmentRideMinutes;
+                travelTimeElapsed += segmentRideMinutes; // <-- Add ride time even on error
+            }
+        }
+
+        // 5. Update the total time
+        const totalTimeElement = document.getElementById('route-total-time-span');
+        if (totalTimeElement) {
+            totalTimeElement.textContent = `${Math.round(newTotalJourneyMinutes)} min`;
+        }
+    }
+
+
+async function initializeAutocomplete() {
+        try {
+            const response = await fetch(`${lhosst}/api/stations`);
             if (!response.ok) throw new Error(`Failed to fetch stations: ${response.status}`);
-            allStations = await response.json();
+            const stations = await response.json(); // Fetch into a local variable first
+            allStations = stations; // Assign to the global variable
+            // Initialize autocomplete widgets *after* data is fetched
+            new CustomAutocomplete(startInput, allStations);
+            new CustomAutocomplete(endInput, allStations);
+            return stations; // Return the fetched data
         } catch (error) {
             console.error("Could not initialize autocomplete:", error);
+            allStations = []; // Ensure it's an empty array on error
+            // Initialize with empty lists if fetch failed
+            new CustomAutocomplete(startInput, []);
+            new CustomAutocomplete(endInput, []);
+            return []; // Return empty array on error
         }
-        new CustomAutocomplete(startInput, allStations);
-        new CustomAutocomplete(endInput, allStations);
     }
 
     // --- COORDINATE PARSING ---
@@ -776,13 +1370,41 @@ window.onload = async () => {
         }
     }
 
-    // --- ROUTE HANDLING ---
+    // --- MODIFIED: ROUTE HANDLING ---
     async function handleFormSubmit(event) {
         event.preventDefault();
-        await fetchAndDisplayRoute(startInput.value, endInput.value);
+
+        // --- NEW: Logic to get coordinates or name ---
+        const getSendValue = (inputElement) => {
+            const value = inputElement.value.trim();
+            const storedCoords = inputElement.dataset.coordinates;
+
+            // Priority 1: Check if the current value is valid coordinates
+            const parsedValue = parseCoordinates(value);
+            if (parsedValue) {
+                return parsedValue; // It's coordinates
+            }
+
+            // Priority 2: Check if there are stored coordinates from autocomplete
+            if (storedCoords) {
+                const parsedStored = parseCoordinates(storedCoords);
+                if (parsedStored) {
+                    return parsedStored; // Use stored coordinates
+                }
+            }
+
+            // Priority 3: Fallback to sending the raw text value
+            return value;
+        };
+
+        const startSendValue = getSendValue(startInput);
+        const endSendValue = getSendValue(endInput);
+
+        await fetchAndDisplayRoute(startSendValue, endSendValue); // Pass potentially mixed values
     }
 
-    async function fetchAndDisplayRoute(start, end) {
+    // --- MODIFIED: fetchAndDisplayRoute to handle mixed input types ---
+    async function fetchAndDisplayRoute(startValue, endValue) {
         const detailsContainer = document.getElementById('route-details');
         const findRouteBtn = document.querySelector('#route-form button[type="submit"]');
         const useMyLocationBtn = document.getElementById('use-my-location');
@@ -791,44 +1413,56 @@ window.onload = async () => {
         useMyLocationBtn.style.display = 'none';
         detailsContainer.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Searching for the best route...</p></div>`;
 
-        if (!start || !end) {
-            detailsContainer.innerHTML = '<p style="color: orange;">Please enter both a start and end location.</p>';
-            findRouteBtn.style.display = 'block';
-            useMyLocationBtn.style.display = 'block';
-            return;
-        }
+        // Stop previous timers
+        if (liveRouteUpdater) { clearInterval(liveRouteUpdater); liveRouteUpdater = null; }
+        arrivalAnimationTimers.forEach(timer => clearInterval(timer));
+        arrivalAnimationTimers.clear();
+        currentRouteData = null;
 
-        const startCoords = parseCoordinates(start);
-        const endCoords = parseCoordinates(end);
-        let endpoint = '', body = {};
+        // --- NEW: Determine endpoint based on value types ---
+        let endpoint = '';
+        let body = {};
+        const startIsCoords = typeof startValue === 'object' && startValue.lat !== undefined;
+        const endIsCoords = typeof endValue === 'object' && endValue.lat !== undefined;
 
-        if (startCoords && endCoords) {
-            endpoint = `/route_from_coords`;
-            body = { start_lat: startCoords.lat, start_lng: startCoords.lng, end_lat: endCoords.lat, end_lng: endCoords.lng };
-        } else if (!startCoords && !endCoords) {
+        if (!startValue || !endValue) { // Check if either input is empty string or null
+             detailsContainer.innerHTML = '<p style="color: orange;">Please enter both a start and end location.</p>';
+        } else if (startIsCoords && endIsCoords) {
+            endpoint = `${lhosst}/route_from_coords`;
+            body = { start_lat: startValue.lat, start_lng: startValue.lng, end_lat: endValue.lat, end_lng: endValue.lng };
+        } else if (!startIsCoords && !endIsCoords) {
             endpoint = `/route`;
-            body = { start, end };
+            body = { start: startValue, end: endValue }; // Send names
         } else {
-            detailsContainer.innerHTML = '<p style="color: red;">Error: Please use either two station names or two sets of coordinates. Mixed inputs are not supported.</p>';
-            findRouteBtn.style.display = 'block';
-            useMyLocationBtn.style.display = 'block';
-            return;
+            // Mixed input types (one is coords, one is name) - currently not supported by backend
+            detailsContainer.innerHTML = '<p style="color: red;">Error: Mixed location types (name and coordinates) are not supported. Please use either two names/places or two sets of coordinates.</p>';
+        }
+        // --- END NEW ---
+
+        // Only proceed if an endpoint was determined
+        if (endpoint) {
+            try {
+                const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                const data = await response.json();
+                if (!response.ok || data.error) throw new Error(data.error || `An unknown error occurred (Status: ${response.status}).`);
+
+                displayRoute(data);
+
+            } catch (error) {
+                console.error("Failed to fetch route:", error);
+                detailsContainer.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                // Clear route data on error
+                currentRouteData = null;
+                if (liveRouteUpdater) { clearInterval(liveRouteUpdater); liveRouteUpdater = null; }
+            }
         }
 
-        try {
-            const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-            const data = await response.json();
-            if (!response.ok || data.error) throw new Error(data.error || `An unknown error occurred (Status: ${response.status}).`);
-            displayRoute(data);
-        } catch (error) {
-            console.error("Failed to fetch route:", error);
-            detailsContainer.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-        } finally {
-            findRouteBtn.style.display = 'block';
-            useMyLocationBtn.style.display = 'block';
-        }
+        // Always show buttons again unless still loading (though loading message is replaced on error/success)
+         findRouteBtn.style.display = 'block';
+         useMyLocationBtn.style.display = 'block';
     }
 
+    // --- HEAVILY MODIFIED: This function now just builds the UI skeleton ---
     function displayRoute(data) {
         activeRouteLayers.clearLayers();
         const detailsContainer = document.getElementById('route-details');
@@ -839,13 +1473,17 @@ window.onload = async () => {
             return;
         }
 
-        const route = data.routes[0];
+        currentRouteData = data.routes[0]; // --- NEW: Store route data globally
+        const route = currentRouteData;
         const allCoords = [];
+
+        // --- MODIFIED: Add ID to the total time span ---
         const summaryDiv = document.createElement('div');
         summaryDiv.className = 'route-summary';
-        summaryDiv.innerHTML = `<p>${Math.round(route.total_time / 60)} min</p><span>Total journey time.</span>`;
+        summaryDiv.innerHTML = `<p><span id="route-total-time-span">${Math.round(route.total_time / 60)} min</span></p><span>Total journey time.</span>`;
         detailsContainer.appendChild(summaryDiv);
 
+        // --- MODIFIED: This loop just builds the static HTML skeleton ---
         route.segments.forEach((segment) => {
             let style = {};
             if (segment.type === 'metro') {
@@ -867,6 +1505,9 @@ window.onload = async () => {
             const durationMins = Math.round(segment.duration / 60);
             let instructionTitle = '', instructionDetails = '', endPointName = '';
 
+            const { titleId, arrivalId } = getSegmentIds(segment);
+            let arrivalHtml = '';
+
             if (segment.type === 'walk') {
                 endPointName = segment.to || "your destination";
                 instructionTitle = `Walk to ${endPointName}`;
@@ -881,12 +1522,28 @@ window.onload = async () => {
                 endPointName = segment.stations && segment.stations.length > 0 ? segment.stations[segment.stations.length - 1] : "next stop";
                 const stopsText = segment.stations && segment.stations.length > 1 ? `&bull; ${segment.stations.length - 1} stops` : '';
                 instructionDetails = `${durationMins} min ${stopsText}`;
+
+                // Add the placeholder div for live data
+                arrivalHtml = `<div class="instruction-arrival" id="${arrivalId}"></div>`;
             }
-            instructionDiv.innerHTML = `<div class="instruction-icon">${style.icon}</div><div class="instruction-details"><h3>${instructionTitle}</h3><p>${instructionDetails}</p>${segment.type !== 'walk' ? `<small>${endPointName}</small>` : ''}</div>`;
+
+            instructionDiv.innerHTML = `
+                <div class="instruction-icon">${style.icon}</div>
+                <div class="instruction-details">
+                    <h3 id="${titleId}">${instructionTitle}</h3>
+                    <p>${instructionDetails}</p>
+                    ${segment.type !== 'walk' ? `<small>Disembark at ${endPointName}</small>` : ''}
+                </div>
+                ${arrivalHtml}`;
+
             detailsContainer.appendChild(instructionDiv);
         });
 
         if (allCoords.length > 0) map.fitBounds(L.latLngBounds(allCoords), { padding: [50, 50] });
+
+        // --- NEW: Start the update loop ---
+        updateLiveRouteData(); // Run once immediately
+        liveRouteUpdater = setInterval(updateLiveRouteData, 60000); // Run every minute
     }
 
     // --- ALERTS MENU LOGIC ---
@@ -983,6 +1640,11 @@ window.onload = async () => {
 
     // --- MAP CLICK HANDLER ---
     map.on('click', function(e) {
+        // --- NEW: Stop route updater on map click ---
+        if (liveRouteUpdater) {
+            clearInterval(liveRouteUpdater);
+            liveRouteUpdater = null;
+        }
         const coordString = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
         const popupContent = document.createElement('div');
         popupContent.innerHTML = `<div style="text-align: center;"><strong>Set Location</strong><br><small>${coordString}</small><div style="margin-top: 8px;"><button id="popup-set-origin" class="popup-button">Set as Origin</button><button id="popup-set-destination" class="popup-button" style="margin-left: 5px;">Set as Destination</button><button id="popup-set-stations" class="popup-button" style="margin-top: 5px; width: 100%;">Find Nearby Stations</button></div></div>`;
@@ -999,10 +1661,10 @@ window.onload = async () => {
 
     // --- INITIAL PAGE LOAD ---
     routeForm.addEventListener('submit', handleFormSubmit);
-    await initializeAutocomplete();
-    setLocationFromGPS();
+    await initializeAutocomplete(); // Wait for stations to load
+    setLocationFromGPS();         // Now it's safe to potentially trigger fetchNearbyStations
     map.removeLayer(stationMarkersLayer);
-    fetchAndRenderAlerts(); // Fetch alerts on initial load
+    fetchAndRenderAlerts();
 
     // --- REALTIME ALERTS ---
     client.subscribe(`databases.${APPWRITE_DATABASE_ID}.collections.${APPWRITE_ALERTS_COLLECTION_ID}.documents`, response => {

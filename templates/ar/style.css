@@ -8,18 +8,33 @@
     --warning-background: #fce8e6;
 }
 
+.almarai-light {
+  font-family: "Almarai", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+.almarai-regular {
+  font-family: "Almarai", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
 body, html {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: "Almarai";
     overflow: hidden;
+}
+
+html * {
+    font-family: "Almarai";
 }
 
 #map {
     height: 100%;
     width: 100%;
     z-index: 1;
+    position: fixed;
 }
 
 #panel {
@@ -31,7 +46,8 @@ body, html {
     background: var(--background-color);
     border-radius: var(--border-radius);
     box-shadow: var(--panel-shadow);
-    z-index: 1000;
+    z-index: 1001;
+    position: fixed;
     display: flex;
     flex-direction: column;
     transition: transform 0.3s ease-in-out;
@@ -44,6 +60,7 @@ body, html {
     flex-grow: 1; /* Allow the view to fill the panel */
     min-height: 0; /* Prevent overflow */
 }
+
 
 .panel-header {
     padding: 20px 20px 0;
@@ -330,6 +347,34 @@ body, html {
     display: flex;
     padding: 16px 0;
     border-bottom: 1px solid #e8eaed;
+    align-items: flex-start; /* Align icon/text to top */
+}
+
+/* This is the new container for the arrival time */
+.instruction-arrival {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    margin-left: auto; /* This pushes it to the right */
+    padding-left: 16px;
+    align-self: center; /* Vertically center it with the text block */
+    min-width: 110px; /* Give it space */
+    text-align: right;
+}
+
+/* The animation image */
+.arrival-animation {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+/* The arrival text (e.g., "5 mins" or "4:40 PM") */
+.arrival-text {
+    font-size: 16px;
+    font-weight: 600; /* Bolder */
 }
 
 .instruction-icon {
@@ -396,9 +441,12 @@ body, html {
     justify-content: center;
 }
 
-.leaflet-control .settings-button { margin: 0; }
-.leaflet-right .leaflet-control { margin-right: 10px; }
-.leaflet-top .leaflet-control { margin-top: 10px; }
+.leaflet-control .settings-button {
+    margin: 0;
+    z-index: 1001;
+}
+.leaflet-right .leaflet-control { margin-right: 10px; z-index: 1001; }
+.leaflet-top .leaflet-control { margin-top: 10px; z-index: 1001; }
 
 .settings-overlay {
     position: fixed;
@@ -710,4 +758,76 @@ body, html {
 .direction-option:hover {
     background-color: #e8eaed;
     border-color: #ccc;
+}
+
+/* Container for Metro/Bus sections in station details */
+.station-line-list-container {
+    margin-bottom: 20px;
+}
+.station-line-list-container h4 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #5f6368;
+    border-bottom: 1px solid #e8eaed;
+    padding-bottom: 8px;
+}
+
+/* Individual arrival item */
+.station-line-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.station-line-item:last-child {
+    border-bottom: none;
+}
+
+/* Badge for the line number/name */
+.station-line-badge {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    color: white;
+    min-width: 50px; /* Adjust as needed */
+    box-sizing: border-box;
+    margin-right: 12px;
+}
+
+/* Terminus details */
+.station-line-details {
+    flex-grow: 1; /* Takes up remaining space */
+    font-size: 15px;
+    font-weight: 500;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-right: 10px;
+}
+
+/* Container for live arrival time + animation */
+.station-line-arrival {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    margin-left: auto; /* Pushes to the right */
+    min-width: 110px; /* Consistent width */
+    text-align: right;
+}
+
+/* Reuse animation image class */
+.station-line-arrival .arrival-animation {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+/* Reuse arrival text class */
+.station-line-arrival .arrival-text {
+    font-size: 15px; /* Slightly smaller than route */
+    font-weight: 600;
 }

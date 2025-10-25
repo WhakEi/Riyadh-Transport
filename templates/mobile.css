@@ -378,7 +378,7 @@ body, html {
 .settings-group select { width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 16px; background-color: #f1f3f4; }
 .settings-info { margin-top: 30px; padding-top: 15px; border-top: 1px solid #e8eaed; text-align: center; font-size: 13px; color: #5f6368; }
 .settings-close-button { width: 100%; padding: 15px; margin-top: 24px; background-color: #e8eaed; color: #d93025; border: none; border-radius: 12px; font-size: 18px; font-weight: 500; }
-
+.settings-close-btn { width: 100%; padding: 15px; margin-top: 24px; background-color: #e8eaed; color: #d93025; border: none; border-radius: 12px; font-size: 18px; font-weight: 500; }
 /* --- Alerts Panel --- */
 .alerts-content {
     max-height: 40vh; /* Limit height and make it scrollable */
@@ -390,3 +390,95 @@ body, html {
 .alert-item p { margin: 0; font-size: 14px; line-height: 1.5; color: #444; }
 .alert-item small { display: block; margin-top: 8px; font-size: 12px; color: #5f6368; text-align: right; }
 #alerts-content > p { text-align: center; color: #5f6368; margin-top: 20px; }
+
+/* For Route Details */
+.instruction-arrival {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    margin-left: auto; /* This pushes it to the right */
+    padding-left: 16px;
+    align-self: center; /* Vertically center it with the text block */
+    min-width: 110px; /* Give it space */
+    text-align: right;
+}
+
+.arrival-animation {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.arrival-text {
+    font-size: 16px;
+    font-weight: 600; /* Bolder */
+}
+
+
+/* For Station Details */
+.station-line-list-container {
+    margin-bottom: 20px;
+}
+.station-line-list-container h4 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #5f6368;
+    border-bottom: 1px solid #e8eaed;
+    padding-bottom: 8px;
+}
+
+.station-line-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.station-line-item:last-child {
+    border-bottom: none;
+}
+
+.station-line-badge {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    color: white;
+    min-width: 50px; /* Adjust as needed */
+    box-sizing: border-box;
+    margin-right: 12px;
+}
+
+.station-line-details {
+    flex-grow: 1; /* Takes up remaining space */
+    font-size: 15px;
+    font-weight: 500;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-right: 10px;
+}
+
+.station-line-arrival {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    margin-left: auto; /* Pushes to the right */
+    min-width: 110px; /* Consistent width */
+    text-align: right;
+}
+
+.station-line-arrival .arrival-animation {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+.station-line-arrival .arrival-text {
+    font-size: 15px; /* Slightly smaller than route */
+    font-weight: 600;
+}
