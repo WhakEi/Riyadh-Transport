@@ -10,6 +10,8 @@ import requests
 from datetime import datetime, timezone
 import re
 import pytz
+import time
+import cloudscraper
 
 app = Flask(__name__)
 CORS(app)
@@ -22,6 +24,7 @@ WALKING_DISTANCE = 500  # meters
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), 'templates/ar')
 STATIC_FILE_EXTENSIONS = {'html', 'js', 'css', 'png', 'jpg', 'jpeg', 'gif', 'ico', 'svg', 'woff', 'woff2', 'ttf', 'eot'}
 BACKEND_API_URL = "http://127.0.0.1:5001"
+scraper = cloudscraper.create_scraper()
 
 # Defined metro transfer stations (normalized names)
 METRO_TRANSFER_STATIONS = {
@@ -43,6 +46,8 @@ adjacency = {}
 line_stations = {}
 station_to_lines = {}
 LINE_ENGLISH_NAMES = {}
+API_CACHE = {}
+CACHE_DURATION_SECONDS = 30 # Cache arrivals for 30 seconds
 
 # Helper functions
 def normalize_name(name):
@@ -324,6 +329,15 @@ def fetch_metro_api_data(station_id):
     Fetches arrival data from the external API for a given metro station ID.
     This function mimics the request sent by the official website.
     """
+    # --- ADD CACHE LOGIC ---
+    current_time = time.time()
+    cache_key = f"metro_{station_id}" # Unique key for this station
+
+    if cache_key in API_CACHE:
+        data, timestamp = API_CACHE[cache_key]
+        if (current_time - timestamp) < CACHE_DURATION_SECONDS:
+            print(f"Returning cached data for {cache_key}")
+            return data
     try:
         api_url = 'https://sitprd.rpt.sa/en/stationdetails'
         # These parameters are part of the API's URL query string
@@ -346,10 +360,14 @@ def fetch_metro_api_data(station_id):
             'Referer': f'https://sitprd.rpt.sa/en/stationdetails/tags/{station_id}'
         }
 
-        response = requests.post(api_url, params=params, headers=headers, data=payload, timeout=10)
+        response = scraper.post(api_url, params=params, headers=headers, data=payload, timeout=10)
         response.raise_for_status()  # This will raise an error for bad status codes (like 404 or 500)
         return response.json()
 
+    # It's good practice to catch the specific cloudscraper error
+    except cloudscraper.exceptions.CloudflareChallengeError as e:
+        print(f"Cloudflare challenge failed for station ID {station_id}: {e}")
+        return None
     except requests.exceptions.RequestException as e:
         print(f"Error fetching arrival times for station ID {station_id}: {e}")
         return None
@@ -359,6 +377,15 @@ def fetch_bus_api_data(station_id):
     Fetches arrival data from the external API for a given bus stop ID.
     This function mimics the request for bus route details.
     """
+    # --- ADD CACHE LOGIC START ---
+    current_time = time.time()
+    cache_key = f"bus_{station_id}" # Unique key for this station
+
+    if cache_key in API_CACHE:
+        data, timestamp = API_CACHE[cache_key]
+        if (current_time - timestamp) < CACHE_DURATION_SECONDS:
+            print(f"Returning cached data for {cache_key}")
+            return data
     try:
         api_url = 'https://sitprd.rpt.sa/en/routedetails'
         # These parameters are part of the API's URL query string
@@ -381,10 +408,13 @@ def fetch_bus_api_data(station_id):
             'Referer': 'https://sitprd.rpt.sa/en/routedetails' # A generic Referer is usually sufficient
         }
 
-        response = requests.post(api_url, params=params, headers=headers, data=payload, timeout=10)
+        response = scraper.post(api_url, params=params, headers=headers, data=payload, timeout=10)
         response.raise_for_status()
         return response.json()
 
+    except cloudscraper.exceptions.CloudflareChallengeError as e:
+        print(f"Cloudflare challenge failed for station ID {station_id}: {e}")
+        return None
     except requests.exceptions.RequestException as e:
         print(f"Error fetching arrival times for bus stop ID {station_id}: {e}")
         return None
