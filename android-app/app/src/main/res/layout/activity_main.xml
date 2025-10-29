@@ -11,8 +11,7 @@
     <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:tilesource="MapTiler" />
+        android:layout_height="match_parent" />
 
     <!-- Bottom Sheet -->
     <androidx.core.widget.NestedScrollView
