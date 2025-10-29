@@ -22,7 +22,7 @@ Feature checklist:
 - ✅ Navigate using names of real life locations
 - ✅ Live Navigation instructions
 
-⏳ Mobile Apps _(For more information check out the [Mobile version repository](https://github.com/WhakEi/Riyadh-Transport-Mobile)_
+⏳ Mobile Apps _(For more information check out the [Mobile version repository](https://github.com/WhakEi/Riyadh-Transport-Mobile)_)
 - ✅ Android App (Alpha Release)
 - ⚫ iOS App
 - ⏳ Open Beta Launch
