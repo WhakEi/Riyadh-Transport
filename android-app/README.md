@@ -7,15 +7,14 @@ An Android mobile application for Riyadh public transport, built in Java. This a
 - **Route Planning**: Find routes between locations using public transport
 - **Station Search**: Browse and search all metro and bus stations
 - **Live Arrivals**: View real-time arrival information for metro and buses
-- **Interactive Map**: View stations and routes on Google Maps
+- **Interactive Map**: View stations and routes with OpenStreetMap and MapTiler
 - **GPS Location**: Use your current location as starting point
-- **Multilingual**: Supports English and Arabic (العربية)
+- **Multilingual**: Supports English and Arabic (العربية) with language-specific map labels
 
 ## Prerequisites
 
 - Android Studio Arctic Fox or later
 - Android SDK 21 (Lollipop) or higher
-- Google Maps API Key
 
 ## Setup Instructions
 
@@ -26,17 +25,7 @@ git clone https://github.com/WhakEi/Riyadh-Transport.git
 cd Riyadh-Transport/android-app
 ```
 
-### 2. Configure Google Maps API Key
-
-1. Get a Google Maps API key from [Google Cloud Console](https://console.cloud.google.com/)
-2. Open `gradle.properties`
-3. Replace `YOUR_GOOGLE_MAPS_API_KEY_HERE` with your actual API key:
-
-```properties
-MAPS_API_KEY=AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-```
-
-### 3. Configure Backend Server URL
+### 2. Configure Backend Server URL
 
 Open `app/src/main/java/com/riyadhtransport/api/ApiClient.java` and update the `BASE_URL`:
 
@@ -48,7 +37,7 @@ private static final String BASE_URL = "http://192.168.1.XXX:5000/";
 private static final String BASE_URL = "https://your-server.com/";
 ```
 
-### 4. Build and Run
+### 3. Build and Run
 
 1. Open the project in Android Studio
 2. Wait for Gradle sync to complete
@@ -95,18 +84,29 @@ The app communicates with the Flask backend server using the following endpoints
 
 - **Language**: Java
 - **UI Framework**: Android SDK, Material Design Components
-- **Maps**: Google Maps SDK for Android
+- **Maps**: OSMDroid (OpenStreetMap) with MapTiler tiles
 - **Location**: Google Play Services Location
 - **Networking**: Retrofit 2, OkHttp
 - **JSON Parsing**: Gson
 - **Architecture**: Fragment-based with ViewPager2 and TabLayout
 
+## Map Features
+
+The app uses **OSMDroid** with **MapTiler** tiles, providing:
+- Language-specific map labels (automatically matches app language)
+- High-quality street maps
+- No API key required
+- Open-source mapping solution
+- Same map provider as the web frontend for consistency
+
 ## Permissions Required
 
 - `ACCESS_FINE_LOCATION` - For GPS-based features
 - `ACCESS_COARSE_LOCATION` - For network-based location
-- `INTERNET` - For API communication
+- `INTERNET` - For API communication and map tiles
 - `ACCESS_NETWORK_STATE` - For network status checking
+- `WRITE_EXTERNAL_STORAGE` - For map tile caching (Android 12 and below)
+- `READ_EXTERNAL_STORAGE` - For map tile caching (Android 12 and below)
 
 ## Testing
 
@@ -119,8 +119,8 @@ Note: For local backend testing on emulator, use `http://10.0.2.2:5000/` as the 
 ## Known Limitations
 
 - Backend server must be running and accessible
-- Google Maps API key is required for map functionality
 - Some features require active internet connection
+- Map tiles are downloaded on demand (requires internet)
 
 ## Future Enhancements
 

@@ -1,8 +1,12 @@
 package com.riyadhtransport;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,12 +14,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -23,21 +21,40 @@ import com.riyadhtransport.fragments.LinesFragment;
 import com.riyadhtransport.fragments.RouteFragment;
 import com.riyadhtransport.fragments.StationsFragment;
 import com.riyadhtransport.utils.LocationHelper;
+import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase;
+import org.osmdroid.tileprovider.tilesource.XYTileSource;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity {
     
-    private GoogleMap mMap;
+    private MapView mapView;
+    private MyLocationNewOverlay myLocationOverlay;
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
     private FloatingActionButton fabMyLocation;
     private LocationHelper locationHelper;
     
     // Riyadh coordinates
-    private static final LatLng RIYADH_CENTER = new LatLng(24.7136, 46.6753);
+    private static final GeoPoint RIYADH_CENTER = new GeoPoint(24.7136, 46.6753);
+    
+    // MapTiler API key (same as web frontend)
+    private static final String MAPTILER_API_KEY = "exlDzvn29auMMJLNeP23";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Configure OSMDroid
+        Context ctx = getApplicationContext();
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+        Configuration.getInstance().setUserAgentValue(getPackageName());
+        
         setContentView(R.layout.activity_main);
         
         // Initialize location helper
@@ -47,13 +64,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         tabLayout = findViewById(R.id.tab_layout);
         viewPager = findViewById(R.id.view_pager);
         fabMyLocation = findViewById(R.id.fab_my_location);
+        mapView = findViewById(R.id.map);
         
         // Setup map
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
+        setupMap();
         
         // Setup ViewPager with tabs
         setupViewPager();
@@ -65,6 +79,60 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (!LocationHelper.hasLocationPermission(this)) {
             LocationHelper.requestLocationPermission(this);
         }
+    }
+    
+    private void setupMap() {
+        // Get current language
+        String language = getCurrentLanguage();
+        
+        // Create MapTiler tile source with language support
+        OnlineTileSourceBase mapTilerSource = new XYTileSource(
+                "MapTiler",
+                0, 20, 256, ".png",
+                new String[]{
+                    "https://api.maptiler.com/maps/streets-v2/256/"
+                },
+                "© MapTiler © OpenStreetMap contributors",
+                new org.osmdroid.tileprovider.tilesource.TileSourcePolicy(
+                        2,
+                        org.osmdroid.tileprovider.tilesource.TileSourcePolicy.FLAG_NO_BULK
+                                | org.osmdroid.tileprovider.tilesource.TileSourcePolicy.FLAG_NO_PREVENTIVE
+                )
+        ) {
+            @Override
+            public String getTileURLString(long pMapTileIndex) {
+                return getBaseUrl()
+                        + org.osmdroid.util.MapTileIndex.getZoom(pMapTileIndex)
+                        + "/" + org.osmdroid.util.MapTileIndex.getX(pMapTileIndex)
+                        + "/" + org.osmdroid.util.MapTileIndex.getY(pMapTileIndex)
+                        + ".png?key=" + MAPTILER_API_KEY + "&language=" + language;
+            }
+        };
+        
+        mapView.setTileSource(mapTilerSource);
+        mapView.setMultiTouchControls(true);
+        mapView.getController().setZoom(11.0);
+        mapView.getController().setCenter(RIYADH_CENTER);
+        
+        // Add my location overlay
+        if (LocationHelper.hasLocationPermission(this)) {
+            myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
+            myLocationOverlay.enableMyLocation();
+            mapView.getOverlays().add(myLocationOverlay);
+        }
+    }
+    
+    private String getCurrentLanguage() {
+        // Get app language from system locale
+        Locale locale = getResources().getConfiguration().locale;
+        String language = locale.getLanguage();
+        
+        // MapTiler supports language codes like "en", "ar", "fr", etc.
+        // Return "ar" for Arabic, "en" for everything else (default)
+        if ("ar".equals(language)) {
+            return "ar";
+        }
+        return "en";
     }
     
     private void setupViewPager() {
@@ -86,28 +154,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }).attach();
     }
     
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
-        mMap = googleMap;
-        
-        // Move camera to Riyadh
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(RIYADH_CENTER, 11));
-        
-        // Enable location if permission granted
-        if (LocationHelper.hasLocationPermission(this)) {
-            try {
-                mMap.setMyLocationEnabled(true);
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            }
-        }
-        
-        // Configure map UI settings
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.getUiSettings().setCompassEnabled(true);
-        mMap.getUiSettings().setMyLocationButtonEnabled(false); // Using custom FAB
-    }
-    
     private void getCurrentLocation() {
         if (!LocationHelper.hasLocationPermission(this)) {
             LocationHelper.requestLocationPermission(this);
@@ -117,10 +163,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationHelper.getCurrentLocation(new LocationHelper.LocationCallback() {
             @Override
             public void onLocationReceived(double latitude, double longitude) {
-                LatLng location = new LatLng(latitude, longitude);
-                if (mMap != null) {
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
-                }
+                GeoPoint location = new GeoPoint(latitude, longitude);
+                mapView.getController().animateTo(location);
+                mapView.getController().setZoom(15.0);
                 Toast.makeText(MainActivity.this, 
                         getString(R.string.finding_location), 
                         Toast.LENGTH_SHORT).show();
@@ -140,12 +185,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         
         if (requestCode == LocationHelper.LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (mMap != null) {
-                    try {
-                        mMap.setMyLocationEnabled(true);
-                    } catch (SecurityException e) {
-                        e.printStackTrace();
-                    }
+                if (myLocationOverlay != null) {
+                    myLocationOverlay.enableMyLocation();
+                } else {
+                    myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
+                    myLocationOverlay.enableMyLocation();
+                    mapView.getOverlays().add(myLocationOverlay);
                 }
             } else {
                 Toast.makeText(this, R.string.error_permission, Toast.LENGTH_SHORT).show();
@@ -153,8 +198,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
     
-    public GoogleMap getMap() {
-        return mMap;
+    public MapView getMapView() {
+        return mapView;
+    }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mapView != null) {
+            mapView.onResume();
+        }
+    }
+    
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mapView != null) {
+            mapView.onPause();
+        }
+    }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mapView != null) {
+            mapView.onDetach();
+        }
     }
     
     // ViewPager Adapter

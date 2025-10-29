@@ -1,6 +1,6 @@
 # Quick Start Guide - Riyadh Transport Android App
 
-## Get Started in 5 Minutes!
+## Get Started in 3 Minutes!
 
 ### Prerequisites
 - ✅ Android Studio installed
@@ -15,27 +15,7 @@
 4. Click "OK"
 5. Wait for Gradle sync to complete
 
-### Step 2: Configure API Key (1 minute)
-
-#### Option A: Get Your Own Google Maps Key (Recommended)
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select existing
-3. Enable "Maps SDK for Android"
-4. Create API key in "Credentials"
-5. Open `gradle.properties`
-6. Replace:
-   ```
-   MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY_HERE
-   ```
-   with:
-   ```
-   MAPS_API_KEY=AIzaSyXXXXXXXXXXXXXXXXXXXXXXX
-   ```
-
-#### Option B: Test Without Maps (Quick)
-Skip this step - map will show blank but rest of app works
-
-### Step 3: Configure Backend URL (1 minute)
+### Step 2: Configure Backend URL (1 minute)
 
 Open `app/src/main/java/com/riyadhtransport/api/ApiClient.java`
 
@@ -55,7 +35,7 @@ private static final String BASE_URL = "http://192.168.1.XXX:5000/";
 private static final String BASE_URL = "https://your-domain.com/";
 ```
 
-### Step 4: Run the App (2 minutes)
+### Step 3: Run the App (1 minute)
 
 1. Connect device via USB (enable USB debugging) OR start emulator
 2. Click the green "Run" button (▶️) in Android Studio
@@ -64,9 +44,6 @@ private static final String BASE_URL = "https://your-domain.com/";
 5. App launches! 🎉
 
 ## Troubleshooting
-
-### "Map is blank"
-➡️ Need valid Google Maps API key (see Step 2)
 
 ### "Network error"
 ➡️ Check backend server is running:

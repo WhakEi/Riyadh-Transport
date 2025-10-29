@@ -75,11 +75,14 @@ android-app/
 ## Features Implemented
 
 ### ✅ Core Features
-1. **Google Maps Integration**
+1. **OpenStreetMap Integration (OSMDroid + MapTiler)**
    - Interactive map centered on Riyadh
    - Station markers
    - User location tracking
    - Map controls (zoom, compass)
+   - **Language-specific map labels** (Arabic/English based on app language)
+   - No API key required
+   - Same map provider as web frontend
 
 2. **Route Planning**
    - Start/end location inputs
@@ -138,8 +141,9 @@ The app includes complete API service definitions for:
 ### Key Libraries
 - **AndroidX**: Modern Android support
 - **Material Design**: UI components
-- **Google Maps SDK**: Map functionality
-- **Google Play Services**: Location services
+- **OSMDroid**: OpenStreetMap for Android (map display)
+- **MapTiler**: Map tile provider with language support
+- **Google Play Services**: Location services (GPS only)
 - **Retrofit 2**: REST API client
 - **Gson**: JSON parsing
 - **OkHttp**: HTTP client with logging
@@ -155,18 +159,13 @@ The app includes complete API service definitions for:
 1. Android Studio Arctic Fox or later
 2. JDK 8 or higher
 3. Android SDK
-4. Google Maps API key
-5. Access to backend server
+4. Access to backend server
 
 ## Configuration Needed
 
 Before running the app:
 
-1. **Google Maps API Key**
-   - Edit `gradle.properties`
-   - Replace `YOUR_GOOGLE_MAPS_API_KEY_HERE`
-
-2. **Backend Server URL**
+1. **Backend Server URL**
    - Edit `api/ApiClient.java`
    - Update `BASE_URL` to your server
 
@@ -256,16 +255,19 @@ implementation 'androidx.lifecycle:lifecycle-livedata:2.6.2'
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" 
+    android:maxSdkVersion="32" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    android:maxSdkVersion="32" />
 ```
 
 ## What's Next?
 
 ### Immediate Next Steps
-1. Get Google Maps API key
-2. Configure backend server URL
-3. Test with live backend
-4. Complete route finding logic
-5. Add arrival times display
+1. Configure backend server URL
+2. Test with live backend
+3. Complete route finding logic
+4. Add arrival times display
 
 ### Phase 2
 - Polish UI/UX
@@ -298,14 +300,15 @@ The codebase is ready for:
 - API endpoints in `api/TransportApiService.java`
 - Base URL configured in `api/ApiClient.java`
 - Metro line colors in `utils/LineColorHelper.java`
+- Map language is auto-detected from app locale in `MainActivity.getCurrentLanguage()`
+- MapTiler API key is embedded (same as web frontend)
 
 ## Known Limitations
 
 1. **Backend Dependency**: Requires running backend server
-2. **Maps API**: Requires valid Google Maps API key
-3. **Network Only**: No offline mode yet
-4. **Limited Testing**: Needs testing with real data
-5. **Placeholder Logic**: Some features need completion
+2. **Network Only**: No offline mode yet (though map tiles are cached)
+3. **Limited Testing**: Needs testing with real data
+4. **Placeholder Logic**: Some features need completion
 
 ## Conclusion
 

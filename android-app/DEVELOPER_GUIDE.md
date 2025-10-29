@@ -33,17 +33,27 @@ com.riyadhtransport/
 
 ## Key Features Implementation
 
-### 1. Map Integration (Google Maps)
+### 1. Map Integration (OSMDroid with MapTiler)
 
-The app uses Google Maps SDK to display:
+The app uses **OSMDroid** (OpenStreetMap for Android) with **MapTiler** tiles to display:
 - Station locations as markers
 - Route paths as polylines
 - User's current location
 - Interactive map controls
+- **Language-specific map labels** (automatically matches app language - Arabic or English)
+
+**Key Advantages:**
+- No API key required
+- Same map provider as web frontend (MapTiler)
+- Automatic language switching based on app locale
+- Open-source and free
+- High-quality street maps
 
 **Setup:**
-- Add Google Maps API key to `gradle.properties`
-- Map is initialized in `MainActivity.onMapReady()`
+- OSMDroid dependency in `build.gradle`
+- Map is initialized in `MainActivity.setupMap()`
+- MapTiler API key is embedded (same as web frontend)
+- Language is automatically detected from system locale
 - Location permission is requested on first launch
 
 ### 2. Route Planning
@@ -198,8 +208,10 @@ Key libraries used:
 // Material Design
 implementation 'com.google.android.material:material:1.10.0'
 
-// Google Maps
-implementation 'com.google.android.gms:play-services-maps:18.2.0'
+// OSMDroid (OpenStreetMap for Android) - Map display
+implementation 'org.osmdroid:osmdroid-android:6.1.17'
+
+// Google Play Services Location - GPS services only
 implementation 'com.google.android.gms:play-services-location:21.0.1'
 
 // Networking
@@ -222,9 +234,13 @@ The app requires these permissions:
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" 
+    android:maxSdkVersion="32" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    android:maxSdkVersion="32" />
 ```
 
-Location permission is requested at runtime when needed.
+Location permission is requested at runtime when needed. Storage permissions are only needed for Android 12 and below for map tile caching.
 
 ## Building and Testing
 
@@ -289,25 +305,24 @@ If backend is unavailable, you can modify adapters to use mock data temporarily.
 ## Performance Considerations
 
 1. **Image Loading**: Consider adding Glide or Picasso for efficient image loading
-2. **Caching**: Implement response caching to reduce API calls
+2. **Caching**: Implement response caching to reduce API calls. OSMDroid automatically caches map tiles
 3. **Background Tasks**: Use WorkManager for background updates
 4. **Memory**: Properly manage RecyclerView adapters and clear references
 
 ## Security
 
-1. **API Key**: Never commit API keys to version control
-2. **HTTPS**: Use HTTPS for production API endpoints
-3. **ProGuard**: Enable code obfuscation for release builds
-4. **Certificate Pinning**: Consider for production
+1. **HTTPS**: Use HTTPS for production API endpoints
+2. **ProGuard**: Enable code obfuscation for release builds
+3. **Certificate Pinning**: Consider for production
 
 ## Troubleshooting
 
 ### Common Issues
 
 **Map not showing:**
-- Check Google Maps API key is valid
-- Ensure key has Maps SDK for Android enabled
-- Verify `MAPS_API_KEY` in gradle.properties
+- Check internet connection (map tiles require download)
+- Verify INTERNET permission is granted
+- Check Logcat for OSMDroid errors
 
 **Location not working:**
 - Check permissions are granted
