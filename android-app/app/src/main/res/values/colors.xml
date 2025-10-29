@@ -1,0 +1,37 @@
+<resources>
+    <!-- Primary colors -->
+    <color name="colorPrimary">#1976D2</color>
+    <color name="colorPrimaryDark">#1565C0</color>
+    <color name="colorAccent">#FF4081</color>
+    
+    <!-- Metro Line Colors -->
+    <color name="metro_line_1">#0066CC</color> <!-- Blue -->
+    <color name="metro_line_2">#E31E24</color> <!-- Red -->
+    <color name="metro_line_3">#FF6600</color> <!-- Orange -->
+    <color name="metro_line_4">#FFD700</color> <!-- Yellow -->
+    <color name="metro_line_5">#00A651</color> <!-- Green -->
+    <color name="metro_line_6">#800080</color> <!-- Purple -->
+    
+    <!-- Common colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#808080</color>
+    <color name="light_gray">#E0E0E0</color>
+    <color name="dark_gray">#424242</color>
+    
+    <!-- Background -->
+    <color name="background">#F5F5F5</color>
+    <color name="card_background">#FFFFFF</color>
+    
+    <!-- Text -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    
+    <!-- Status -->
+    <color name="success">#4CAF50</color>
+    <color name="warning">#FFC107</color>
+    <color name="error">#F44336</color>
+    
+    <!-- Bus -->
+    <color name="bus_color">#FF9800</color>
+</resources>

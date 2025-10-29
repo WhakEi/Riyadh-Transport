@@ -1,0 +1,79 @@
+<resources>
+    <string name="app_name">مواصلات الرياض</string>
+    
+    <!-- Main Activity -->
+    <string name="route_tab">المسار</string>
+    <string name="stations_tab">المحطات</string>
+    <string name="lines_tab">الخطوط</string>
+    
+    <!-- Route Planning -->
+    <string name="start_location">موقع البداية</string>
+    <string name="end_location">موقع الوصول</string>
+    <string name="find_route">البحث عن مسار</string>
+    <string name="use_my_location">استخدم موقعي</string>
+    <string name="finding_location">جاري تحديد موقعك...</string>
+    <string name="enter_destination">أدخل الوجهة</string>
+    <string name="route_details">تفاصيل المسار</string>
+    <string name="no_route_found">لم يتم العثور على مسار</string>
+    
+    <!-- Stations -->
+    <string name="station_details">تفاصيل المحطة</string>
+    <string name="search_stations">البحث عن محطات...</string>
+    <string name="nearby_stations">المحطات القريبة</string>
+    <string name="arrivals">المواعيد</string>
+    <string name="no_arrivals">لا توجد مواعيد متاحة</string>
+    <string name="metro_arrivals">مواعيد المترو</string>
+    <string name="bus_arrivals">مواعيد الحافلات</string>
+    <string name="minutes">دقيقة</string>
+    <string name="closed">الخدمة مغلقة</string>
+    
+    <!-- Lines -->
+    <string name="line_details">تفاصيل الخط</string>
+    <string name="search_lines">البحث عن خط...</string>
+    <string name="metro_lines">خطوط المترو</string>
+    <string name="bus_lines">خطوط الحافلات</string>
+    <string name="select_direction">اختر الاتجاه</string>
+    
+    <!-- Metro Lines -->
+    <string name="blue_line">المسار الأزرق</string>
+    <string name="red_line">المسار الأحمر</string>
+    <string name="orange_line">المسار البرتقالي</string>
+    <string name="yellow_line">المسار الأصفر</string>
+    <string name="green_line">المسار الأخضر</string>
+    <string name="purple_line">المسار البنفسجي</string>
+    
+    <!-- Route Segments -->
+    <string name="walk">مشي</string>
+    <string name="metro">مترو</string>
+    <string name="bus">حافلة</string>
+    <string name="transfer">تحويل</string>
+    <string name="total_time">الوقت الإجمالي</string>
+    <string name="stops">محطات</string>
+    
+    <!-- Common -->
+    <string name="loading">جاري التحميل...</string>
+    <string name="error">خطأ</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="cancel">إلغاء</string>
+    <string name="ok">موافق</string>
+    <string name="settings">الإعدادات</string>
+    <string name="language">اللغة</string>
+    <string name="about">حول</string>
+    
+    <!-- Errors -->
+    <string name="error_network">خطأ في الشبكة. يرجى التحقق من الاتصال.</string>
+    <string name="error_location">تعذر الحصول على موقعك</string>
+    <string name="error_permission">مطلوب إذن الموقع</string>
+    
+    <!-- Settings -->
+    <string name="english">English</string>
+    <string name="arabic">العربية</string>
+    
+    <!-- Map -->
+    <string name="map">الخريطة</string>
+    <string name="show_on_map">عرض على الخريطة</string>
+    
+    <!-- Distance -->
+    <string name="meters">م</string>
+    <string name="kilometers">كم</string>
+</resources>

@@ -22,7 +22,8 @@ Feature checklist:
 - ✅ Navigate using names of real life locations
 - ⏳ Live Navigation instructions
 
-⏳ Mobile Apps
+✅ Mobile Apps
+- ✅ Android App (Java) - Initial release
 - ⏳ Open Beta Launch
 - ⏳ Launch on Google Play Store
-- ⏳ Launch on TestFlight
+- ⏳ Launch on TestFlight (iOS)

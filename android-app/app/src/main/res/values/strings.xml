@@ -1,0 +1,79 @@
+<resources>
+    <string name="app_name">Riyadh Transport</string>
+    
+    <!-- Main Activity -->
+    <string name="route_tab">Route</string>
+    <string name="stations_tab">Stations</string>
+    <string name="lines_tab">Lines</string>
+    
+    <!-- Route Planning -->
+    <string name="start_location">Start Location</string>
+    <string name="end_location">End Location</string>
+    <string name="find_route">Find Route</string>
+    <string name="use_my_location">Use My Location</string>
+    <string name="finding_location">Finding your location...</string>
+    <string name="enter_destination">Enter destination</string>
+    <string name="route_details">Route Details</string>
+    <string name="no_route_found">No route found</string>
+    
+    <!-- Stations -->
+    <string name="station_details">Station Details</string>
+    <string name="search_stations">Search stations...</string>
+    <string name="nearby_stations">Nearby Stations</string>
+    <string name="arrivals">Arrivals</string>
+    <string name="no_arrivals">No arrivals available</string>
+    <string name="metro_arrivals">Metro Arrivals</string>
+    <string name="bus_arrivals">Bus Arrivals</string>
+    <string name="minutes">min</string>
+    <string name="closed">Service Closed</string>
+    
+    <!-- Lines -->
+    <string name="line_details">Line Details</string>
+    <string name="search_lines">Search for a line...</string>
+    <string name="metro_lines">Metro Lines</string>
+    <string name="bus_lines">Bus Lines</string>
+    <string name="select_direction">Select Direction</string>
+    
+    <!-- Metro Lines -->
+    <string name="blue_line">Blue Line</string>
+    <string name="red_line">Red Line</string>
+    <string name="orange_line">Orange Line</string>
+    <string name="yellow_line">Yellow Line</string>
+    <string name="green_line">Green Line</string>
+    <string name="purple_line">Purple Line</string>
+    
+    <!-- Route Segments -->
+    <string name="walk">Walk</string>
+    <string name="metro">Metro</string>
+    <string name="bus">Bus</string>
+    <string name="transfer">Transfer</string>
+    <string name="total_time">Total Time</string>
+    <string name="stops">stops</string>
+    
+    <!-- Common -->
+    <string name="loading">Loading...</string>
+    <string name="error">Error</string>
+    <string name="retry">Retry</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="settings">Settings</string>
+    <string name="language">Language</string>
+    <string name="about">About</string>
+    
+    <!-- Errors -->
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_location">Unable to get your location</string>
+    <string name="error_permission">Location permission required</string>
+    
+    <!-- Settings -->
+    <string name="english">English</string>
+    <string name="arabic">العربية</string>
+    
+    <!-- Map -->
+    <string name="map">Map</string>
+    <string name="show_on_map">Show on Map</string>
+    
+    <!-- Distance -->
+    <string name="meters">m</string>
+    <string name="kilometers">km</string>
+</resources>
