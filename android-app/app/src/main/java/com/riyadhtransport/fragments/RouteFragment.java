@@ -26,6 +26,12 @@ import com.riyadhtransport.models.Station;
 import com.riyadhtransport.utils.LocationHelper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Polyline;
+import android.graphics.Color;
+import android.graphics.DashPathEffect;
+import android.graphics.Paint;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -254,11 +260,130 @@ public class RouteFragment extends Fragment {
             if (routeObj != null && routeObj.getSegments() != null) {
                 segmentAdapter.setSegments(routeObj.getSegments());
                 routeDetailsContainer.setVisibility(View.VISIBLE);
+                
+                // Draw route on map
+                drawRouteOnMap(routeObj);
             }
         } catch (Exception e) {
             Toast.makeText(requireContext(), 
                     "Error displaying route: " + e.getMessage(), 
                     Toast.LENGTH_SHORT).show();
+        }
+    }
+    
+    private void drawRouteOnMap(Route route) {
+        if (getActivity() == null || !(getActivity() instanceof MainActivity)) {
+            return;
+        }
+        
+        MainActivity mainActivity = (MainActivity) getActivity();
+        MapView mapView = mainActivity.getMapView();
+        
+        if (mapView == null) {
+            return;
+        }
+        
+        // Clear existing route overlays (keep location overlay)
+        mapView.getOverlays().removeIf(overlay -> overlay instanceof Polyline);
+        
+        // Draw each segment
+        for (RouteSegment segment : route.getSegments()) {
+            Polyline line = new Polyline();
+            List<GeoPoint> points = new ArrayList<>();
+            
+            // Get segment coordinates based on type
+            if (segment.isWalking()) {
+                // Walking segment - dotted gray line
+                line.setColor(Color.GRAY);
+                line.getPaint().setStrokeWidth(8f);
+                line.getPaint().setPathEffect(new DashPathEffect(new float[]{10, 20}, 0));
+                
+                // Add start and end points for walking
+                // Note: You may need to parse the from/to objects to get coordinates
+                addSegmentPoints(segment, points);
+                
+            } else if (segment.isMetro()) {
+                // Metro segment - solid blue line
+                line.setColor(Color.BLUE);
+                line.getPaint().setStrokeWidth(10f);
+                
+                // Add all station points for metro
+                addSegmentPoints(segment, points);
+                
+            } else if (segment.isBus()) {
+                // Bus segment - solid green line
+                line.setColor(Color.GREEN);
+                line.getPaint().setStrokeWidth(10f);
+                
+                // Add all station points for bus
+                addSegmentPoints(segment, points);
+            }
+            
+            if (!points.isEmpty()) {
+                line.setPoints(points);
+                mapView.getOverlays().add(line);
+            }
+        }
+        
+        mapView.invalidate();
+        
+        // Zoom to show the entire route
+        if (!route.getSegments().isEmpty()) {
+            zoomToRoute(mapView, route);
+        }
+    }
+    
+    private void addSegmentPoints(RouteSegment segment, List<GeoPoint> points) {
+        // For now, we'll need to get coordinates from stations
+        // This is a simplified version - you may need to enhance based on your data structure
+        if (segment.getStations() != null && !segment.getStations().isEmpty()) {
+            for (String stationName : segment.getStations()) {
+                Station station = stationMap.get(stationName);
+                if (station != null) {
+                    points.add(new GeoPoint(station.getLatitude(), station.getLongitude()));
+                }
+            }
+        }
+    }
+    
+    private void zoomToRoute(MapView mapView, Route route) {
+        double minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
+        
+        for (RouteSegment segment : route.getSegments()) {
+            if (segment.getStations() != null) {
+                for (String stationName : segment.getStations()) {
+                    Station station = stationMap.get(stationName);
+                    if (station != null) {
+                        double lat = station.getLatitude();
+                        double lon = station.getLongitude();
+                        
+                        minLat = Math.min(minLat, lat);
+                        maxLat = Math.max(maxLat, lat);
+                        minLon = Math.min(minLon, lon);
+                        maxLon = Math.max(maxLon, lon);
+                    }
+                }
+            }
+        }
+        
+        if (minLat != 90) {
+            // Calculate center and zoom
+            double centerLat = (minLat + maxLat) / 2;
+            double centerLon = (minLon + maxLon) / 2;
+            
+            mapView.getController().setCenter(new GeoPoint(centerLat, centerLon));
+            
+            // Calculate appropriate zoom level based on bounds
+            double latDiff = maxLat - minLat;
+            double lonDiff = maxLon - minLon;
+            double maxDiff = Math.max(latDiff, lonDiff);
+            
+            int zoomLevel = 15; // Default
+            if (maxDiff > 0.1) zoomLevel = 12;
+            else if (maxDiff > 0.05) zoomLevel = 13;
+            else if (maxDiff > 0.02) zoomLevel = 14;
+            
+            mapView.getController().setZoom((double) zoomLevel);
         }
     }
 }
