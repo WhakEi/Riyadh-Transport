@@ -14,11 +14,12 @@
         android:hint="@string/start_location"
         app:boxBackgroundMode="outline">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <AutoCompleteTextView
             android:id="@+id/start_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:inputType="text"
+            android:completionThreshold="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- End Location Input -->
@@ -30,11 +31,12 @@
         android:hint="@string/end_location"
         app:boxBackgroundMode="outline">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <AutoCompleteTextView
             android:id="@+id/end_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:inputType="text"
+            android:completionThreshold="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Find Route Button -->

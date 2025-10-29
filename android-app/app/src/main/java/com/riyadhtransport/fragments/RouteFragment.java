@@ -6,6 +6,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -14,16 +16,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.textfield.TextInputEditText;
 import com.riyadhtransport.MainActivity;
 import com.riyadhtransport.R;
 import com.riyadhtransport.adapters.RouteSegmentAdapter;
 import com.riyadhtransport.api.ApiClient;
 import com.riyadhtransport.models.Route;
 import com.riyadhtransport.models.RouteSegment;
+import com.riyadhtransport.models.Station;
 import com.riyadhtransport.utils.LocationHelper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +36,8 @@ import retrofit2.Response;
 
 public class RouteFragment extends Fragment {
     
-    private TextInputEditText startInput;
-    private TextInputEditText endInput;
+    private AutoCompleteTextView startInput;
+    private AutoCompleteTextView endInput;
     private Button findRouteButton;
     private Button useLocationButton;
     private LinearLayout routeDetailsContainer;
@@ -43,6 +46,8 @@ public class RouteFragment extends Fragment {
     private LocationHelper locationHelper;
     private double currentLat = 0;
     private double currentLng = 0;
+    private List<Station> allStations = new ArrayList<>();
+    private Map<String, Station> stationMap = new HashMap<>();
     
     @Nullable
     @Override
@@ -74,8 +79,51 @@ public class RouteFragment extends Fragment {
         findRouteButton.setOnClickListener(v -> findRoute());
         useLocationButton.setOnClickListener(v -> useMyLocation());
         
+        // Load stations for autocomplete
+        loadStations();
+        
         // Get current location
         getCurrentLocation();
+    }
+    
+    private void loadStations() {
+        ApiClient.getApiService().getStations().enqueue(new Callback<List<Station>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Station>> call, 
+                                   @NonNull Response<List<Station>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    allStations = response.body();
+                    
+                    // Build station name list and map
+                    List<String> stationNames = new ArrayList<>();
+                    for (Station station : allStations) {
+                        String name = station.getDisplayName();
+                        stationNames.add(name);
+                        stationMap.put(name, station);
+                    }
+                    
+                    // Setup autocomplete adapters
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            requireContext(),
+                            android.R.layout.simple_dropdown_item_1line,
+                            stationNames
+                    );
+                    startInput.setAdapter(adapter);
+                    endInput.setAdapter(adapter);
+                } else {
+                    Toast.makeText(requireContext(), 
+                            R.string.error_network, 
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+            
+            @Override
+            public void onFailure(@NonNull Call<List<Station>> call, @NonNull Throwable t) {
+                Toast.makeText(requireContext(), 
+                        getString(R.string.error_network) + ": " + t.getMessage(), 
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     
     private void getCurrentLocation() {
@@ -118,21 +166,99 @@ public class RouteFragment extends Fragment {
             return;
         }
         
-        // TODO: Parse coordinates or station names and call API
-        // For now, showing a placeholder
-        Toast.makeText(requireContext(), "Finding route from " + start + " to " + end, 
-                Toast.LENGTH_SHORT).show();
-        
-        // If using coordinates (from "My Location")
-        if (start.contains("My Location") && currentLat != 0) {
-            findRouteFromCoordinates(currentLat, currentLng, end);
+        // Check if using "My Location" as start
+        if (start.contains("My Location") && currentLat != 0 && currentLng != 0) {
+            // Get end station coordinates
+            Station endStation = stationMap.get(end);
+            if (endStation != null) {
+                findRouteFromCoordinates(currentLat, currentLng, 
+                        endStation.getLatitude(), endStation.getLongitude());
+            } else {
+                Toast.makeText(requireContext(), 
+                        "Please select a valid station for destination", 
+                        Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            // Both are station names
+            Station startStation = stationMap.get(start);
+            Station endStation = stationMap.get(end);
+            
+            if (startStation != null && endStation != null) {
+                findRouteFromCoordinates(startStation.getLatitude(), startStation.getLongitude(),
+                        endStation.getLatitude(), endStation.getLongitude());
+            } else {
+                Toast.makeText(requireContext(), 
+                        "Please select valid stations from the list", 
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
     
-    private void findRouteFromCoordinates(double startLat, double startLng, String endStation) {
-        // This is a simplified version - you'd need to geocode the end station first
-        // or allow user to select from stations list
-        Toast.makeText(requireContext(), "Route finding not yet fully implemented", 
-                Toast.LENGTH_LONG).show();
+    private void findRouteFromCoordinates(double startLat, double startLng, 
+                                          double endLat, double endLng) {
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("start_lat", startLat);
+        requestBody.put("start_lng", startLng);
+        requestBody.put("end_lat", endLat);
+        requestBody.put("end_lng", endLng);
+        
+        ApiClient.getApiService().findRouteFromCoordinates(requestBody)
+                .enqueue(new Callback<Map<String, Object>>() {
+            @Override
+            public void onResponse(@NonNull Call<Map<String, Object>> call, 
+                                   @NonNull Response<Map<String, Object>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Map<String, Object> responseBody = response.body();
+                    
+                    if (responseBody.containsKey("routes")) {
+                        List<Map<String, Object>> routes = 
+                                (List<Map<String, Object>>) responseBody.get("routes");
+                        
+                        if (routes != null && !routes.isEmpty()) {
+                            Map<String, Object> route = routes.get(0);
+                            displayRoute(route);
+                        } else {
+                            Toast.makeText(requireContext(), 
+                                    R.string.no_route_found, 
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    } else if (responseBody.containsKey("error")) {
+                        String error = (String) responseBody.get("error");
+                        Toast.makeText(requireContext(), 
+                                "Error: " + error, 
+                                Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(requireContext(), 
+                            "Failed to find route", 
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+            
+            @Override
+            public void onFailure(@NonNull Call<Map<String, Object>> call, @NonNull Throwable t) {
+                Toast.makeText(requireContext(), 
+                        getString(R.string.error_network) + ": " + t.getMessage(), 
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+    
+    private void displayRoute(Map<String, Object> route) {
+        try {
+            // Parse route segments
+            Gson gson = new Gson();
+            String json = gson.toJson(route);
+            Route routeObj = gson.fromJson(json, Route.class);
+            
+            if (routeObj != null && routeObj.getSegments() != null) {
+                segmentAdapter.setSegments(routeObj.getSegments());
+                routeDetailsContainer.setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), 
+                    "Error displaying route: " + e.getMessage(), 
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 }
