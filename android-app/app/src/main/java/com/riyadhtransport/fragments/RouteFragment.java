@@ -293,29 +293,27 @@ public class RouteFragment extends Fragment {
             
             // Get segment coordinates based on type
             if (segment.isWalking()) {
-                // Walking segment - dotted gray line
-                line.setColor(Color.GRAY);
+                // Walking segment - dotted gray line (matching frontend walk color)
+                line.setColor(Color.parseColor("#6c757d"));
                 line.getPaint().setStrokeWidth(8f);
                 line.getPaint().setPathEffect(new DashPathEffect(new float[]{10, 20}, 0));
                 
-                // Add start and end points for walking
-                // Note: You may need to parse the from/to objects to get coordinates
                 addSegmentPoints(segment, points);
                 
             } else if (segment.isMetro()) {
-                // Metro segment - solid blue line
-                line.setColor(Color.BLUE);
+                // Metro segment - color based on line (matching frontend colors)
+                int lineColor = com.riyadhtransport.utils.LineColorHelper.getMetroLineColor(
+                        requireContext(), segment.getLine());
+                line.setColor(lineColor);
                 line.getPaint().setStrokeWidth(10f);
                 
-                // Add all station points for metro
                 addSegmentPoints(segment, points);
                 
             } else if (segment.isBus()) {
-                // Bus segment - solid green line
-                line.setColor(Color.GREEN);
+                // Bus segment - green line (matching frontend bus color)
+                line.setColor(Color.parseColor("#18a034"));
                 line.getPaint().setStrokeWidth(10f);
                 
-                // Add all station points for bus
                 addSegmentPoints(segment, points);
             }
             

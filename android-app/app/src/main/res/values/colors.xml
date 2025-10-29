@@ -4,13 +4,13 @@
     <color name="colorPrimaryDark">#1565C0</color>
     <color name="colorAccent">#FF4081</color>
     
-    <!-- Metro Line Colors -->
-    <color name="metro_line_1">#0066CC</color> <!-- Blue -->
-    <color name="metro_line_2">#E31E24</color> <!-- Red -->
-    <color name="metro_line_3">#FF6600</color> <!-- Orange -->
-    <color name="metro_line_4">#FFD700</color> <!-- Yellow -->
-    <color name="metro_line_5">#00A651</color> <!-- Green -->
-    <color name="metro_line_6">#800080</color> <!-- Purple -->
+    <!-- Metro Line Colors (matching frontend) -->
+    <color name="metro_line_1">#00aee6</color> <!-- Blue Line -->
+    <color name="metro_line_2">#ef4938</color> <!-- Red Line -->
+    <color name="metro_line_3">#f68d39</color> <!-- Orange Line -->
+    <color name="metro_line_4">#ffd10a</color> <!-- Yellow Line -->
+    <color name="metro_line_5">#37b23f</color> <!-- Green Line -->
+    <color name="metro_line_6">#984b9d</color> <!-- Purple Line -->
     
     <!-- Common colors -->
     <color name="white">#FFFFFF</color>
@@ -32,6 +32,7 @@
     <color name="warning">#FFC107</color>
     <color name="error">#F44336</color>
     
-    <!-- Bus -->
-    <color name="bus_color">#FF9800</color>
+    <!-- Bus and Walk colors (matching frontend) -->
+    <color name="bus_color">#18a034</color>
+    <color name="walk_color">#6c757d</color>
 </resources>

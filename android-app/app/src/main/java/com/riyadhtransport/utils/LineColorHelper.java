@@ -55,4 +55,19 @@ public class LineColorHelper {
     public static int getBusLineColor(Context context) {
         return context.getColor(R.color.bus_color);
     }
+    
+    public static int getWalkColor(Context context) {
+        return context.getColor(R.color.walk_color);
+    }
+    
+    public static int getColorForSegment(Context context, String type, String line) {
+        if ("walk".equalsIgnoreCase(type)) {
+            return getWalkColor(context);
+        } else if ("metro".equalsIgnoreCase(type) && line != null) {
+            return getMetroLineColor(context, line);
+        } else if ("bus".equalsIgnoreCase(type)) {
+            return getBusLineColor(context);
+        }
+        return context.getColor(R.color.colorPrimary);
+    }
 }
