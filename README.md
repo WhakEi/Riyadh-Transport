@@ -12,7 +12,7 @@ Feature checklist:
 
 ✅ Added Buses
 - ✅ Live tracking functionality
-- ⏳ Integrate Live tracking into Route planning
+- ✅ Integrate Live tracking into Route planning
 
 ✅ Added Walking Directions
 
@@ -20,9 +20,11 @@ Feature checklist:
 - ✅ Show closest stations to user
 - ✅ Find route from user's location
 - ✅ Navigate using names of real life locations
-- ⏳ Live Navigation instructions
+- ✅ Live Navigation instructions
 
-⏳ Mobile Apps
+⏳ Mobile Apps _(For more information check out the [Mobile version repository](https://github.com/WhakEi/Riyadh-Transport-Mobile)_
+- ✅ Android App (Alpha Release)
+- ⚫ iOS App
 - ⏳ Open Beta Launch
-- ⏳ Launch on Google Play Store
-- ⏳ Launch on TestFlight
+- ⚫ Launch on Google Play Store
+- ⚫ Launch on TestFlight
