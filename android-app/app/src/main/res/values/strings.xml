@@ -87,4 +87,13 @@
     <!-- About -->
     <string name="about_app_text">Riyadh Transport is an open-source mobile app providing comprehensive public transportation information for Riyadh\'s metro and bus systems. Find routes, view nearby stations, and navigate the city with ease.</string>
     <string name="app_version">Version 1.0.0</string>
+    
+    <!-- Route Instructions -->
+    <string name="take_bus">Take Bus %1$s and disembark at %2$s</string>
+    <string name="take_metro">Take the %1$s and disembark at %2$s</string>
+    <string name="walk_to_station">Walk to %1$s (%2$s)</string>
+    <string name="walk_to_destination">Walk to your destination</string>
+    <string name="bus_stop">Bus stop</string>
+    <string name="metro_station">Metro station</string>
+    <string name="min_walk">min walk</string>
 </resources>

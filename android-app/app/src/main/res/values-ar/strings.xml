@@ -87,4 +87,13 @@
     <!-- About -->
     <string name="about_app_text">مواصلات الرياض هو تطبيق مفتوح المصدر يوفر معلومات شاملة عن النقل العام لأنظمة المترو والحافلات في الرياض. اعثر على المسارات، وشاهد المحطات القريبة، وتنقل في المدينة بسهولة.</string>
     <string name="app_version">الإصدار 1.0.0</string>
+    
+    <!-- Route Instructions -->
+    <string name="take_bus">خذ الحافلة %1$s وانزل في %2$s</string>
+    <string name="take_metro">خذ %1$s وانزل في %2$s</string>
+    <string name="walk_to_station">امشي إلى %1$s (%2$s)</string>
+    <string name="walk_to_destination">امشي إلى وجهتك</string>
+    <string name="bus_stop">محطة حافلات</string>
+    <string name="metro_station">محطة مترو</string>
+    <string name="min_walk">دقيقة مشي</string>
 </resources>
