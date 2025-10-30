@@ -83,4 +83,8 @@
     <!-- Distance -->
     <string name="meters">م</string>
     <string name="kilometers">كم</string>
+    
+    <!-- About -->
+    <string name="about_app_text">مواصلات الرياض هو تطبيق مفتوح المصدر يوفر معلومات شاملة عن النقل العام لأنظمة المترو والحافلات في الرياض. اعثر على المسارات، وشاهد المحطات القريبة، وتنقل في المدينة بسهولة.</string>
+    <string name="app_version">الإصدار 1.0.0</string>
 </resources>

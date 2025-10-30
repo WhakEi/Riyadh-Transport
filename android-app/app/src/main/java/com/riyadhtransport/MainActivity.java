@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private MyLocationNewOverlay myLocationOverlay;
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
-    private FloatingActionButton fabMyLocation;
+    private FloatingActionButton fabSettings;
     private LocationHelper locationHelper;
     
     // Riyadh coordinates
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialize views
         tabLayout = findViewById(R.id.tab_layout);
         viewPager = findViewById(R.id.view_pager);
-        fabMyLocation = findViewById(R.id.fab_my_location);
+        fabSettings = findViewById(R.id.fab_settings);
         mapView = findViewById(R.id.map);
         
         // Setup map
@@ -72,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
         // Setup ViewPager with tabs
         setupViewPager();
         
-        // Setup FAB for my location
-        fabMyLocation.setOnClickListener(v -> getCurrentLocation());
+        // Setup FAB for settings
+        fabSettings.setOnClickListener(v -> showSettingsDialog());
         
         // Request location permission if not granted
         if (!LocationHelper.hasLocationPermission(this)) {
@@ -263,6 +263,48 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, error, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    
+    private void showSettingsDialog() {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_settings, null);
+        builder.setView(dialogView);
+        
+        android.widget.RadioGroup languageGroup = dialogView.findViewById(R.id.language_radio_group);
+        android.widget.RadioButton englishRadio = dialogView.findViewById(R.id.radio_english);
+        android.widget.RadioButton arabicRadio = dialogView.findViewById(R.id.radio_arabic);
+        
+        // Set current language selection
+        String currentLang = getCurrentLanguage();
+        if ("ar".equals(currentLang)) {
+            arabicRadio.setChecked(true);
+        } else {
+            englishRadio.setChecked(true);
+        }
+        
+        // Handle language change
+        languageGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            String newLang = checkedId == R.id.radio_arabic ? "ar" : "en";
+            if (!newLang.equals(currentLang)) {
+                changeLanguage(newLang);
+            }
+        });
+        
+        builder.setPositiveButton(R.string.ok, null);
+        builder.show();
+    }
+    
+    private void changeLanguage(String languageCode) {
+        Locale locale = new Locale(languageCode);
+        Locale.setDefault(locale);
+        
+        Configuration config = new Configuration();
+        config.setLocale(locale);
+        
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
+        
+        // Restart activity to apply changes
+        recreate();
     }
     
     @Override

@@ -11,19 +11,41 @@ public class LineColorHelper {
             return context.getColor(R.color.colorPrimary);
         }
         
-        switch (lineNumber) {
+        // Handle cases where backend returns "Line Blue Line", "Line Orange Line", etc.
+        String cleanLine = lineNumber.trim();
+        if (cleanLine.startsWith("Line ")) {
+            cleanLine = cleanLine.substring(5).trim();
+        }
+        
+        // Check for color names
+        if (cleanLine.equalsIgnoreCase("Blue Line") || cleanLine.equals("1")) {
+            return context.getColor(R.color.metro_line_1);
+        } else if (cleanLine.equalsIgnoreCase("Red Line") || cleanLine.equals("2")) {
+            return context.getColor(R.color.metro_line_2);
+        } else if (cleanLine.equalsIgnoreCase("Orange Line") || cleanLine.equals("3")) {
+            return context.getColor(R.color.metro_line_3);
+        } else if (cleanLine.equalsIgnoreCase("Yellow Line") || cleanLine.equals("4")) {
+            return context.getColor(R.color.metro_line_4);
+        } else if (cleanLine.equalsIgnoreCase("Green Line") || cleanLine.equals("5")) {
+            return context.getColor(R.color.metro_line_5);
+        } else if (cleanLine.equalsIgnoreCase("Purple Line") || cleanLine.equals("6")) {
+            return context.getColor(R.color.metro_line_6);
+        }
+        
+        // Fallback for numeric line numbers
+        switch (cleanLine) {
             case "1":
-                return context.getColor(R.color.metro_line_1); // Blue
+                return context.getColor(R.color.metro_line_1);
             case "2":
-                return context.getColor(R.color.metro_line_2); // Red
+                return context.getColor(R.color.metro_line_2);
             case "3":
-                return context.getColor(R.color.metro_line_3); // Orange
+                return context.getColor(R.color.metro_line_3);
             case "4":
-                return context.getColor(R.color.metro_line_4); // Yellow
+                return context.getColor(R.color.metro_line_4);
             case "5":
-                return context.getColor(R.color.metro_line_5); // Green
+                return context.getColor(R.color.metro_line_5);
             case "6":
-                return context.getColor(R.color.metro_line_6); // Purple
+                return context.getColor(R.color.metro_line_6);
             default:
                 return context.getColor(R.color.colorPrimary);
         }
@@ -34,7 +56,29 @@ public class LineColorHelper {
             return "";
         }
         
-        switch (lineNumber) {
+        // Handle cases where backend returns "Line Blue Line", "Line Orange Line", etc.
+        String cleanLine = lineNumber.trim();
+        if (cleanLine.startsWith("Line ")) {
+            cleanLine = cleanLine.substring(5).trim();
+        }
+        
+        // Check for color names
+        if (cleanLine.equalsIgnoreCase("Blue Line") || cleanLine.equals("1")) {
+            return context.getString(R.string.blue_line);
+        } else if (cleanLine.equalsIgnoreCase("Red Line") || cleanLine.equals("2")) {
+            return context.getString(R.string.red_line);
+        } else if (cleanLine.equalsIgnoreCase("Orange Line") || cleanLine.equals("3")) {
+            return context.getString(R.string.orange_line);
+        } else if (cleanLine.equalsIgnoreCase("Yellow Line") || cleanLine.equals("4")) {
+            return context.getString(R.string.yellow_line);
+        } else if (cleanLine.equalsIgnoreCase("Green Line") || cleanLine.equals("5")) {
+            return context.getString(R.string.green_line);
+        } else if (cleanLine.equalsIgnoreCase("Purple Line") || cleanLine.equals("6")) {
+            return context.getString(R.string.purple_line);
+        }
+        
+        // Fallback for numeric line numbers
+        switch (cleanLine) {
             case "1":
                 return context.getString(R.string.blue_line);
             case "2":
@@ -48,7 +92,7 @@ public class LineColorHelper {
             case "6":
                 return context.getString(R.string.purple_line);
             default:
-                return "Line " + lineNumber;
+                return cleanLine;
         }
     }
     

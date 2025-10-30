@@ -83,4 +83,8 @@
     <!-- Distance -->
     <string name="meters">m</string>
     <string name="kilometers">km</string>
+    
+    <!-- About -->
+    <string name="about_app_text">Riyadh Transport is an open-source mobile app providing comprehensive public transportation information for Riyadh\'s metro and bus systems. Find routes, view nearby stations, and navigate the city with ease.</string>
+    <string name="app_version">Version 1.0.0</string>
 </resources>
