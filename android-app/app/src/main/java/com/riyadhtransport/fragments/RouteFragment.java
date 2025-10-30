@@ -224,19 +224,134 @@ public class RouteFragment extends Fragment {
                         Toast.LENGTH_SHORT).show();
             }
         } else {
-            // Both are station names
+            // Both might be station names or location names
             Station startStation = stationMap.get(start);
             Station endStation = stationMap.get(end);
             
             if (startStation != null && endStation != null) {
+                // Both are known stations
                 findRouteFromCoordinates(startStation.getLatitude(), startStation.getLongitude(),
                         endStation.getLatitude(), endStation.getLongitude());
+            } else if (startStation == null && endStation != null) {
+                // Start is unknown, try Nominatim
+                searchLocationAndFindRoute(start, true, endStation.getLatitude(), endStation.getLongitude());
+            } else if (startStation != null && endStation == null) {
+                // End is unknown, try Nominatim
+                searchLocationAndFindRoute(end, false, startStation.getLatitude(), startStation.getLongitude());
             } else {
-                Toast.makeText(requireContext(), 
-                        "Please select valid stations from the list", 
-                        Toast.LENGTH_SHORT).show();
+                // Both unknown, search start first
+                searchBothLocationsAndFindRoute(start, end);
             }
         }
+    }
+    
+    private void searchLocationAndFindRoute(String locationName, boolean isStart, double otherLat, double otherLng) {
+        // Riyadh bounding box: viewbox format is: min_lon,min_lat,max_lon,max_lat
+        String viewbox = "46.5,24.5,47.0,25.0";
+        
+        ApiClient.getNominatimService().search(
+                locationName + ", Riyadh",
+                "json",
+                5,
+                1,
+                viewbox
+        ).enqueue(new Callback<List<com.riyadhtransport.models.NominatimResult>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<com.riyadhtransport.models.NominatimResult>> call,
+                                   @NonNull Response<List<com.riyadhtransport.models.NominatimResult>> response) {
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    com.riyadhtransport.models.NominatimResult result = response.body().get(0);
+                    double lat = result.getLatitudeAsDouble();
+                    double lng = result.getLongitudeAsDouble();
+                    
+                    if (isStart) {
+                        findRouteFromCoordinates(lat, lng, otherLat, otherLng);
+                    } else {
+                        findRouteFromCoordinates(otherLat, otherLng, lat, lng);
+                    }
+                } else {
+                    Toast.makeText(requireContext(),
+                            "Location not found: " + locationName,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+            
+            @Override
+            public void onFailure(@NonNull Call<List<com.riyadhtransport.models.NominatimResult>> call,
+                                  @NonNull Throwable t) {
+                Toast.makeText(requireContext(),
+                        "Failed to search location: " + t.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    
+    private void searchBothLocationsAndFindRoute(String startName, String endName) {
+        String viewbox = "46.5,24.5,47.0,25.0";
+        
+        // Search start location
+        ApiClient.getNominatimService().search(
+                startName + ", Riyadh",
+                "json",
+                5,
+                1,
+                viewbox
+        ).enqueue(new Callback<List<com.riyadhtransport.models.NominatimResult>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<com.riyadhtransport.models.NominatimResult>> call,
+                                   @NonNull Response<List<com.riyadhtransport.models.NominatimResult>> response) {
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    com.riyadhtransport.models.NominatimResult startResult = response.body().get(0);
+                    double startLat = startResult.getLatitudeAsDouble();
+                    double startLng = startResult.getLongitudeAsDouble();
+                    
+                    // Now search end location
+                    ApiClient.getNominatimService().search(
+                            endName + ", Riyadh",
+                            "json",
+                            5,
+                            1,
+                            viewbox
+                    ).enqueue(new Callback<List<com.riyadhtransport.models.NominatimResult>>() {
+                        @Override
+                        public void onResponse(@NonNull Call<List<com.riyadhtransport.models.NominatimResult>> call2,
+                                               @NonNull Response<List<com.riyadhtransport.models.NominatimResult>> response2) {
+                            if (response2.isSuccessful() && response2.body() != null && !response2.body().isEmpty()) {
+                                com.riyadhtransport.models.NominatimResult endResult = response2.body().get(0);
+                                double endLat = endResult.getLatitudeAsDouble();
+                                double endLng = endResult.getLongitudeAsDouble();
+                                
+                                findRouteFromCoordinates(startLat, startLng, endLat, endLng);
+                            } else {
+                                Toast.makeText(requireContext(),
+                                        "Destination not found: " + endName,
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        
+                        @Override
+                        public void onFailure(@NonNull Call<List<com.riyadhtransport.models.NominatimResult>> call2,
+                                              @NonNull Throwable t) {
+                            Toast.makeText(requireContext(),
+                                    "Failed to search destination: " + t.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(requireContext(),
+                            "Origin not found: " + startName,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+            
+            @Override
+            public void onFailure(@NonNull Call<List<com.riyadhtransport.models.NominatimResult>> call,
+                                  @NonNull Throwable t) {
+                Toast.makeText(requireContext(),
+                        "Failed to search origin: " + t.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     
     private void findRouteFromCoordinates(double startLat, double startLng, 

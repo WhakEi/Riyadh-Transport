@@ -12,9 +12,12 @@ public class ApiClient {
     // For testing with local server, use: http://10.0.2.2:5000/ (Android emulator)
     // For production, use your actual server URL
     private static final String BASE_URL = "http://10.0.2.2:5000/";
+    private static final String NOMINATIM_URL = "https://nominatim.openstreetmap.org/";
     
     private static Retrofit retrofit = null;
+    private static Retrofit nominatimRetrofit = null;
     private static TransportApiService apiService = null;
+    private static NominatimService nominatimService = null;
     
     public static Retrofit getClient() {
         if (retrofit == null) {
@@ -45,6 +48,40 @@ public class ApiClient {
             apiService = getClient().create(TransportApiService.class);
         }
         return apiService;
+    }
+    
+    private static Retrofit getNominatimClient() {
+        if (nominatimRetrofit == null) {
+            // Create OkHttpClient with timeout settings
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .readTimeout(15, TimeUnit.SECONDS)
+                    .addInterceptor(chain -> {
+                        // Add User-Agent header as required by Nominatim
+                        return chain.proceed(
+                                chain.request()
+                                        .newBuilder()
+                                        .header("User-Agent", "RiyadhTransportApp/1.0")
+                                        .build()
+                        );
+                    })
+                    .build();
+            
+            // Create Retrofit instance for Nominatim
+            nominatimRetrofit = new Retrofit.Builder()
+                    .baseUrl(NOMINATIM_URL)
+                    .client(client)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return nominatimRetrofit;
+    }
+    
+    public static NominatimService getNominatimService() {
+        if (nominatimService == null) {
+            nominatimService = getNominatimClient().create(NominatimService.class);
+        }
+        return nominatimService;
     }
     
     // Method to update base URL if needed
