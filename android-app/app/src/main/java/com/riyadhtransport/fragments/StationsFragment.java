@@ -17,7 +17,10 @@ import com.riyadhtransport.R;
 import com.riyadhtransport.adapters.StationAdapter;
 import com.riyadhtransport.api.ApiClient;
 import com.riyadhtransport.models.Station;
+import com.riyadhtransport.utils.LocationHelper;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,6 +30,9 @@ public class StationsFragment extends Fragment {
     private TextInputEditText searchInput;
     private RecyclerView stationsRecycler;
     private StationAdapter stationAdapter;
+    private LocationHelper locationHelper;
+    private double currentLat = 0;
+    private double currentLng = 0;
     
     @Nullable
     @Override
@@ -38,6 +44,8 @@ public class StationsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        
+        locationHelper = new LocationHelper(requireContext());
         
         // Initialize views
         searchInput = view.findViewById(R.id.search_stations);
@@ -69,12 +77,44 @@ public class StationsFragment extends Fragment {
             public void afterTextChanged(Editable s) {}
         });
         
-        // Load stations
-        loadStations();
+        // Load nearby stations based on GPS location
+        loadNearbyStations();
     }
     
-    private void loadStations() {
-        ApiClient.getApiService().getStations().enqueue(new Callback<List<Station>>() {
+    private void loadNearbyStations() {
+        if (!LocationHelper.hasLocationPermission(requireContext())) {
+            Toast.makeText(requireContext(), 
+                    R.string.error_permission, 
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        locationHelper.getCurrentLocation(new LocationHelper.LocationCallback() {
+            @Override
+            public void onLocationReceived(double latitude, double longitude) {
+                currentLat = latitude;
+                currentLng = longitude;
+                fetchNearbyStations(latitude, longitude);
+            }
+            
+            @Override
+            public void onLocationError(String error) {
+                Toast.makeText(requireContext(), 
+                        "Unable to get location. Using default.", 
+                        Toast.LENGTH_SHORT).show();
+                // Use Riyadh center as default
+                fetchNearbyStations(24.7136, 46.6753);
+            }
+        });
+    }
+    
+    public void fetchNearbyStations(double latitude, double longitude) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("lat", latitude);
+        body.put("lng", longitude);
+        body.put("radius", 1.5); // 1.5 km radius
+        
+        ApiClient.getApiService().getNearbyStations(body).enqueue(new Callback<List<Station>>() {
             @Override
             public void onResponse(@NonNull Call<List<Station>> call, 
                                    @NonNull Response<List<Station>> response) {

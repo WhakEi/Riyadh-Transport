@@ -72,6 +72,13 @@
     <!-- Map -->
     <string name="map">الخريطة</string>
     <string name="show_on_map">عرض على الخريطة</string>
+    <string name="map_tap_title">ماذا تريد أن تفعل؟</string>
+    <string name="set_as_origin">تعيين كنقطة بداية</string>
+    <string name="set_as_destination">تعيين كوجهة</string>
+    <string name="view_nearby_stations">عرض المحطات القريبة</string>
+    <string name="origin_set">تم تعيين موقع البداية</string>
+    <string name="destination_set">تم تعيين موقع الوجهة</string>
+    <string name="loading_nearby_stations">جاري تحميل المحطات القريبة...</string>
     
     <!-- Distance -->
     <string name="meters">م</string>

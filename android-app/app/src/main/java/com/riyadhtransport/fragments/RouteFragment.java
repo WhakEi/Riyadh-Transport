@@ -172,16 +172,55 @@ public class RouteFragment extends Fragment {
             return;
         }
         
-        // Check if using "My Location" as start
-        if (start.contains("My Location") && currentLat != 0 && currentLng != 0) {
-            // Get end station coordinates
+        // Parse coordinates from text if present
+        double startLat = 0, startLng = 0, endLat = 0, endLng = 0;
+        boolean startIsCoord = false, endIsCoord = false;
+        
+        // Check if start is a coordinate (from map tap or "My Location")
+        if (start.contains("Location (") || start.contains("My Location")) {
+            startLat = currentLat;
+            startLng = currentLng;
+            startIsCoord = true;
+        }
+        
+        // Check if end is a coordinate (from map tap)
+        if (end.contains("Location (")) {
+            // Parse coordinates from text like "Location (24.1234, 46.5678)"
+            try {
+                String coords = end.substring(end.indexOf("(") + 1, end.indexOf(")"));
+                String[] parts = coords.split(",");
+                endLat = Double.parseDouble(parts[0].trim());
+                endLng = Double.parseDouble(parts[1].trim());
+                endIsCoord = true;
+            } catch (Exception e) {
+                // Failed to parse, treat as station name
+            }
+        }
+        
+        // Get coordinates based on input types
+        if (startIsCoord && endIsCoord) {
+            // Both coordinates
+            findRouteFromCoordinates(startLat, startLng, endLat, endLng);
+        } else if (startIsCoord && !endIsCoord) {
+            // Start is coordinate, end is station
             Station endStation = stationMap.get(end);
             if (endStation != null) {
-                findRouteFromCoordinates(currentLat, currentLng, 
+                findRouteFromCoordinates(startLat, startLng, 
                         endStation.getLatitude(), endStation.getLongitude());
             } else {
                 Toast.makeText(requireContext(), 
                         "Please select a valid station for destination", 
+                        Toast.LENGTH_SHORT).show();
+            }
+        } else if (!startIsCoord && endIsCoord) {
+            // Start is station, end is coordinate
+            Station startStation = stationMap.get(start);
+            if (startStation != null) {
+                findRouteFromCoordinates(startStation.getLatitude(), startStation.getLongitude(),
+                        endLat, endLng);
+            } else {
+                Toast.makeText(requireContext(), 
+                        "Please select a valid station for origin", 
                         Toast.LENGTH_SHORT).show();
             }
         } else {
@@ -383,5 +422,16 @@ public class RouteFragment extends Fragment {
             
             mapView.getController().setZoom((double) zoomLevel);
         }
+    }
+    
+    // Public methods for setting locations from map tap
+    public void setStartLocation(double latitude, double longitude) {
+        currentLat = latitude;
+        currentLng = longitude;
+        startInput.setText(String.format("Location (%.4f, %.4f)", latitude, longitude));
+    }
+    
+    public void setEndLocation(double latitude, double longitude) {
+        endInput.setText(String.format("Location (%.4f, %.4f)", latitude, longitude));
     }
 }

@@ -72,6 +72,13 @@
     <!-- Map -->
     <string name="map">Map</string>
     <string name="show_on_map">Show on Map</string>
+    <string name="map_tap_title">What would you like to do?</string>
+    <string name="set_as_origin">Set as Origin</string>
+    <string name="set_as_destination">Set as Destination</string>
+    <string name="view_nearby_stations">View Nearby Stations</string>
+    <string name="origin_set">Origin location set</string>
+    <string name="destination_set">Destination location set</string>
+    <string name="loading_nearby_stations">Loading nearby stations...</string>
     
     <!-- Distance -->
     <string name="meters">m</string>

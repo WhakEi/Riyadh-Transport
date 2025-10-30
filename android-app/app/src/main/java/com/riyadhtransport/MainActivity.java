@@ -120,6 +120,93 @@ public class MainActivity extends AppCompatActivity {
             myLocationOverlay.enableMyLocation();
             mapView.getOverlays().add(myLocationOverlay);
         }
+        
+        // Add map tap listener
+        setupMapTapListener();
+    }
+    
+    private void setupMapTapListener() {
+        org.osmdroid.views.overlay.Overlay tapOverlay = new org.osmdroid.views.overlay.Overlay() {
+            @Override
+            public boolean onSingleTapConfirmed(android.view.MotionEvent e, MapView mapView) {
+                org.osmdroid.api.IGeoPoint tappedPoint = mapView.getProjection().fromPixels((int) e.getX(), (int) e.getY());
+                showMapTapDialog(tappedPoint.getLatitude(), tappedPoint.getLongitude());
+                return true;
+            }
+        };
+        mapView.getOverlays().add(tapOverlay);
+    }
+    
+    private void showMapTapDialog(double latitude, double longitude) {
+        String[] options = {
+                getString(R.string.set_as_origin),
+                getString(R.string.set_as_destination),
+                getString(R.string.view_nearby_stations)
+        };
+        
+        new android.app.AlertDialog.Builder(this)
+                .setTitle(R.string.map_tap_title)
+                .setItems(options, (dialog, which) -> {
+                    switch (which) {
+                        case 0: // Set as origin
+                            setAsOrigin(latitude, longitude);
+                            break;
+                        case 1: // Set as destination
+                            setAsDestination(latitude, longitude);
+                            break;
+                        case 2: // View nearby stations
+                            viewNearbyStations(latitude, longitude);
+                            break;
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+    
+    private void setAsOrigin(double latitude, double longitude) {
+        // Switch to route tab and set origin
+        viewPager.setCurrentItem(0);
+        RouteFragment routeFragment = getRouteFragment();
+        if (routeFragment != null) {
+            routeFragment.setStartLocation(latitude, longitude);
+        }
+        Toast.makeText(this, R.string.origin_set, Toast.LENGTH_SHORT).show();
+    }
+    
+    private void setAsDestination(double latitude, double longitude) {
+        // Switch to route tab and set destination
+        viewPager.setCurrentItem(0);
+        RouteFragment routeFragment = getRouteFragment();
+        if (routeFragment != null) {
+            routeFragment.setEndLocation(latitude, longitude);
+        }
+        Toast.makeText(this, R.string.destination_set, Toast.LENGTH_SHORT).show();
+    }
+    
+    private void viewNearbyStations(double latitude, double longitude) {
+        // Switch to stations tab and load nearby stations
+        viewPager.setCurrentItem(1);
+        StationsFragment stationsFragment = getStationsFragment();
+        if (stationsFragment != null) {
+            stationsFragment.fetchNearbyStations(latitude, longitude);
+        }
+        Toast.makeText(this, R.string.loading_nearby_stations, Toast.LENGTH_SHORT).show();
+    }
+    
+    private RouteFragment getRouteFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("f0");
+        if (fragment instanceof RouteFragment) {
+            return (RouteFragment) fragment;
+        }
+        return null;
+    }
+    
+    private StationsFragment getStationsFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("f1");
+        if (fragment instanceof StationsFragment) {
+            return (StationsFragment) fragment;
+        }
+        return null;
     }
     
     private String getCurrentLanguage() {
