@@ -9,6 +9,9 @@ public class Station {
     @SerializedName("label")
     private String label;
     
+    @SerializedName("name")
+    private String name; // For nearby stations endpoint
+    
     @SerializedName("type")
     private String type; // "metro" or "bus"
     
@@ -17,6 +20,12 @@ public class Station {
     
     @SerializedName("lng")
     private double longitude;
+    
+    @SerializedName("distance")
+    private Double distance; // Distance in meters
+    
+    @SerializedName("duration")
+    private Double duration; // Walking duration in seconds
     
     public Station() {
     }
@@ -78,6 +87,33 @@ public class Station {
     }
     
     public String getDisplayName() {
-        return label != null ? label : value;
+        // Handle both /api/stations and /nearbystations formats
+        if (label != null) return label;
+        if (name != null) return name;
+        return value;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public Double getDistance() {
+        return distance;
+    }
+    
+    public void setDistance(Double distance) {
+        this.distance = distance;
+    }
+    
+    public Double getDuration() {
+        return duration;
+    }
+    
+    public void setDuration(Double duration) {
+        this.duration = duration;
     }
 }

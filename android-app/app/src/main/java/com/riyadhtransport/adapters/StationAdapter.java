@@ -87,6 +87,30 @@ public class StationAdapter extends RecyclerView.Adapter<StationAdapter.StationV
                     itemView.getContext().getString(R.string.bus);
             stationType.setText(type);
             
+            // Display distance and walking time if available
+            if (station.getDistance() != null && station.getDuration() != null) {
+                double distanceMeters = station.getDistance();
+                double durationSeconds = station.getDuration();
+                
+                String distanceStr;
+                if (distanceMeters < 1000) {
+                    distanceStr = String.format("%.0f %s", distanceMeters, 
+                            itemView.getContext().getString(R.string.meters));
+                } else {
+                    distanceStr = String.format("%.2f %s", distanceMeters / 1000, 
+                            itemView.getContext().getString(R.string.kilometers));
+                }
+                
+                int walkMinutes = (int) Math.ceil(durationSeconds / 60.0);
+                String walkTimeStr = walkMinutes + " " + itemView.getContext().getString(R.string.minutes) + 
+                        " " + itemView.getContext().getString(R.string.walk).toLowerCase();
+                
+                stationDistance.setText(distanceStr + " • " + walkTimeStr);
+                stationDistance.setVisibility(View.VISIBLE);
+            } else {
+                stationDistance.setVisibility(View.GONE);
+            }
+            
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onStationClick(station);
