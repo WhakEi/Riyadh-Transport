@@ -449,8 +449,11 @@ public class RouteFragment extends Fragment {
             if (segment.isWalking()) {
                 // Walking segment - dotted gray line (matching frontend walk color)
                 line.setColor(Color.parseColor("#6c757d"));
-                line.getPaint().setStrokeWidth(8f);
-                line.getPaint().setPathEffect(new DashPathEffect(new float[]{10, 20}, 0));
+                line.getPaint().setStrokeWidth(12f); // Increased width for visibility
+                line.getPaint().setStyle(Paint.Style.STROKE);
+                line.getPaint().setStrokeCap(Paint.Cap.ROUND);
+                // Dash pattern: 20px dash, 10px gap
+                line.getPaint().setPathEffect(new DashPathEffect(new float[]{20, 10}, 0));
                 
                 addSegmentPoints(segment, points);
                 

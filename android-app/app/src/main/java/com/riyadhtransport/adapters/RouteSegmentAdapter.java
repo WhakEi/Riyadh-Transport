@@ -78,13 +78,17 @@ public class RouteSegmentAdapter extends RecyclerView.Adapter<RouteSegmentAdapte
                 String destination = getDestinationName(segment, isLastSegment);
                 
                 if (isLastSegment) {
-                    typeText = "Walk to your destination";
+                    typeText = itemView.getContext().getString(R.string.walk_to_destination);
                 } else {
-                    typeText = "Walk to " + destination;
+                    // Determine if destination is a bus stop or metro station based on next segment
+                    String stationType = itemView.getContext().getString(R.string.metro_station); // default
+                    typeText = itemView.getContext().getString(R.string.walk_to_station, 
+                            destination, stationType);
                 }
                 
                 double distanceKm = segment.getDistance() != null ? segment.getDistance() / 1000.0 : 0;
-                detailsText = String.format("%.2f km", distanceKm);
+                detailsText = String.format("%.2f %s", distanceKm, 
+                        itemView.getContext().getString(R.string.kilometers));
                 
             } else if (segment.isMetro()) {
                 // Metro segment
@@ -94,8 +98,9 @@ public class RouteSegmentAdapter extends RecyclerView.Adapter<RouteSegmentAdapte
                 color = LineColorHelper.getMetroLineColor(itemView.getContext(), segment.getLine());
                 
                 String destination = getDestinationStation(segment);
-                typeText = "Take the " + lineName + " and disembark at " + destination;
-                detailsText = destination + " (Metro station)";
+                typeText = itemView.getContext().getString(R.string.take_metro, 
+                        lineName, destination);
+                detailsText = destination + " (" + itemView.getContext().getString(R.string.metro_station) + ")";
                 
             } else {
                 // Bus segment
@@ -105,8 +110,9 @@ public class RouteSegmentAdapter extends RecyclerView.Adapter<RouteSegmentAdapte
                 String startStation = getStartStation(segment);
                 String destination = getDestinationStation(segment);
                 
-                typeText = "Take Bus " + segment.getLine() + " and disembark at " + destination;
-                detailsText = startStation + " (Bus stop) → " + destination;
+                typeText = itemView.getContext().getString(R.string.take_bus, 
+                        segment.getLine(), destination);
+                detailsText = startStation + " (" + itemView.getContext().getString(R.string.bus_stop) + ") → " + destination;
             }
             
             // Set icon and color

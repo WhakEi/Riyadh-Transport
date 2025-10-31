@@ -15,11 +15,20 @@
         android:padding="16dp">
 
         <View
-            android:id="@+id/line_color_indicator"
+            android:id="@+id/color_indicator"
             android:layout_width="4dp"
             android:layout_height="match_parent"
             android:layout_marginEnd="12dp"
-            android:background="@color/colorPrimary" />
+            android:background="@color/blue_line" />
+
+        <ImageView
+            android:id="@+id/line_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="12dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_metro"
+            android:contentDescription="@string/line_details" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -33,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_primary" />
+                android:textColor="@android:color/black" />
 
             <TextView
                 android:id="@+id/line_type"
@@ -41,15 +50,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:textSize="14sp"
-                android:textColor="@color/text_secondary" />
+                android:textColor="@android:color/darker_gray" />
         </LinearLayout>
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
-            android:src="@android:drawable/ic_menu_more"
-            android:contentDescription="@string/line_details" />
 
     </LinearLayout>
 

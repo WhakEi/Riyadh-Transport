@@ -1,5 +1,6 @@
 package com.riyadhtransport.api;
 
+import com.google.gson.JsonObject;
 import com.riyadhtransport.models.Arrival;
 import com.riyadhtransport.models.Route;
 import com.riyadhtransport.models.Station;
@@ -33,14 +34,14 @@ public interface TransportApiService {
     Call<Map<String, Object>> getBusArrivals(@Body Map<String, String> stationName);
     
     @GET("buslines")
-    Call<Map<String, String>> getBusLines();
+    Call<JsonObject> getBusLines();
     
     @GET("mtrlines")
-    Call<Map<String, String>> getMetroLines();
+    Call<JsonObject> getMetroLines();
     
     @POST("viewbus")
-    Call<Map<String, Object>> getBusLineDetails(@Body Map<String, String> lineNumber);
+    Call<JsonObject> viewBus(@Body JsonObject lineNumber);
     
     @POST("viewmtr")
-    Call<Map<String, Object>> getMetroLineDetails(@Body Map<String, String> lineNumber);
+    Call<JsonObject> viewMetro(@Body JsonObject lineNumber);
 }
